@@ -2,25 +2,29 @@ import { Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
 import { LocalServer } from "../../src/localServer.js";
 import { Runner } from "../../src/runner.js";
 import { ClaimResult } from "esbehavior/dist/Claim.js";
+import { PlaywrightBrowser } from "../../src/playwrightBrowser.js";
+import { BehaviorEnvironment } from "../../src/behaviorMetadata.js";
 
-export function testRunnerContext(): Context<TestRunner> {
+export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
   return {
-    init: () => new TestRunner()
+    init: () => new TestRunner(environment)
   }
 }
 
 export class TestRunner {
   private localServer: LocalServer;
+  private playwrightBrowser: PlaywrightBrowser
   private runner: Runner;
   private testReporter: TestReporter;
   private testOrderProvider: TestOrderProvider
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
 
-  constructor() {
+  constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) {
     this.localServer = new LocalServer()
+    this.playwrightBrowser = new PlaywrightBrowser()
     this.testReporter = new TestReporter()
-    this.runner = new Runner(this.localServer)
+    this.runner = new Runner(this.localServer, this.playwrightBrowser)
     this.testOrderProvider = new TestOrderProvider()
   }
 
@@ -39,9 +43,11 @@ export class TestRunner {
       reporter: this.testReporter,
       orderProvider: this.testOrderProvider,
       failFast: this.shouldFailFast,
-      runPickedOnly: this.shouldRunPickedExamplesOnly
+      runPickedOnly: this.shouldRunPickedExamplesOnly,
+      defaultEnvironment: this.defaultBehaviorEnvironment
     })
     await this.localServer.stop()
+    await this.playwrightBrowser.stop()
   }
 
   get reporter(): TestReporter {

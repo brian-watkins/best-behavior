@@ -1,7 +1,11 @@
-import { getDocumentationMatchingPattern } from "./collector.js"
-import { ServerBehaviorValidator, Transpiler } from "./serverValidator.js"
-import { SequentialDocumentationValidator } from "./documentationValidator.js"
+import { getBehaviorsMatchingPattern } from "./behaviorCollector.js"
+import { SequentialValidator } from "./sequentialValidator.js"
 import { OrderProvider, Reporter } from "esbehavior"
+import { PlaywrightBrowser } from "./playwrightBrowser.js"
+import { Transpiler } from "./transpiler.js"
+import { BehaviorEnvironment } from "./behaviorMetadata.js"
+import { BehaviorFactory } from "./behaviorFactory.js"
+import { BrowserBehaviorContext } from "./browserBehavior.js"
 
 export interface RunOptions {
   behaviorPathPattern: string
@@ -9,24 +13,28 @@ export interface RunOptions {
   orderProvider: OrderProvider
   failFast: boolean
   runPickedOnly: boolean
+  defaultEnvironment: BehaviorEnvironment
 }
 
 export class Runner {
-  private serverValidator: ServerBehaviorValidator
-  private documentationValidator: SequentialDocumentationValidator
+  private behaviorFactory: BehaviorFactory
 
-  constructor(private transpiler: Transpiler) {
-    this.serverValidator = new ServerBehaviorValidator(this.transpiler)
-    this.documentationValidator = new SequentialDocumentationValidator(this.serverValidator)
+  constructor(private transpiler: Transpiler, private playwright: PlaywrightBrowser) {
+    this.behaviorFactory = new BehaviorFactory(this.transpiler, new BrowserBehaviorContext(this.playwright))
   }
 
   async run(options: RunOptions): Promise<void> {
-    const documentation = await getDocumentationMatchingPattern(options.behaviorPathPattern)
+    // Why do we need to return the pattern from this function?
+    const documentation = await getBehaviorsMatchingPattern({
+      pattern: options.behaviorPathPattern,
+      defaultEnvironment: options.defaultEnvironment
+    })
   
     options.reporter.start(options.orderProvider.description)
 
     // need to call terminate if this throws an exception
-    const summary = await this.documentationValidator.validate(documentation, options)
+    const validator = new SequentialValidator(this.behaviorFactory)
+    const summary = await validator.validate(documentation, options)
 
     options.reporter.end(summary)
 

@@ -1,5 +1,5 @@
 import { ViteDevServer, createServer } from "vite";
-import { Transpiler } from "./serverValidator.js";
+import { Transpiler } from "./transpiler.js";
 
 export class LocalServer implements Transpiler {
   private server: ViteDevServer | undefined;
