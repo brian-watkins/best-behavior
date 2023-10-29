@@ -1,14 +1,18 @@
 import { StandardReporter, randomOrder } from "esbehavior"
-import { LocalServer } from "./localServer.js"
 import { Runner } from "./runner.js"
 import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorEnvironment } from "./behaviorMetadata.js"
+import { BehaviorFactory } from "./behaviorFactory.js"
+import { BrowserBehaviorContext } from "./browserBehavior.js"
+import { ViteLocalServer } from "./viteServer.js"
 
-const localServer = new LocalServer()
+const viteServer = new ViteLocalServer()
 const playwrightBrowser = new PlaywrightBrowser()
-const runner = new Runner(localServer, playwrightBrowser)
+const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser)
+const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
+const runner = new Runner(behaviorFactory)
 
-await localServer.start()
+await viteServer.start()
 
 await runner.run({
   behaviorPathPattern: "./test/fixture/**/*.behavior.ts",
@@ -19,5 +23,5 @@ await runner.run({
   defaultEnvironment: BehaviorEnvironment.Local
 })
 
-await localServer.stop()
+await viteServer.stop()
 await playwrightBrowser.stop()

@@ -1,0 +1,44 @@
+import { ViteDevServer, createServer } from "vite";
+import { LocalServer } from "./localServer.js";
+import { Transpiler } from "./transpiler.js";
+
+export class ViteLocalServer implements LocalServer, Transpiler {
+  private server: ViteDevServer | undefined;
+  
+  async start(): Promise<void> {
+    this.server = await createServer({
+      // root: "../",
+      // server: {
+        // port: 5957
+      // },
+      optimizeDeps: {
+        include: [ "./**/*.behavior.ts" ]
+      }
+      // plugins: [
+        // tsConfigPaths()
+      // ],
+      // css: {
+        // postcss: "examples"
+      // }
+    })
+
+    await this.server.listen()
+  }
+
+  url(path: string): string {
+    return new URL(path, this.host()).href
+  }
+
+  private host(): string | undefined {
+    return this.server?.resolvedUrls?.local[0]
+  }
+
+  async loadModule(path: string): Promise<any> {
+    return this.server?.ssrLoadModule(path)
+  }
+
+  async stop(): Promise<void> {
+    await this.server?.close()
+  }
+
+}

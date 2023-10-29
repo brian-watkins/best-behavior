@@ -1,6 +1,6 @@
 import { ConfigurableBehavior } from "esbehavior";
 import { Transpiler } from "./transpiler.js";
-import { BrowserBehaviorContext, getBrowserBehavior } from "./browserBehavior.js";
+import { BrowserBehaviorContext } from "./browserBehavior.js";
 import { getLocalBehavior } from "./localBehavior.js";
 import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js";
 
@@ -13,7 +13,7 @@ export class BehaviorFactory {
       case BehaviorEnvironment.Local:
         return getLocalBehavior(this.transpiler, metadata)
       case BehaviorEnvironment.Browser:
-        return getBrowserBehavior(this.browserContext, metadata)
+        return this.browserContext.getBrowserBehavior(metadata)
     }
   }
 }

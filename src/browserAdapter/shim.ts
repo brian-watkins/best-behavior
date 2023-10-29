@@ -13,8 +13,8 @@ export interface BehaviorData {
   validationMode: ValidationMode
 }
 
-window.loadBehavior = async function (path: string): Promise<BehaviorData> {
-  const behaviorModule = await import(/* @vite-ignore */ `http://localhost:5957/${path}`)
+window.loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
+  const behaviorModule = await import(/* @vite-ignore */ behaviorModuleUrl)
 
   const configurableBehavior = behaviorModule.default
 

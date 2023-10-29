@@ -1,9 +1,11 @@
 import { Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { LocalServer } from "../../src/localServer.js";
 import { Runner } from "../../src/runner.js";
 import { ClaimResult } from "esbehavior/dist/Claim.js";
 import { PlaywrightBrowser } from "../../src/playwrightBrowser.js";
 import { BehaviorEnvironment } from "../../src/behaviorMetadata.js";
+import { BehaviorFactory } from "../../src/behaviorFactory.js";
+import { BrowserBehaviorContext } from "../../src/browserBehavior.js";
+import { ViteLocalServer } from "../../src/viteServer.js";
 
 export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
   return {
@@ -12,7 +14,7 @@ export function testRunnerContext(environment: BehaviorEnvironment): Context<Tes
 }
 
 export class TestRunner {
-  private localServer: LocalServer;
+  private viteServer: ViteLocalServer;
   private playwrightBrowser: PlaywrightBrowser
   private runner: Runner;
   private testReporter: TestReporter;
@@ -21,10 +23,10 @@ export class TestRunner {
   private shouldRunPickedExamplesOnly: boolean = false
 
   constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) {
-    this.localServer = new LocalServer()
+    this.viteServer = new ViteLocalServer()
     this.playwrightBrowser = new PlaywrightBrowser()
     this.testReporter = new TestReporter()
-    this.runner = new Runner(this.localServer, this.playwrightBrowser)
+    this.runner = new Runner(new BehaviorFactory(this.viteServer, new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser)))
     this.testOrderProvider = new TestOrderProvider()
   }
 
@@ -37,7 +39,7 @@ export class TestRunner {
   }
 
   async runBehaviors(pattern: string): Promise<void> {
-    await this.localServer.start()
+    await this.viteServer.start()
     await this.runner.run({
       behaviorPathPattern: `./test/fixtures/behaviors/${pattern}`,
       reporter: this.testReporter,
@@ -46,7 +48,7 @@ export class TestRunner {
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       defaultEnvironment: this.defaultBehaviorEnvironment
     })
-    await this.localServer.stop()
+    await this.viteServer.stop()
     await this.playwrightBrowser.stop()
   }
 

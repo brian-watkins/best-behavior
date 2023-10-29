@@ -1,21 +1,21 @@
+import path from "path"
+import url from 'url';
 import { Behavior, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { ClaimResult } from "esbehavior/dist/Claim.js"
 import { Page } from "playwright"
 import { PlaywrightBrowser } from "./playwrightBrowser.js"
-import path from "path"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorOptions, ExampleOptions, ValidationMode } from "esbehavior/dist/Behavior.js"
-import * as url from 'url';
 import { BehaviorData } from "./browserAdapter/shim.js"
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { LocalServer } from "./localServer.js"
 
 export class BrowserBehaviorContext {
   private page: Page | undefined
   private browserReporter: BrowserReporter | undefined
 
-  constructor(private playwrightBrowser: PlaywrightBrowser) { }
+  constructor(private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser) { }
 
-  async getPage(): Promise<Page> {
+  private async getPage(): Promise<Page> {
     if (this.page !== undefined) {
       return this.page
     }
@@ -28,29 +28,28 @@ export class BrowserBehaviorContext {
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()
 
-    const basePath = path.relative("", __dirname)
-    await this.page.goto(`http://localhost:5957/${basePath}/browserAdapter/index.html`)
+    await this.page.goto(this.localServer.url(`${basePath()}/browserAdapter/index.html`))
   
     return this.page
   }
 
-  getBrowserReporter(): BrowserReporter {
-    return this.browserReporter!
+  async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
+    const page = await this.getPage()
+    const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.url(metadata.path))
+      return (b: BehaviorOptions) => {
+        b.validationMode = data.validationMode
+        return new Behavior(data.description, data.examples.map((mode: ValidationMode, index: number) => {
+          return (m: ExampleOptions) => {
+            m.validationMode = mode
+            return new BrowserExample(index, page, this.browserReporter!)
+          }
+        }))
+      }
   }
 }
 
-export async function getBrowserBehavior(context: BrowserBehaviorContext, metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
-  const page = await context.getPage()
-  const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), metadata.path)
-    return (b: BehaviorOptions) => {
-      b.validationMode = data.validationMode
-      return new Behavior(data.description, data.examples.map((mode: ValidationMode, index: number) => {
-        return (m: ExampleOptions) => {
-          m.validationMode = mode
-          return new BrowserExample(index, page, context.getBrowserReporter())
-        }
-      }))
-    }
+function basePath() {
+  return path.relative("", url.fileURLToPath(new URL('.', import.meta.url)))
 }
 
 class BrowserExample implements Example {

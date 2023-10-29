@@ -1,11 +1,8 @@
 import { getBehaviorsMatchingPattern } from "./behaviorCollector.js"
 import { SequentialValidator } from "./sequentialValidator.js"
 import { OrderProvider, Reporter, Summary } from "esbehavior"
-import { PlaywrightBrowser } from "./playwrightBrowser.js"
-import { Transpiler } from "./transpiler.js"
 import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
-import { BrowserBehaviorContext } from "./browserBehavior.js"
 import { DocumentationRunner } from "./documentationRunner.js"
 
 export interface RunOptions {
@@ -18,11 +15,7 @@ export interface RunOptions {
 }
 
 export class Runner {
-  private behaviorFactory: BehaviorFactory
-
-  constructor(private transpiler: Transpiler, private playwright: PlaywrightBrowser) {
-    this.behaviorFactory = new BehaviorFactory(this.transpiler, new BrowserBehaviorContext(this.playwright))
-  }
+  constructor(private behaviorFactory: BehaviorFactory) { }
 
   async run(options: RunOptions): Promise<void> {
     try {
