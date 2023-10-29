@@ -2,7 +2,7 @@ import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayWith, assignedWith, equalTo, expect, is } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
-import { BehaviorEnvironment } from "../src/behaviorMetadata.js"
+import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js"
 
 export default (environment: BehaviorEnvironment): Array<ConfigurableExample> => [
 

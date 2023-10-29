@@ -1,4 +1,10 @@
 
+interface BehaviorData {
+  description: string
+  examples: Array<ValidationMode>
+  validationMode: ValidationMode
+}
+
 export declare global {
   interface Window {
     currentBehavior: Behavior

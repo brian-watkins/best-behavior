@@ -1,11 +1,11 @@
 import { Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Runner } from "../../src/runner.js";
+import { Runner } from "../../runner/src/runner.js";
 import { ClaimResult } from "esbehavior/dist/Claim.js";
-import { PlaywrightBrowser } from "../../src/playwrightBrowser.js";
-import { BehaviorEnvironment } from "../../src/behaviorMetadata.js";
-import { BehaviorFactory } from "../../src/behaviorFactory.js";
-import { BrowserBehaviorContext } from "../../src/browserBehavior.js";
-import { ViteLocalServer } from "../../src/viteServer.js";
+import { PlaywrightBrowser } from "../../runner/src/playwrightBrowser.js";
+import { BehaviorEnvironment } from "../../runner/src/behaviorMetadata.js";
+import { BehaviorFactory } from "../../runner/src/behaviorFactory.js";
+import { BrowserBehaviorContext } from "../../runner/src/browserBehavior.js";
+import { ViteLocalServer } from "../../runner/src/viteServer.js";
 
 export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
   return {

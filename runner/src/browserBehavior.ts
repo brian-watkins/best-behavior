@@ -6,8 +6,9 @@ import { Page } from "playwright"
 import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorOptions, ExampleOptions, ValidationMode } from "esbehavior/dist/Behavior.js"
-import { BehaviorData } from "./browserAdapter/shim.js"
 import { LocalServer } from "./localServer.js"
+import { BehaviorData } from "../../types/types.js";
+
 
 export class BrowserBehaviorContext {
   private page: Page | undefined
@@ -28,7 +29,7 @@ export class BrowserBehaviorContext {
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()
 
-    await this.page.goto(this.localServer.url(`${basePath()}/browserAdapter/index.html`))
+    await this.page.goto(this.localServer.url(`/browserAdapter/index.html`))
   
     return this.page
   }
@@ -48,6 +49,7 @@ export class BrowserBehaviorContext {
   }
 }
 
+// Consider whether we need this once we get the import working
 function basePath() {
   return path.relative("", url.fileURLToPath(new URL('.', import.meta.url)))
 }

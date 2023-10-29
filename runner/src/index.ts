@@ -15,7 +15,7 @@ const runner = new Runner(behaviorFactory)
 await viteServer.start()
 
 await runner.run({
-  behaviorPathPattern: "./test/fixture/**/*.behavior.ts",
+  behaviorPathPattern: "./test/fixtures/**/*.behavior.ts",
   reporter: new StandardReporter(),
   orderProvider: randomOrder(),
   failFast: false,

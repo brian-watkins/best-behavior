@@ -4,7 +4,8 @@
   "description": "Runner for esbehavior behaviors",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node --swc --esm ./src/index.ts",
+    "build": "rm -rf ./dist && tsc --build",
+    "dev": "ts-node --swc --esm ./runner/src/index.ts",
     "test": "ts-node --swc --esm ./test/runner.ts"
   },
   "type": "module",

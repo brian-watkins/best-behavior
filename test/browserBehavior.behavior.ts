@@ -2,7 +2,7 @@ import { behavior, effect, example, step } from "esbehavior";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayWith, assignedWith, equalTo, expect, is } from "great-expectations";
 import { expectedBehavior } from "./helpers/matchers.js";
-import { BehaviorEnvironment } from "../src/behaviorMetadata.js";
+import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 
 export default behavior("running behaviors in the browser environment", [

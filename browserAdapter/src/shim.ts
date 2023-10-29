@@ -1,17 +1,13 @@
 import { ConfigurableExample, Example, ExampleOptions, Summary, defaultOrder } from "esbehavior"
 import { BehaviorOptions, ValidationMode } from "esbehavior/dist/Behavior.js"
 import { AdapterReporter } from "./adapterReporter.js"
+import { BehaviorData } from "../../types/types.js"
 
 // Note might have to exclude this from getting transpiled when
 // we build the module? Otherwise the path that is used to load this
 // from the index.html page might be messed up
 // Unless maybe we use vite to build everything?
 
-export interface BehaviorData {
-  description: string
-  examples: Array<ValidationMode>
-  validationMode: ValidationMode
-}
 
 window.loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
   const behaviorModule = await import(/* @vite-ignore */ behaviorModuleUrl)
