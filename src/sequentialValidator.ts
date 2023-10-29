@@ -10,22 +10,19 @@ export interface DocumentationValidationOptions {
   runPickedOnly: boolean
 }
 
-export interface Documentation {
-  pattern: string
-  behaviors: Array<BehaviorMetadata>
-}
-
 export class SequentialValidator {
-  constructor (private behaviorFactory: BehaviorFactory) { }
+  constructor (private behaviorFactory: BehaviorFactory, private runner: DocumentationRunner) { }
 
-  async validate(documentation: Documentation, options: DocumentationValidationOptions): Promise<Summary> {
-    const runner = new DocumentationRunner()
+  async validate(behaviors: Array<BehaviorMetadata>, options: DocumentationValidationOptions): Promise<Summary> {
+    this.runner.start()
 
-    for (const metadata of options.orderProvider.order(documentation.behaviors)) {
+    for (const metadata of options.orderProvider.order(behaviors)) {
       const configurableBehavior = await this.behaviorFactory.getBehavior(metadata)
-      await runner.run(configurableBehavior, options)
+      await this.runner.run(configurableBehavior, options)
     }
 
-    return runner.getSummary()
+    this.runner.end()
+
+    return this.runner.getSummary()
   }
 }

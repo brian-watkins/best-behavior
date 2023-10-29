@@ -1,6 +1,5 @@
 import { glob } from 'glob'
 import firstLine from 'firstline'
-import { Documentation } from './sequentialValidator.js'
 import { BehaviorEnvironment, BehaviorMetadata } from './behaviorMetadata.js'
 
 export interface BehaviorCollectionOptions {
@@ -8,7 +7,7 @@ export interface BehaviorCollectionOptions {
   defaultEnvironment: BehaviorEnvironment
 }
 
-export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<Documentation> {
+export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<Array<BehaviorMetadata>> {
   const files = await glob(options.pattern, { ignore: 'node_modules/**'})
 
   let behaviors: Array<BehaviorMetadata> = []
@@ -21,10 +20,7 @@ export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOpt
     })
   }
 
-  return {
-    pattern: options.pattern,
-    behaviors
-  }
+  return behaviors
 }
 
 async function getEnvironment(defaultEnvironment: BehaviorEnvironment, file: string): Promise<BehaviorEnvironment> {
