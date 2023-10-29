@@ -1,5 +1,4 @@
-import { ConfigurableExample, Example, ExampleOptions, Summary, defaultOrder } from "esbehavior"
-import { BehaviorOptions, ValidationMode } from "esbehavior/dist/Behavior.js"
+import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
 import { BehaviorData } from "../../types/types.js"
 

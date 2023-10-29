@@ -1,11 +1,9 @@
 import path from "path"
 import url from 'url';
-import { Behavior, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
-import { ClaimResult } from "esbehavior/dist/Claim.js"
+import { Behavior, BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleOptions, ExampleValidationOptions, Reporter, Summary, ValidationMode } from "esbehavior"
 import { Page } from "playwright"
 import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
-import { BehaviorOptions, ExampleOptions, ValidationMode } from "esbehavior/dist/Behavior.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
 

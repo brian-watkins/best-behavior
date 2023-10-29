@@ -1,7 +1,6 @@
-import { OrderProvider, Reporter, Summary } from "esbehavior";
+import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior";
 import { BehaviorMetadata } from "./behaviorMetadata.js";
 import { BehaviorFactory } from "./behaviorFactory.js";
-import { DocumentationRunner } from "./documentationRunner.js";
 
 export interface DocumentationValidationOptions {
   reporter: Reporter

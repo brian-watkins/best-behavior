@@ -1,9 +1,8 @@
 import { getBehaviorsMatchingPattern } from "./behaviorCollector.js"
 import { SequentialValidator } from "./sequentialValidator.js"
-import { OrderProvider, Reporter, Summary } from "esbehavior"
+import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior"
 import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
-import { DocumentationRunner } from "./documentationRunner.js"
 
 export interface RunOptions {
   behaviorPathPattern: string

@@ -1,5 +1,4 @@
-import { Failure, Reporter, Summary } from "esbehavior";
-import { ClaimResult } from "esbehavior/dist/Claim.js";
+import { ClaimResult, Failure, Reporter, Summary } from "esbehavior";
 
 // this needs to just handle stuff from the example
 export class AdapterReporter implements Reporter {
