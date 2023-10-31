@@ -1,18 +1,20 @@
-import path from "path"
-import url from 'url';
-import { Behavior, BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleOptions, ExampleValidationOptions, Reporter, Summary, ValidationMode } from "esbehavior"
+import fs from "fs"
+import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { Page } from "playwright"
 import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
 
+export interface BrowserBehaviorContextOptions {
+  adapterPath: string
+}
 
 export class BrowserBehaviorContext {
   private page: Page | undefined
   private browserReporter: BrowserReporter | undefined
 
-  constructor(private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser) { }
+  constructor(private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser, private options: BrowserBehaviorContextOptions) { }
 
   private async getPage(): Promise<Page> {
     if (this.page !== undefined) {
@@ -27,29 +29,29 @@ export class BrowserBehaviorContext {
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()
 
-    await this.page.goto(this.localServer.url(`/browserAdapter/index.html`))
-  
+    const adapter = fs.readFileSync(this.options.adapterPath, "utf8")
+    await this.page.evaluate(adapter)
+
     return this.page
   }
 
   async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
     const page = await this.getPage()
     const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.url(metadata.path))
-      return (b: BehaviorOptions) => {
-        b.validationMode = data.validationMode
-        return new Behavior(data.description, data.examples.map((mode: ValidationMode, index: number) => {
-          return (m: ExampleOptions) => {
+
+    return (b: BehaviorOptions) => {
+      b.validationMode = data.validationMode
+      return {
+        description: data.description,
+        examples: data.examples.map((mode, index) => {
+          return (m) => {
             m.validationMode = mode
             return new BrowserExample(index, page, this.browserReporter!)
           }
-        }))
+        })
       }
+    }
   }
-}
-
-// Consider whether we need this once we get the import working
-function basePath() {
-  return path.relative("", url.fileURLToPath(new URL('.', import.meta.url)))
 }
 
 class BrowserExample implements Example {

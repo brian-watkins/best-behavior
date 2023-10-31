@@ -1,10 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "./runner" },
-    { "path": "./browserAdapter" }
-  ],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+    { "path": "./runner" }
+  ]
 }

@@ -25,7 +25,10 @@ export class TestRunner {
     this.viteServer = new ViteLocalServer()
     this.playwrightBrowser = new PlaywrightBrowser()
     this.testReporter = new TestReporter()
-    this.runner = new Runner(new BehaviorFactory(this.viteServer, new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser)))
+    const browserBehaviorContext = new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser, {
+      adapterPath: "./dist/adapter/browserAdapter.js"
+    })
+    this.runner = new Runner(new BehaviorFactory(this.viteServer, browserBehaviorContext))
     this.testOrderProvider = new TestOrderProvider()
   }
 
