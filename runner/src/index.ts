@@ -9,7 +9,7 @@ import { ViteLocalServer } from "./viteServer.js"
 const viteServer = new ViteLocalServer()
 const playwrightBrowser = new PlaywrightBrowser()
 const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
-  adapterPath: "./dist/adapter/browserAdapter.js"
+  adapterPath: "./dist/adapter/browserAdapter.cjs"
 })
 const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
 const runner = new Runner(behaviorFactory)

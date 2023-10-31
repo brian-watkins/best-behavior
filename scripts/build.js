@@ -5,10 +5,11 @@ await build({
   base: "/dist/adapter",
   build: {
     outDir: "../dist/adapter",
+    minify: true,
     emptyOutDir: true,
     lib: {
       entry: "./src/index.ts",
-      formats: ["es"],
+      formats: ["cjs"],
       fileName: "browserAdapter"
     }
   }
