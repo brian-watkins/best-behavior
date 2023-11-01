@@ -1,29 +1,70 @@
+import yargs from "yargs"
+import url from "url"
+import path from "path"
 import { StandardReporter, randomOrder } from "esbehavior"
-import { Runner } from "./runner.js"
-import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorEnvironment } from "./behaviorMetadata.js"
-import { BehaviorFactory } from "./behaviorFactory.js"
-import { BrowserBehaviorContext } from "./browserBehavior.js"
 import { ViteLocalServer } from "./viteServer.js"
+import { PlaywrightBrowser } from "./playwrightBrowser.js"
+import { BrowserBehaviorContext } from "./browserBehavior.js"
+import { BehaviorFactory } from "./behaviorFactory.js"
+import { Runner } from "./runner.js"
 
-const viteServer = new ViteLocalServer()
-const playwrightBrowser = new PlaywrightBrowser()
-const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
-  adapterPath: "./dist/adapter/browserAdapter.cjs"
-})
-const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
-const runner = new Runner(behaviorFactory)
+export async function run(): Promise<void> {
+  const args = yargs(process.argv.slice(2))
+    .scriptName("behave")
+    .usage("$0 --behaviors 'some/path/**/*.behavior.ts'")
+    .options({
+      "behaviors": {
+        describe: "glob that matches behaviors; relative to working dir",
+        demandOption: true,
+        type: "string"
+      },
+      "failFast": {
+        describe: "stop on first invalid claim",
+        default: false,
+        type: "boolean"
+      },
+      "picked": {
+        describe: "run only picked behaviors and examples",
+        default: false,
+        type: "boolean"
+      },
+      "environment": {
+        describe: "default behavior environment",
+        choices: [
+          BehaviorEnvironment.Local,
+          BehaviorEnvironment.Browser
+        ],
+        default: BehaviorEnvironment.Local
+      },
+      "seed": {
+        describe: "specify seed for random ordering",
+        type: "string"
+      }
+    })
+    .parseSync()
 
-await viteServer.start()
+  const distRoot = url.fileURLToPath(new URL('../', import.meta.url))
 
-await runner.run({
-  behaviorPathPattern: "./test/fixtures/**/*.behavior.ts",
-  reporter: new StandardReporter(),
-  orderProvider: randomOrder(),
-  failFast: false,
-  runPickedOnly: false,
-  defaultEnvironment: BehaviorEnvironment.Local
-})
+  const viteServer = new ViteLocalServer()
+  const playwrightBrowser = new PlaywrightBrowser()
+  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
+    adapterPath: path.join(distRoot, "adapter", "browserAdapter.cjs")
+  })
+  const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
+  const runner = new Runner(behaviorFactory)
 
-await viteServer.stop()
-await playwrightBrowser.stop()
+  await viteServer.start()
+
+  await runner.run({
+    behaviorPathPattern: args.behaviors,
+    reporter: new StandardReporter(),
+    orderProvider: randomOrder(args.seed),
+    failFast: args.failFast,
+    runPickedOnly: args.picked,
+    defaultEnvironment: args.environment
+  })
+
+  await viteServer.stop()
+  await playwrightBrowser.stop()
+}

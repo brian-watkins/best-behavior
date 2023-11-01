@@ -1,6 +1,6 @@
 export enum BehaviorEnvironment {
-  Local,
-  Browser
+  Local = "local",
+  Browser = "browser"
 }
 
 export interface BehaviorMetadata {
