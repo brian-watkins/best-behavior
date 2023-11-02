@@ -41,6 +41,11 @@ export async function run(): Promise<void> {
         describe: "specify seed for random ordering",
         type: "string"
       },
+      "showBrowser": {
+        describe: "make the browser visible and keep it open",
+        type: "boolean",
+        default: false
+      },
       "viteConfigPath": {
         describe: "path to vite config file",
         type: "string"
@@ -51,7 +56,7 @@ export async function run(): Promise<void> {
   const distRoot = url.fileURLToPath(new URL('../', import.meta.url))
 
   const viteServer = new ViteLocalServer({ viteConfigPath: args.viteConfigPath })
-  const playwrightBrowser = new PlaywrightBrowser()
+  const playwrightBrowser = new PlaywrightBrowser({ showBrowser: args.showBrowser })
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
     adapterPath: path.join(distRoot, "adapter", "browserAdapter.cjs")
   })
@@ -69,6 +74,8 @@ export async function run(): Promise<void> {
     defaultEnvironment: args.environment
   })
 
-  await viteServer.stop()
-  await playwrightBrowser.stop()
+  if (!args.showBrowser || !playwrightBrowser.isOpen) {
+    await viteServer.stop()
+    await playwrightBrowser.stop()
+  }
 }

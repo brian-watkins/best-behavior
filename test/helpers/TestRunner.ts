@@ -23,7 +23,7 @@ export class TestRunner {
 
   constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) {
     this.viteServer = new ViteLocalServer({ viteConfigPath: undefined })
-    this.playwrightBrowser = new PlaywrightBrowser()
+    this.playwrightBrowser = new PlaywrightBrowser({ showBrowser: false })
     this.testReporter = new TestReporter()
     const browserBehaviorContext = new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser, {
       adapterPath: "./dist/adapter/browserAdapter.cjs"
