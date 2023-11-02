@@ -40,13 +40,17 @@ export async function run(): Promise<void> {
       "seed": {
         describe: "specify seed for random ordering",
         type: "string"
+      },
+      "viteConfigPath": {
+        describe: "path to vite config file",
+        type: "string"
       }
     })
     .parseSync()
 
   const distRoot = url.fileURLToPath(new URL('../', import.meta.url))
 
-  const viteServer = new ViteLocalServer()
+  const viteServer = new ViteLocalServer({ viteConfigPath: args.viteConfigPath })
   const playwrightBrowser = new PlaywrightBrowser()
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
     adapterPath: path.join(distRoot, "adapter", "browserAdapter.cjs")

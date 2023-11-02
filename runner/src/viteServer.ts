@@ -2,16 +2,24 @@ import { ViteDevServer, createServer } from "vite";
 import { LocalServer } from "./localServer.js";
 import { Transpiler } from "./transpiler.js";
 
+export interface ViteLocalServerOptions {
+  viteConfigPath: string | undefined
+}
+
 export class ViteLocalServer implements LocalServer, Transpiler {
   private server: ViteDevServer | undefined;
   
+  constructor(private options: ViteLocalServerOptions) { }
+
   async start(): Promise<void> {
     this.server = await createServer({
+      configFile: this.options.viteConfigPath,
       // root: "../",
       // server: {
         // port: 5957
       // },
       optimizeDeps: {
+        // Note that for this we need to use the behaviors path ...
         include: [ "./**/*.behavior.ts" ]
       }
       // plugins: [

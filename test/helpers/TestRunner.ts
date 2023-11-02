@@ -22,7 +22,7 @@ export class TestRunner {
   private shouldRunPickedExamplesOnly: boolean = false
 
   constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) {
-    this.viteServer = new ViteLocalServer()
+    this.viteServer = new ViteLocalServer({ viteConfigPath: undefined })
     this.playwrightBrowser = new PlaywrightBrowser()
     this.testReporter = new TestReporter()
     const browserBehaviorContext = new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser, {
