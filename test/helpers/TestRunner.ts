@@ -1,10 +1,6 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Runner } from "../../runner/src/runner.js";
-import { PlaywrightBrowser } from "../../runner/src/playwrightBrowser.js";
 import { BehaviorEnvironment } from "../../runner/src/behaviorMetadata.js";
-import { BehaviorFactory } from "../../runner/src/behaviorFactory.js";
-import { BrowserBehaviorContext } from "../../runner/src/browserBehavior.js";
-import { ViteLocalServer } from "../../runner/src/viteServer.js";
+import { run } from "../../runner/src/index.js";
 
 export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
   return {
@@ -13,24 +9,12 @@ export function testRunnerContext(environment: BehaviorEnvironment): Context<Tes
 }
 
 export class TestRunner {
-  private viteServer: ViteLocalServer;
-  private playwrightBrowser: PlaywrightBrowser
-  private runner: Runner;
-  private testReporter: TestReporter;
-  private testOrderProvider: TestOrderProvider
+  private testReporter = new TestReporter()
+  private testOrderProvider = new TestOrderProvider()
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
 
-  constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) {
-    this.viteServer = new ViteLocalServer({ viteConfigPath: undefined })
-    this.playwrightBrowser = new PlaywrightBrowser({ showBrowser: false })
-    this.testReporter = new TestReporter()
-    const browserBehaviorContext = new BrowserBehaviorContext(this.viteServer, this.playwrightBrowser, {
-      adapterPath: "./dist/adapter/browserAdapter.cjs"
-    })
-    this.runner = new Runner(new BehaviorFactory(this.viteServer, browserBehaviorContext))
-    this.testOrderProvider = new TestOrderProvider()
-  }
+  constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) { }
 
   setShouldFailFast(shouldFailFast: boolean) {
     this.shouldFailFast = shouldFailFast
@@ -41,17 +25,17 @@ export class TestRunner {
   }
 
   async runBehaviors(pattern: string): Promise<void> {
-    await this.viteServer.start()
-    await this.runner.run({
-      behaviorPathPattern: `./test/fixtures/behaviors/${pattern}`,
-      reporter: this.testReporter,
-      orderProvider: this.testOrderProvider,
+    await run({
+      behaviorGlob: `./test/fixtures/behaviors/${pattern}`,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
-      defaultEnvironment: this.defaultBehaviorEnvironment
+      showBrowser: false,
+      viteConfigPath: undefined,
+      behaviorEnvironment: this.defaultBehaviorEnvironment,
+      reporter: this.testReporter,
+      orderProvider: this.testOrderProvider,
+      root: "./dist"
     })
-    await this.viteServer.stop()
-    await this.playwrightBrowser.stop()
   }
 
   get reporter(): TestReporter {
