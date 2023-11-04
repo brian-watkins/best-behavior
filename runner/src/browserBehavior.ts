@@ -21,10 +21,7 @@ export class BrowserBehaviorContext {
       return this.page
     }
 
-    const browser = await this.playwrightBrowser.getPlaywrightBrowser()
-    const context = await browser.newContext()
-
-    this.page = await context.newPage()
+    this.page = await this.playwrightBrowser.newPage()
 
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()

@@ -24,16 +24,7 @@ export class LocalBrowser {
   }
 
   async [Symbol.for("PreparePage")](): Promise<void> {
-    const browser = await this.playwrightBrowser.getPlaywrightBrowser()
-    const context = await browser.newContext()
-    const page = await context.newPage()
-    page.on("console", (message) => {
-      const text = message.text()
-      if (text.startsWith("[vite]")) return
-      console.log(text.replace(this.localServer.host, ''))
-    })
-    page.on("pageerror", console.log)
-    this._page = page
+    this._page = await this.playwrightBrowser.newPage()
   }
 
   get page(): Page {

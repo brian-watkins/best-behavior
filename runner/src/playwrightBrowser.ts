@@ -1,7 +1,19 @@
-import { Browser, chromium } from "playwright";
+import { Browser, BrowserContext, Page, chromium } from "playwright";
+import { Logger } from "./logger.js";
 
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
+  logger: Logger
+}
+
+export function browserLogger(logger: Logger): Logger {
+  return {
+    info: (line) => {
+      if (line.startsWith("[vite]")) return
+      logger.info(line)
+    },
+    error: logger.error
+  }
 }
 
 export class PlaywrightBrowser {
@@ -23,11 +35,23 @@ export class PlaywrightBrowser {
     await this.browser?.close()
   }
 
-  async getPlaywrightBrowser(): Promise<Browser> {
+  async newBrowserContext(): Promise<BrowserContext> {
     if (!this.browser) {
       await this.start()
     }
 
-    return this.browser!
+    return this.browser!.newContext()
+  }
+
+  async newPage(): Promise<Page> {
+    const context = await this.newBrowserContext()
+    const page = await context.newPage()
+    page.on("console", (message) => {
+      this.options.logger.info(message.text())
+    })
+    page.on("pageerror", (error) => {
+      this.options.logger.error(error)
+    })
+    return page
   }
 }

@@ -41,6 +41,11 @@ export default behavior("running behaviors in the browser environment", [
             invalid: 0,
             skipped: 2
           }))))
+        }),
+        effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
+          expect(context.logs.infoLines, is(equalTo([
+            "I am in a browser!!!"
+          ])))
         })
       ]
     }),

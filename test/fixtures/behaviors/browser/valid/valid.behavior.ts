@@ -20,6 +20,7 @@ export default behavior("Behavior 1", [
     .script({
       observe: [
         effect("it does something else", () => {
+          console.log("I am in a browser!!!")
           expect(window, is(defined()))
         })
       ]

@@ -1,6 +1,7 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
 import { BehaviorEnvironment } from "../../runner/src/behaviorMetadata.js";
 import { run } from "../../runner/src/index.js";
+import { Logger } from "../../runner/src/logger.js";
 
 export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
   return {
@@ -11,6 +12,7 @@ export function testRunnerContext(environment: BehaviorEnvironment): Context<Tes
 export class TestRunner {
   private testReporter = new TestReporter()
   private testOrderProvider = new TestOrderProvider()
+  private testLogger = new TestLogger()
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
 
@@ -34,12 +36,17 @@ export class TestRunner {
       behaviorEnvironment: this.defaultBehaviorEnvironment,
       reporter: this.testReporter,
       orderProvider: this.testOrderProvider,
-      root: "./dist"
+      logger: this.testLogger,
+      rootPath: "./dist"
     })
   }
 
   get reporter(): TestReporter {
     return this.testReporter
+  }
+
+  get logs(): TestLogger {
+    return this.testLogger
   }
 }
 
@@ -109,5 +116,18 @@ class TestOrderProvider implements OrderProvider {
 
   order<T>(items: T[]): T[] {
     return items.reverse()
+  }
+}
+
+class TestLogger implements Logger {
+  infoLines: Array<string> = []
+  errorLines: Array<Error> = []
+
+  info(line: string): void {
+    this.infoLines.push(line)
+  }
+
+  error(err: Error): void {
+    this.errorLines.push(err)
   }
 }

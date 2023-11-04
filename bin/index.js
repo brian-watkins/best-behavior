@@ -4,6 +4,7 @@ import yargs from "yargs"
 import url from "url"
 import { run } from "../dist/runner/index.js"
 import { BehaviorEnvironment } from "../dist/runner/behaviorMetadata.js"
+import { consoleLogger } from "../dist/runner/logger.js"
 import { StandardReporter, randomOrder } from "esbehavior"
 
 const args = yargs(process.argv.slice(2))
@@ -58,5 +59,6 @@ await run({
   showBrowser: args.showBrowser,
   reporter: new StandardReporter(),
   orderProvider: randomOrder(args.seed),
-  root: url.fileURLToPath(new URL('../dist', import.meta.url))
+  logger: consoleLogger(),
+  rootPath: url.fileURLToPath(new URL('../dist', import.meta.url))
 })

@@ -1,4 +1,4 @@
-import { behavior, effect, example, fact } from "esbehavior";
+import { behavior, effect, example, fact, step } from "esbehavior";
 import { expect, resolvesTo } from "great-expectations";
 import { useLocalBrowser } from "../../../../runner/src/localBrowser.js";
 
@@ -10,6 +10,11 @@ export default behavior("outside browser", [
       suppose: [
         fact("it loads the local page", async (context) => {
           await context.loadLocalPage("/test/fixtures/src/index.html")
+        })
+      ],
+      perform: [
+        step("it does something in the browser that produces a log message", async (context) => {
+          await context.page.evaluate(() => console.log("Hello from the browser!"))
         })
       ],
       observe: [
