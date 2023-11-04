@@ -18,10 +18,13 @@ export class ViteLocalServer implements LocalServer, Transpiler {
       // server: {
         // port: 5957
       // },
+      server: {
+        hmr: false
+      },
       optimizeDeps: {
         // Note that for this we need to use the behaviors path ...
         include: [ "./**/*.behavior.ts" ]
-      }
+      },
       // plugins: [
         // tsConfigPaths()
       // ],
@@ -33,12 +36,12 @@ export class ViteLocalServer implements LocalServer, Transpiler {
     await this.server.listen()
   }
 
-  url(path: string): string {
-    return new URL(path, this.host()).href
+  urlForPath(path: string): string {
+    return new URL(path, this.host).href
   }
 
-  private host(): string | undefined {
-    return this.server?.resolvedUrls?.local[0]
+  get host(): string {
+    return this.server?.resolvedUrls?.local[0] ?? ""
   }
 
   async loadModule(path: string): Promise<any> {

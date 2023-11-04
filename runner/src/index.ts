@@ -6,6 +6,7 @@ import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
+import { LocalBrowser } from "./localBrowser.js"
 
 export interface RunArguments {
   behaviorGlob: string
@@ -22,6 +23,8 @@ export interface RunArguments {
 export async function run(args: RunArguments): Promise<void> {
   const viteServer = new ViteLocalServer({ viteConfigPath: args.viteConfigPath })
   const playwrightBrowser = new PlaywrightBrowser({ showBrowser: args.showBrowser })
+
+  LocalBrowser.configure(viteServer, playwrightBrowser)
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
     adapterPath: path.join(args.root, "adapter", "browserAdapter.cjs")

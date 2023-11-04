@@ -1,6 +1,5 @@
 
 export interface LocalServer {
-  start(): Promise<void>
-  stop(): Promise<void>
-  url(path: string): string
+  host: string
+  urlForPath(path: string): string
 }

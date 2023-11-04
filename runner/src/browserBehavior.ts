@@ -37,7 +37,7 @@ export class BrowserBehaviorContext {
 
   async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
     const page = await this.getPage()
-    const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.url(metadata.path))
+    const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.urlForPath(metadata.path))
 
     return (b: BehaviorOptions) => {
       b.validationMode = data.validationMode
