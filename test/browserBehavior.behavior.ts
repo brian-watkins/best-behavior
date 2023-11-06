@@ -1,6 +1,6 @@
 import { behavior, effect, example, step } from "esbehavior";
-import { testRunnerContext } from "./helpers/TestRunner.js";
-import { arrayWith, assignedWith, equalTo, expect, is } from "great-expectations";
+import { BehaviorOutput, ClaimOutput, ExampleOutput, testRunnerContext } from "./helpers/TestRunner.js";
+import { Matcher, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 import { expectedBehavior } from "./helpers/matchers.js";
 import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
@@ -50,6 +50,78 @@ export default behavior("running behaviors in the browser environment", [
       ]
     }),
 
+  example(testRunnerContext(BehaviorEnvironment.Browser))
+    .description("failed example in browser")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/common/failing/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it prints the reports the expected example script locations", (context) => {
+          expect(context.reporter.output, is(arrayWith([
+            expectedExampleScripts([
+              ["third", "common/failing/failed.behavior.ts:28"],
+              ["second", "common/failing/failed.behavior.ts:18"],
+              ["first", "common/failing/failed.behavior.ts:8"]
+            ]),
+            expectedExampleScripts([
+              ["sixth", "common/failing/moreFailed.behavior.ts:32"],
+              ["fifth", "common/failing/moreFailed.behavior.ts:22"],
+              ["fourth", "common/failing/moreFailed.behavior.ts:12"]
+            ])
+          ])))
+        }),
+        effect("it prints the expected stack trace for the failures", (context) => {
+          expect(context.reporter.invalidClaims, is(arrayWith([
+            expectedClaim("it fails", "common/failing/failed.behavior.ts:21"),
+            expectedClaim("it also fails", "common/failing/moreFailed.behavior.ts:15")
+          ])))
+        })
+      ]
+    }),
+
+  example(testRunnerContext(BehaviorEnvironment.Browser))
+    .description("failed presuppositions and actions in browser")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/browser/invalid/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it prints the expected stack trace for the failures", (context) => {
+          expect(context.reporter.invalidClaims, is(arrayWith([
+            expectedClaim("this is a bad step", "browser/invalid/badStuff.behavior.ts:23"),
+            expectedClaim("this is a bad fact", "browser/invalid/badStuff.behavior.ts:13")
+          ])))
+        })
+      ]
+    }),
+
   ...behaviorBehaviors(BehaviorEnvironment.Browser)
 
 ])
+
+function expectedExampleScripts(examples: Array<Array<string>>): Matcher<BehaviorOutput> {
+  return objectWithProperty("examples", arrayWith(examples.map(e => {
+    return objectWith({
+      description: assignedWith(equalTo(e[0])),
+      scriptLocation: satisfying([
+        stringContaining("http://localhost:", { times: 0 }),
+        stringContaining(e[1])
+      ])
+    })
+  })))
+}
+
+function expectedClaim(description: string, location: string): Matcher<ClaimOutput> {
+  return objectWith({
+    description: assignedWith(equalTo(description)),
+    stack: assignedWith(satisfying([
+      stringContaining("http://localhost:", { times: 0 }),
+      stringContaining(location)
+    ]))
+  })
+}

@@ -19,7 +19,8 @@ export class ViteLocalServer implements LocalServer, Transpiler {
         // port: 5957
       // },
       server: {
-        hmr: false
+        hmr: false,
+        headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }
       },
       optimizeDeps: {
         // Note that for this we need to use the behaviors path ...

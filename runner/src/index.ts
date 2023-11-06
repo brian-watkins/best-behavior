@@ -49,7 +49,7 @@ export async function run(args: RunArguments): Promise<void> {
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {
-    await viteServer.stop()
     await playwrightBrowser.stop()
+    await viteServer.stop()
   }
 }

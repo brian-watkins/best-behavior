@@ -5,10 +5,13 @@ import { PlaywrightBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
+import { pathInNodeModules, pathTo } from "./path.js"
 
 export interface BrowserBehaviorContextOptions {
   adapterPath: string
 }
+
+const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
 export class BrowserBehaviorContext {
   private page: Page | undefined
@@ -22,6 +25,15 @@ export class BrowserBehaviorContext {
     }
 
     this.page = await this.playwrightBrowser.newPage()
+
+    if (sourceMapSupportPath) {
+      await this.page.addScriptTag({
+        path: pathTo(sourceMapSupportPath, "browser-source-map-support.js")
+      })
+      await this.page.addScriptTag({
+        content: "sourceMapSupport.install()"
+      })
+    }
 
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()
@@ -72,6 +84,7 @@ class BrowserExample implements Example {
 
 class BrowserReporter {
   private reporter: Reporter | undefined
+  private currentOrigin: string = ""
 
   constructor(private page: Page) { }
 
@@ -83,20 +96,33 @@ class BrowserReporter {
       this.reporter?.endExample()
     })
     await this.page.exposeFunction("esb_startScript", (location: string) => {
-      this.reporter?.startScript(location)
+      this.setCurrentOrigin(location)
+      this.reporter?.startScript(location.replace(this.currentOrigin, ""))
     })
     await this.page.exposeFunction("esb_endScript", () => {
       this.reporter?.endScript()
     })
     await this.page.exposeFunction("esb_recordPresupposition", (result: ClaimResult) => {
-      this.reporter?.recordPresupposition(result)
+      this.reporter?.recordPresupposition(this.fixStackIfNecessary(result))
     })
     await this.page.exposeFunction("esb_recordAction", (result: ClaimResult) => {
-      this.reporter?.recordAction(result)
+      this.reporter?.recordAction(this.fixStackIfNecessary(result))
     })
     await this.page.exposeFunction("esb_recordObservation", (result: ClaimResult) => {
-      this.reporter?.recordObservation(result)
+      this.reporter?.recordObservation(this.fixStackIfNecessary(result))
     })
+  }
+
+  private fixStackIfNecessary(result: ClaimResult): ClaimResult {
+    if (result.type === "invalid-claim") {
+      result.error.stack = result.error.stack?.replaceAll(this.currentOrigin, "")
+    }
+    return result
+  }
+
+  private setCurrentOrigin(location: string) {
+    const locationUrl = new URL(location.substring(0, location.lastIndexOf(":")))
+    this.currentOrigin = `${locationUrl.origin}/`
   }
 
   setReporter(reporter: Reporter) {

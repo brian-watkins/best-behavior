@@ -56,6 +56,7 @@ class TestReporter implements Reporter {
   output: Array<BehaviorOutput> = []
   currentBehavior: BehaviorOutput | undefined
   currentExample: ExampleOutput | undefined
+  invalidClaims: Array<ClaimOutput> = []
 
   start(orderDescription: string): void {
     this.orderDescription = orderDescription
@@ -64,7 +65,7 @@ class TestReporter implements Reporter {
     this.summary = summary
   }
   terminate(error: Failure): void {
-  
+
   }
   startBehavior(description: string): void {
     this.currentBehavior = {
@@ -78,7 +79,8 @@ class TestReporter implements Reporter {
   }
   startExample(description?: string | undefined): void {
     this.currentExample = {
-      description
+      description,
+      scriptLocation: ""
     }
   }
   endExample(): void {
@@ -86,19 +88,26 @@ class TestReporter implements Reporter {
     this.currentExample = undefined
   }
   startScript(location: string): void {
-  
+    this.currentExample!.scriptLocation = location
   }
   endScript(): void {
-  
+
   }
   recordPresupposition(result: ClaimResult): void {
-  
+    this.recordClaim(result)
   }
   recordAction(result: ClaimResult): void {
-  
+    this.recordClaim(result)
   }
   recordObservation(result: ClaimResult): void {
-  
+    this.recordClaim(result)
+  }
+  private recordClaim(result: ClaimResult): void {
+    switch (result.type) {
+      // we don't assert anything about other claims yet
+      case "invalid-claim":
+        this.invalidClaims.push({ description: result.description, stack: result.error.stack })
+    }
   }
 }
 
@@ -109,6 +118,12 @@ export interface BehaviorOutput {
 
 export interface ExampleOutput {
   description: string | undefined
+  scriptLocation: string
+}
+
+export interface ClaimOutput {
+  description: string
+  stack: string | undefined
 }
 
 class TestOrderProvider implements OrderProvider {

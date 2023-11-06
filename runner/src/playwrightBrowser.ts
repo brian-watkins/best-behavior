@@ -12,13 +12,15 @@ export function browserLogger(logger: Logger): Logger {
       if (line.startsWith("[vite]")) return
       logger.info(line)
     },
-    error: logger.error
+    error: (err) => {
+      logger.error(err)
+    }
   }
 }
 
 export class PlaywrightBrowser {
   private browser: Browser | undefined;
-  
+
   constructor(private options: PlaywrightBrowserOptions) { }
 
   private async start(): Promise<void> {
