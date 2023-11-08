@@ -32,6 +32,27 @@ export default behavior("running behaviors in the local JS environment", [
           ])))
         })
       ]
+    }),
+
+  (m) => m.pick() && example(testRunnerContext(BehaviorEnvironment.Local))
+    .description("Local behavior that uses a display context")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/hybrid/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 4,
+            invalid: 0,
+            skipped: 0
+          }))))
+        })
+      ]
     })
 
 ])

@@ -1,4 +1,4 @@
-import { ViteDevServer, createServer } from "vite";
+import { PluginOption, ViteDevServer, createServer } from "vite";
 import { LocalServer } from "./localServer.js";
 import { Transpiler } from "./transpiler.js";
 
@@ -26,6 +26,9 @@ export class ViteLocalServer implements LocalServer, Transpiler {
         // Note that for this we need to use the behaviors path ...
         include: [ "./**/*.behavior.ts" ]
       },
+      plugins: [
+        mySuperPlugin()
+      ],
       // plugins: [
         // tsConfigPaths()
       // ],
@@ -46,11 +49,31 @@ export class ViteLocalServer implements LocalServer, Transpiler {
   }
 
   async loadModule(path: string): Promise<any> {
-    return this.server?.ssrLoadModule(path)
+    try {
+      return this.server?.ssrLoadModule(path)
+    } catch (err) {
+      console.log("Got an error loading module", path, err)
+    }
   }
 
   async stop(): Promise<void> {
     await this.server?.close()
   }
 
+}
+
+function mySuperPlugin(): PluginOption {
+  return {
+    name: "my-super-plugin",
+
+    transform(src, id, options) {
+      if (options?.ssr) {
+        console.log("this is loading for ssr", id)
+      } else {
+        console.log("this is loading for the browser", id)
+      }
+
+      this.parse(src)
+    }
+  }
 }
