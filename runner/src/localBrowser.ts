@@ -1,10 +1,15 @@
+import { useContext } from "./behaviorContext.js";
 import { LocalServer } from "./localServer.js";
 import { PlaywrightBrowser } from "./playwrightBrowser.js";
 import { Page } from "playwright";
 
 export async function useLocalBrowser(): Promise<LocalBrowser> {
-  //@ts-ignore
-  const localBrowser = globalThis[Symbol.for("LocalBrowserInstance")]!
+  // @ts-ignore
+  // const localBrowser = globalThis[Symbol.for("LocalBrowserInstance")]!
+  // await localBrowser[Symbol.for("PreparePage")]()
+  // return localBrowser
+
+  const localBrowser: any = useContext().browser
   await localBrowser[Symbol.for("PreparePage")]()
   return localBrowser
 }
@@ -12,12 +17,12 @@ export async function useLocalBrowser(): Promise<LocalBrowser> {
 export class LocalBrowser {
   private _page: Page | undefined;
 
-  static configure(localServer: LocalServer, playwrightBrowser: PlaywrightBrowser) {
-    //@ts-ignore
-    globalThis[Symbol.for("LocalBrowserInstance")] = new LocalBrowser(localServer, playwrightBrowser)
-  }
+  // static configure(localServer: LocalServer, playwrightBrowser: PlaywrightBrowser) {
+    // @ts-ignore
+    // globalThis[Symbol.for("LocalBrowserInstance")] = new LocalBrowser(localServer, playwrightBrowser)
+  // }
 
-  private constructor (private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser) { }
+  constructor (private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser) { }
 
   async loadLocalPage(path: string): Promise<void> {
     await this.page.goto(this.localServer.urlForPath(path))

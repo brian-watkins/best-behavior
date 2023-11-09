@@ -460,3 +460,89 @@ It would also depend on /whether/ there were an export for the browser context.
 If so, then you are saying that the behavior should run on the server and the
 browser context should be loaded in the browser. So for these types of behaviors
 we'd want to load the file on the server side and also on the browser side.
+
+But in order for this to work, we need some way that when we execute a behavior
+that uses a display context it knows to initiate the display context. And to
+initiate the display context, it needs to load the behavior file, or at least
+it needs to load the display context function, which so far we've defined in the
+behavior file.
+
+I could do something like:
+
+```
+useDisplay("../path/to/the/context.ts")
+```
+
+but that feels really lame. 
+
+But note that we could potentially identify a behavior file as a hybrid behavior
+based on whether it exports a DisplayContext. And then if it did, could we
+somehow inject some metadata about the module?
+
+We could say `import.meta.currentBehavior = path` and maybe that would be availble?
+No that doesn't seem to work.
+
+But we can use `globalThis` to do the same thing. and it does work. But feels hacky?
+Note that `useLocalBrowser` already uses the globalThis to get access to the local
+browser instance.
+
+We're finding though several cases where we need to make certain things available
+to a behavior ... the localBrowser (potentially), the path to the behavior file
+(potentially), etc. Is there a better way to do this than using the globalThis?
+
+Potentially we could set some stuff on the this object of the functions that get
+called as part of the example. But this isn't that great since then we'd have to
+do stuff like:
+
+```
+useDisplay(this.behaviorMetadata.url)
+```
+
+or whatever. When we'd really just like to do this:
+
+```
+useDisplay()
+```
+
+Also, useDisplay could be called from anywhere really, like in some kind of TestApp
+class in a helper file somewhere.
+
+Feels like import.meta is maybe a nice way to provide info to a behavior? But again,
+if `useDisplay` is called in some other file, then that files `import.meta` wouldn't
+have special properties on it, right? I thought the point was that each module has
+its own import.meta.
+
+Or maybe we just need to create some object that's on the global scope that contains
+all the details we might want -- reference to local browser, metadata for current
+behavior, etc.
+
+Or could we have a module that is stateful which knows this stuff? So some module
+that has functions to set some things and then other things like the DisplayContext
+module could import it and get values from it?
+
+That seems to work IF we load the module via vite, because then vite will track it
+and any other ssr modules that get loaded (ie all the behaviors) will have access
+to this same instance of this module if they import it.
+
+But if we were to move to multiple processes for local behaviors, would that mess
+this up in some way? Right now we create the context at the very start and
+provide it to the runner and the sequentialValidator. But if we had a
+concurrentValidator would that change things? Each process would need to have its
+own context, and when we create the process we would create a local browser for
+that process and we would just set the behavior metadata on it as messages come
+in to run various behaviors. Because the process would need to load the behavior.
+
+So ultimately it might be better to have the validator create the context instead
+of the root `run` function. But we might make that change when/if we move to
+multiple processes because then would the main process need a local browser?
+Maybe because that is what would be used to run browser behaviors? But maybe
+not because if we want to run multiple browser behaviors in parallel then we
+would need to start up multiple browsers like Playwright does? Yes -- multiple
+contexts aren't enough because the subject under test could be messing with
+local storage or whatever I guess. A browserContext is just a browser session
+not a completely isolated instance of the browser. (apparently)
+
+But then that means that we would have a separate process that runs any kind
+of behavior. And the question is just whether you start one process or multiple
+processes. And the point of the main process is just to get the behavior files
+and manage these multiple processes I guess.

@@ -50,6 +50,7 @@ export class ViteLocalServer implements LocalServer, Transpiler {
 
   async loadModule(path: string): Promise<any> {
     try {
+      console.log("Loading module", path)
       return this.server?.ssrLoadModule(path)
     } catch (err) {
       console.log("Got an error loading module", path, err)

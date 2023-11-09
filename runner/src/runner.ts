@@ -3,6 +3,8 @@ import { SequentialValidator } from "./sequentialValidator.js"
 import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior"
 import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
+import { Transpiler } from "./transpiler.js"
+import { BehaviorContext } from "./behaviorContext.js"
 
 export interface RunOptions {
   behaviorPathPattern: string
@@ -11,6 +13,7 @@ export interface RunOptions {
   failFast: boolean
   runPickedOnly: boolean
   defaultEnvironment: BehaviorEnvironment
+  behaviorContext: BehaviorContext
 }
 
 export class Runner {
@@ -38,7 +41,7 @@ export class Runner {
 
   private async validateBehaviors(behaviors: Array<BehaviorMetadata>, options: RunOptions): Promise<Summary> {
     const runner = new DocumentationRunner(options)
-    const validator = new SequentialValidator(this.behaviorFactory, runner)
+    const validator = new SequentialValidator(options.behaviorContext, this.behaviorFactory, runner)
 
     return await validator.validate(behaviors, options)
   }

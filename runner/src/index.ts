@@ -8,6 +8,7 @@ import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
 import { LocalBrowser } from "./localBrowser.js"
 import { Logger } from "./logger.js"
+import { createContext, useContext } from "./behaviorContext.js"
 
 export interface RunArguments {
   behaviorGlob: string
@@ -29,7 +30,12 @@ export async function run(args: RunArguments): Promise<void> {
     logger: browserLogger(args.logger)
   })
 
-  LocalBrowser.configure(viteServer, playwrightBrowser)
+  await viteServer.start()
+
+  // LocalBrowser.configure(viteServer, playwrightBrowser)
+  const localBrowser = new LocalBrowser(viteServer, playwrightBrowser)
+  const contextModule = await viteServer.loadModule("runner/src/behaviorContext.ts")
+  contextModule.createContext(localBrowser)
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
     adapterPath: path.join(args.rootPath, "adapter", "browserAdapter.cjs")
@@ -37,15 +43,14 @@ export async function run(args: RunArguments): Promise<void> {
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
   const runner = new Runner(behaviorFactory)
 
-  await viteServer.start()
-
   await runner.run({
     behaviorPathPattern: args.behaviorGlob,
     reporter: args.reporter,
     orderProvider: args.orderProvider,
     failFast: args.failFast,
     runPickedOnly: args.runPickedOnly,
-    defaultEnvironment: args.behaviorEnvironment
+    defaultEnvironment: args.behaviorEnvironment,
+    behaviorContext: contextModule.useContext()
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {
