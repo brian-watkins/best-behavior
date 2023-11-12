@@ -1,5 +1,6 @@
 import { Browser, BrowserContext, Page, chromium } from "playwright";
 import { Logger } from "./logger.js";
+import fs from "fs"
 
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
@@ -54,6 +55,19 @@ export class PlaywrightBrowser {
     page.on("pageerror", (error) => {
       this.options.logger.error(error)
     })
+    return page
+  }
+}
+
+export class PreparedBrowser {
+  constructor(private browser: PlaywrightBrowser, private adapterPath: string) { }
+
+  async newPage(): Promise<Page> {
+    const page = await this.browser.newPage()
+
+    const adapter = fs.readFileSync(this.adapterPath, "utf8")
+    await page.evaluate(adapter)
+
     return page
   }
 }

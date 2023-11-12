@@ -2,12 +2,12 @@ import path from "path"
 import { OrderProvider, Reporter } from "esbehavior"
 import { BehaviorEnvironment } from "./behaviorMetadata.js"
 import { ViteLocalServer } from "./viteServer.js"
-import { PlaywrightBrowser, browserLogger } from "./playwrightBrowser.js"
+import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./playwrightBrowser.js"
 import { BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
-import { LocalBrowser } from "./localBrowser.js"
 import { Logger } from "./logger.js"
+import { createContext, useContext } from "./behaviorContext.js"
 
 export interface RunArguments {
   behaviorGlob: string
@@ -29,15 +29,23 @@ export async function run(args: RunArguments): Promise<void> {
     logger: browserLogger(args.logger)
   })
 
-  LocalBrowser.configure(viteServer, playwrightBrowser)
+  await viteServer.start()
 
-  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
-    adapterPath: path.join(args.rootPath, "adapter", "browserAdapter.cjs")
-  })
+  const displayBrowser = new PreparedBrowser(
+    playwrightBrowser,
+    path.join(args.rootPath, "adapter", "displayAdapter.cjs")
+  )
+
+  createContext(viteServer, playwrightBrowser, displayBrowser)
+
+  const behaviorBrowser = new PreparedBrowser(
+    playwrightBrowser,
+    path.join(args.rootPath, "adapter", "behaviorAdapter.cjs")
+  )
+
+  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
   const runner = new Runner(behaviorFactory)
-
-  await viteServer.start()
 
   await runner.run({
     behaviorPathPattern: args.behaviorGlob,
@@ -45,7 +53,8 @@ export async function run(args: RunArguments): Promise<void> {
     orderProvider: args.orderProvider,
     failFast: args.failFast,
     runPickedOnly: args.runPickedOnly,
-    defaultEnvironment: args.behaviorEnvironment
+    defaultEnvironment: args.behaviorEnvironment,
+    behaviorContext: useContext()
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {

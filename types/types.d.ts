@@ -10,6 +10,7 @@ export declare global {
     currentBehavior: Behavior
     currentExamples: Array<Example>
     loadBehavior(path: string): Promise<BehaviorData>
+    loadDisplay(url: string, exportName: string, args: any): void
     validateExample(id: number, failFast: boolean): Promise<Summary>
     skipExample(id: number): Promise<Summary>
     esb_startExample(description: string | undefined): void
@@ -20,4 +21,6 @@ export declare global {
     esb_recordAction(result: ClaimResult): void
     esb_recordObservation(result: ClaimResult): void
   }
+
+  var __best_behavior_context: BehaviorContext
 }

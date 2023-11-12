@@ -8,30 +8,20 @@ export interface ViteLocalServerOptions {
 
 export class ViteLocalServer implements LocalServer, Transpiler {
   private server: ViteDevServer | undefined;
-  
+
   constructor(private options: ViteLocalServerOptions) { }
 
   async start(): Promise<void> {
     this.server = await createServer({
       configFile: this.options.viteConfigPath,
-      // root: "../",
-      // server: {
-        // port: 5957
-      // },
       server: {
         hmr: false,
         headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }
       },
       optimizeDeps: {
         // Note that for this we need to use the behaviors path ...
-        include: [ "./**/*.behavior.ts" ]
+        include: ["./**/*.behavior.ts"]
       },
-      // plugins: [
-        // tsConfigPaths()
-      // ],
-      // css: {
-        // postcss: "examples"
-      // }
     })
 
     await this.server.listen()
@@ -46,7 +36,11 @@ export class ViteLocalServer implements LocalServer, Transpiler {
   }
 
   async loadModule(path: string): Promise<any> {
-    return this.server?.ssrLoadModule(path)
+    try {
+      return this.server?.ssrLoadModule(`${path}`)
+    } catch (err) {
+      console.log("Got an error loading module", path, err)
+    }
   }
 
   async stop(): Promise<void> {

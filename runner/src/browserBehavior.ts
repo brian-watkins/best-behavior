@@ -1,15 +1,10 @@
-import fs from "fs"
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { Page } from "playwright"
-import { PlaywrightBrowser } from "./playwrightBrowser.js"
+import { PreparedBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
 import { pathInNodeModules, pathTo } from "./path.js"
-
-export interface BrowserBehaviorContextOptions {
-  adapterPath: string
-}
 
 const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
@@ -17,15 +12,17 @@ export class BrowserBehaviorContext {
   private page: Page | undefined
   private browserReporter: BrowserReporter | undefined
 
-  constructor(private localServer: LocalServer, private playwrightBrowser: PlaywrightBrowser, private options: BrowserBehaviorContextOptions) { }
+  constructor(private localServer: LocalServer, private behaviorBrowser: PreparedBrowser) { }
 
   private async getPage(): Promise<Page> {
     if (this.page !== undefined) {
       return this.page
     }
 
-    this.page = await this.playwrightBrowser.newPage()
+    this.page = await this.behaviorBrowser.newPage()
 
+    // This feels like maybe something that the playwright browser could offer
+    // as a capability on a new page?
     if (sourceMapSupportPath) {
       await this.page.addScriptTag({
         path: pathTo(sourceMapSupportPath, "browser-source-map-support.js")
@@ -37,9 +34,6 @@ export class BrowserBehaviorContext {
 
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()
-
-    const adapter = fs.readFileSync(this.options.adapterPath, "utf8")
-    await this.page.evaluate(adapter)
 
     return this.page
   }

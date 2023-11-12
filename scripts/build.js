@@ -8,9 +8,14 @@ await build({
     minify: true,
     emptyOutDir: true,
     lib: {
-      entry: "./src/index.ts",
+      entry: [
+        "./src/behaviorAdapter.ts",
+        "./src/displayAdapter.ts"
+      ],
       formats: ["cjs"],
-      fileName: "browserAdapter"
+      fileName: (_, entry) => {
+        return `${entry}.cjs`
+      }
     }
   }
 })
