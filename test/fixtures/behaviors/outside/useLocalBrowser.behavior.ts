@@ -9,7 +9,7 @@ export default behavior("useLocalBrowser", [
     .script({
       suppose: [
         fact("it loads the local page", async (context) => {
-          await context.loadLocalPage("/test/fixtures/src/index.html")
+          await context.loadLocal("/test/fixtures/src/index.html")
         })
       ],
       perform: [

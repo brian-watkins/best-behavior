@@ -2,11 +2,10 @@ import path from "path"
 import { OrderProvider, Reporter } from "esbehavior"
 import { BehaviorEnvironment } from "./behaviorMetadata.js"
 import { ViteLocalServer } from "./viteServer.js"
-import { PlaywrightBrowser, browserLogger } from "./playwrightBrowser.js"
+import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./playwrightBrowser.js"
 import { BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
-import { LocalBrowser } from "./localBrowser.js"
 import { Logger } from "./logger.js"
 import { createContext, useContext } from "./behaviorContext.js"
 
@@ -32,14 +31,19 @@ export async function run(args: RunArguments): Promise<void> {
 
   await viteServer.start()
 
-  // LocalBrowser.configure(viteServer, playwrightBrowser)
-  const localBrowser = new LocalBrowser(viteServer, playwrightBrowser)
-  const contextModule = await viteServer.loadModule("runner/src/behaviorContext.ts")
-  contextModule.createContext(localBrowser)
+  const displayBrowser = new PreparedBrowser(
+    playwrightBrowser,
+    path.join(args.rootPath, "adapter", "displayAdapter.cjs")
+  )
 
-  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, playwrightBrowser, {
-    adapterPath: path.join(args.rootPath, "adapter", "browserAdapter.cjs")
-  })
+  createContext(viteServer, playwrightBrowser, displayBrowser)
+
+  const behaviorBrowser = new PreparedBrowser(
+    playwrightBrowser,
+    path.join(args.rootPath, "adapter", "browserAdapter.cjs")
+  )
+
+  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
   const runner = new Runner(behaviorFactory)
 
@@ -50,7 +54,7 @@ export async function run(args: RunArguments): Promise<void> {
     failFast: args.failFast,
     runPickedOnly: args.runPickedOnly,
     defaultEnvironment: args.behaviorEnvironment,
-    behaviorContext: contextModule.useContext()
+    behaviorContext: useContext()
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {

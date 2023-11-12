@@ -546,3 +546,220 @@ But then that means that we would have a separate process that runs any kind
 of behavior. And the question is just whether you start one process or multiple
 processes. And the point of the main process is just to get the behavior files
 and manage these multiple processes I guess.
+
+I really like using a module to encapsulate this state. But loading the module
+via vite seems like it will be problematic, since we would have to figure out
+the path and so on I think. And not to mention that when a behavior requires
+something it will be via the `best-behavior` module and not through a relative
+path which might mean that `best-behavior` gets externalized. In that case,
+what we want might just work. But how would we test that? And how could we do it
+locally?
+
+We tried using some resolve aliases or something but doesn't seem to be working.
+
+Could we build something like we do with the browser adapters and import that?
+Would that help at all?
+
+The thing we need to do is use vite to load a behavior module, because the behavior
+could be in typescript or whatever. But once we load that behavior module, we
+want to be able to call some functions like `useLocalBrowser` or `useDisplayContext`
+and to work, these things need information that belongs to the runtime, like
+a reference to the one local browser or the path to the behavior module that is
+being evaluated currently (so that it can be loaded in the browser).
+
+We've fixed this before by leveraging the global scope, but that seems so bad.
+
+The problem is that when vite loads the behavior module, it loads its own version
+of modules ... it does not reuse the existing import module cache that node has;
+vite has its own module cache. So there's really two different modules in this
+case.
+
+The right thing to do would be to somehow inject this runtime information into
+the behavior somehow. We had been thinking about injecting the context, in which
+case we'd still need to do something like:
+
+```
+useDisplay(this.context)
+```
+
+or something. Ie we would need to pass it explicitly to the `useDisplay` function.
+But what if instead we just injected `useDisplay` and `useLocalBrowser` etc? So
+then you would do something like:
+
+```
+this.useDisplay()
+```
+
+The problem there would be to somehow fix the types so the editor wouldn't complain.
+Basically, we would allow the runner to set some context that would be bound to all
+the functions that compose the example when they ran. If we had such a context defined
+then we could execute those functions with `f.call(thisContext)` and it would set
+the value of `this` inside the function to the `thisContext` object.
+
+But note too that we might want to call `useDisplay` from some place other than
+the function itself. Feels like the module approach is the only way to support this.
+
+So maybe the thing to do is that the behaviorContext module stores its state on
+the global this rather than internal to itself. That means we localize global state
+to one thing. And it should work if imported normally or via vite ssrLoadModule. The
+annoying thing is that we can't use a private symbol since this would get initialized
+multiple times.
+
+### tree shaking
+
+OK so now it's possible to remove the disply export when in SSR and the behavior
+export when in the browser and use esbuild to tree shake the rest. In order to
+remove unused imports we have to set each one to not have side effects. Is this bad?
+Could someone want to import a module that has side effects? Maybe so, especially
+in the browser ... but there's no other way to tree shake an unused import. So,
+we could have an option somehow that specifies a list of modules that do have side
+effects. But then we might want to still remove these on the server side or something.
+So it's complicated.
+
+Is this a bad approach -- to mix code that runs on the server with code that runs
+in the browser in the same file? We could instead do something like a SFC? Note that
+Remix has the same problem and has a long page about it:
+
+https://remix.run/docs/en/main/guides/constraints
+
+They describe their approach as using a proxy module to import just the stuff you
+care about. We could probably do that instead of parsing the AST and going through.
+
+So, for SSR we would just create a module that exports the default export from the
+behavior file. And for the browser we would create a module that exports the `display`
+export. Then let vite figure out the rest I guess. That could be a 'pre' module maybe.
+And maybe, just maybe, that would take ordinary imports with it. We'd still be left
+with the same problem.
+
+We could also do something like name a file. So `displayContext.display.ts` would
+contain the display for that behavior? Or, just `useDisplay("./myDisplay.ts")`?
+Getting the path right might be the tricky thing here. I guess we could make it
+relative to the behavior file?
+
+Note that remix says they load all the file on the server side -- browser and server.
+So maybe it's ok if we refer to the display context directly like a module in the
+behavior. But we just need to somehow get the path to the file that its in.
+
+I could try something crazy like when you load the module in the browser it just
+looks for the useDisplay call and just pulls that out somehow?
+
+Also we aren't getting any type help from useDisplay right now. If it knew the
+context then it could pass on the type.
+
+Maybe on the SSR side we could replace any calls to useDisplay with a call to
+something else that would actually return a Display object. (or just not do
+anything at all). But on the browser side any calls to useDisplay get hoisted
+and exported? But we don't want to return anything except the useDisplay call.
+
+Maybe if we required that the useDisplay call happens inside the behavior then
+we could find the expression (the argument that it is called with) and hoist
+that and export it? But would that be an annoying restriction to have to call
+useDisplay in the behavior? It wouldn't be clear /why/ we had to do that certainly.
+
+What if we bundled everything into a single file with the behavior as the entry point?
+And then we could definitely find useDisplay and export the expression inside it?
+
+We can do this. But there's lots of cases to consider:
+- What if the argument is itself an object expression?
+- What if the argument is a reference to a variable that's not exposed
+at the top level (so can't be exported directly?)
+- something else?
+
+So I have code that I want to run on the server. And I want to run some code on
+the client. Maybe useDisplay could be like the marker function? I think I might
+need useDisplay to have a thunk as an argument though. Maybe that makes it easier?
+
+```
+useDisplay(() => displayContext)
+```
+
+The problem though is that if this closure closes over any variables then we won't
+be able to actually deal with them at run time. Because the surrounding code never
+gets called since we plan to just grab the thunk and export it to run on the browser.
+
+I think we will need to have a named export in the behavior file. Actually, I think
+it could be in any file, since we can bundle everything together. And maybe the
+thing to solve for is the possibility of having multiple displays that need to
+get exported. So if useDisplay references some display, then that thing must
+be exported somewhere. And our plugin will need to generate a name for it, so that
+when we run useDisplay on the server it asks to load the behavior file and the
+particular display context. And then basically we should just find those exports
+and somehow select on them to include in the file to ship to the server.
+
+Note that in Next.js for server actions, then say that you need to define the
+actions in a separate file and export them. So we could say that too ... put
+your display context in a separate file and export it. Then we would need to
+take the name and figure out some way to tell the server what to load. I guess we
+would read the imports to figure out what file to load? We could maybe even
+read the comments from the bundled esbuild output
+
+This is an interesting article on this stuff:
+
+https://www.builder.io/blog/wtf-is-code-extraction
+
+And this is a helpful thing for dealing with an estree structure:
+
+https://astexplorer.net
+
+Note that Playwright's component testing stuff actually works by somehow capturing
+values in the test that are changed by the browser code and then inspected by the
+test in node. so wild! They have a notion called 'stories' that are basically
+wrapper components that manipulate the component under test, setting it up and
+translating properties to serializable values that are then somehow set on these
+closed over values.
+
+I'm not even thinking about how you would test that an event handler is called
+etc ...
+
+But in our case, the rendered stuff could always set something on the window or
+something and then you use page.evaluate to fetch it for the test.
+
+Playwright also has `beforeMount` and `afterMount` hooks that allow you to do
+arbitrary stuff. It says that they reuse the page but reset things in between
+tests so probably means they just reload the page. I guess we could do that as
+well instead of having a teardown function?
+
+Mixing frontend and server code just seems so sketchy though. There's always
+these caveats like: oh but you can't actually do this or you can't actually do
+that even though you can write the code just fine. The main benefit for us is
+type safety on the args that you can pass to the component. And we could probably
+use typescript types to ensure that these args are serializable somehow maybe.
+
+The simplest way to do it without any crazy compiler stuff would be:
+
+```
+useDisplay<MyArgs>("./pathToFileForBrowser.ts", "myCoolDisplayExport")
+```
+
+Here you would have to specify the type explicitly as well as the export name
+and the path.
+
+Maybe we could do:
+
+```
+useDisplay("myCoolDisplayExport", () => import("./pathToFileForBrowser.ts"))
+```
+
+So we were able to do the above. And we get type safety for the args. And we put
+the stuff that should run in the browser in its own file, so presumably you could
+put whatever you want in there since it will not load that during the test, I think,
+since it's a dynamic import.
+
+Indeed, to make this work, we could try two approaches:
+
+1. Change the server side to replace useDisplay with another function and convert the
+import thunk to just a string path parameter. Then the other function takes this
+and the export name and sends it to the browser to have it load that.
+2. Change the browser side import so that when it imports the behavior file with some
+query param like "?loadDisplay=myCoolDisplayExport" then it parses the bundled file and
+finds the call to usedisplay and figures out the path and then just returns the contents
+of that file.
+3. We could just make use display take the text of the import thunk (ie toString) and
+parse out the path and then construct the url from that because it should know the current
+behavior path from the useContext() call. Then it could just do (1) but without any
+compiler hijinks. The only restriction would be that the thunk must contain a string of
+the form `import("some-relative-path")` that we could parse out. Is that a safe assumption?
+
+You could do other stuff, but if you want the type safety then you must put some definite
+path that can get parsed by typescript/vscode. Otherwise you'll be `unknown` for the type
+arguments which will allow you to do anything.
