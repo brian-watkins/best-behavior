@@ -60,14 +60,20 @@ export class PlaywrightBrowser {
 }
 
 export class PreparedBrowser {
+  private page: Page | undefined
+
   constructor(private browser: PlaywrightBrowser, private adapterPath: string) { }
 
-  async newPage(): Promise<Page> {
-    const page = await this.browser.newPage()
+  async getPage(): Promise<Page> {
+    if (this.page !== undefined) {
+      return this.page
+    }
+
+    this.page = await this.browser.newPage()
 
     const adapter = fs.readFileSync(this.adapterPath, "utf8")
-    await page.evaluate(adapter)
+    await this.page.evaluate(adapter)
 
-    return page
+    return this.page
   }
 }

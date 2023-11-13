@@ -19,7 +19,7 @@ export class BrowserBehaviorContext {
       return this.page
     }
 
-    this.page = await this.behaviorBrowser.newPage()
+    this.page = await this.behaviorBrowser.getPage()
 
     // This feels like maybe something that the playwright browser could offer
     // as a capability on a new page?

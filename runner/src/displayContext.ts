@@ -26,7 +26,7 @@ export async function useDisplay<DisplayModule, ExportName extends keyof Display
   const context = useContext()
 
   const browser = context.displayBrowser
-  const page = await browser.newPage()
+  const page = await browser.getPage()
 
   return new Display(page, context.localServer.urlForPath(modulePath), exportName.toString())
 }
@@ -52,7 +52,7 @@ export class Display<Context> {
 
   async mount(args: Context extends DisplayContext<infer R, any> ? R : never): Promise<void> {
     await this.page.evaluate((options) => {
-      return window.loadDisplay(options.displayModuleURL, options.displayExportName, options.args)
+      window.loadDisplay(options.displayModuleURL, options.displayExportName, options.args)
     }, {
       displayModuleURL: this.displayModuleURL,
       displayExportName: this.displayExportName,
