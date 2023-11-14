@@ -24,12 +24,12 @@ export interface RunArguments {
 
 export async function run(args: RunArguments): Promise<void> {
   const viteServer = new ViteLocalServer({ viteConfigPath: args.viteConfigPath })
+  await viteServer.start()
+
   const playwrightBrowser = new PlaywrightBrowser({
     showBrowser: args.showBrowser,
-    logger: browserLogger(args.logger)
+    logger: browserLogger(viteServer.host, args.logger)
   })
-
-  await viteServer.start()
 
   const displayBrowser = new PreparedBrowser(
     playwrightBrowser,

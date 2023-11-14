@@ -1,20 +1,21 @@
 import { Browser, BrowserContext, Page, chromium } from "playwright";
 import { Logger } from "./logger.js";
 import fs from "fs"
+import { pathInNodeModules, pathTo } from "./path.js";
 
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
   logger: Logger
 }
 
-export function browserLogger(logger: Logger): Logger {
+export function browserLogger(host: string, logger: Logger): Logger {
   return {
     info: (line) => {
       if (line.startsWith("[vite]")) return
-      logger.info(line)
+      logger.info(line.replaceAll(host, ""))
     },
     error: (err) => {
-      logger.error(err)
+      logger.error({ ...err, stack: err.stack?.replaceAll(host, "") })
     }
   }
 }
@@ -59,6 +60,8 @@ export class PlaywrightBrowser {
   }
 }
 
+const sourceMapSupportPath = pathInNodeModules("source-map-support")
+
 export class PreparedBrowser {
   private page: Page | undefined
 
@@ -73,6 +76,15 @@ export class PreparedBrowser {
 
     const adapter = fs.readFileSync(this.adapterPath, "utf8")
     await this.page.evaluate(adapter)
+
+    if (sourceMapSupportPath) {
+      await this.page.addScriptTag({
+        path: pathTo(sourceMapSupportPath, "browser-source-map-support.js")
+      })
+      await this.page.addScriptTag({
+        content: "sourceMapSupport.install()"
+      })
+    }
 
     return this.page
   }

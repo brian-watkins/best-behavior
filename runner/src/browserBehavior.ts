@@ -4,9 +4,6 @@ import { PreparedBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
-import { pathInNodeModules, pathTo } from "./path.js"
-
-const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
 export class BrowserBehaviorContext {
   private page: Page | undefined
@@ -20,17 +17,6 @@ export class BrowserBehaviorContext {
     }
 
     this.page = await this.behaviorBrowser.getPage()
-
-    // This feels like maybe something that the playwright browser could offer
-    // as a capability on a new page?
-    if (sourceMapSupportPath) {
-      await this.page.addScriptTag({
-        path: pathTo(sourceMapSupportPath, "browser-source-map-support.js")
-      })
-      await this.page.addScriptTag({
-        content: "sourceMapSupport.install()"
-      })
-    }
 
     this.browserReporter = new BrowserReporter(this.page)
     await this.browserReporter.start()

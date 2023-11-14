@@ -136,13 +136,13 @@ class TestOrderProvider implements OrderProvider {
 
 class TestLogger implements Logger {
   infoLines: Array<string> = []
-  errorLines: Array<Error> = []
+  errorLines: Array<string> = []
 
   info(line: string): void {
     this.infoLines.push(line)
   }
 
   error(err: Error): void {
-    this.errorLines.push(err)
+    this.errorLines.push(err.stack!)
   }
 }
