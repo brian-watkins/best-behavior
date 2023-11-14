@@ -92,8 +92,8 @@ export default behavior("running behaviors in the browser environment", [
       observe: [
         effect("it prints the expected stack trace for the failures", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
-            expectedClaim("this is a bad step", "browser/invalid/badStuff.behavior.ts:23"),
-            expectedClaim("this is a bad fact", "browser/invalid/badStuff.behavior.ts:13")
+            expectedClaim("this is a bad step", "browser/invalid/badStuff.behavior.ts:21"),
+            expectedClaim("this is a bad fact", "browser/invalid/badStuff.behavior.ts:11")
           ])))
         })
       ]

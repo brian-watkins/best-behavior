@@ -1,5 +1,3 @@
-'use browser';
-
 import { behavior, example, fact, step } from "esbehavior";
 import { equalTo, expect, is } from "great-expectations"
 
