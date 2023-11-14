@@ -51,7 +51,7 @@ const args = yargs(process.argv.slice(2))
   .parseSync()
 
 await run({
-  behaviorGlob: args.behaviors,
+  behaviorsGlob: args.behaviors,
   failFast: args.failFast,
   runPickedOnly: args.picked,
   behaviorEnvironment: args.environment,

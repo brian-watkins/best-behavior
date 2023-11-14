@@ -17,11 +17,7 @@ export class ViteLocalServer implements LocalServer, Transpiler {
       server: {
         hmr: false,
         headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }
-      },
-      optimizeDeps: {
-        // Note that for this we need to use the behaviors path ...
-        include: ["./**/*.behavior.ts"]
-      },
+      }
     })
 
     await this.server.listen()

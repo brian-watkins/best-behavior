@@ -10,7 +10,7 @@ import { Logger } from "./logger.js"
 import { createContext, useContext } from "./behaviorContext.js"
 
 export interface RunArguments {
-  behaviorGlob: string
+  behaviorsGlob: string
   failFast: boolean
   runPickedOnly: boolean
   behaviorEnvironment: BehaviorEnvironment
@@ -23,7 +23,9 @@ export interface RunArguments {
 }
 
 export async function run(args: RunArguments): Promise<void> {
-  const viteServer = new ViteLocalServer({ viteConfigPath: args.viteConfigPath })
+  const viteServer = new ViteLocalServer({
+    viteConfigPath: args.viteConfigPath
+  })
   await viteServer.start()
 
   const playwrightBrowser = new PlaywrightBrowser({
@@ -48,7 +50,7 @@ export async function run(args: RunArguments): Promise<void> {
   const runner = new Runner(behaviorFactory)
 
   await runner.run({
-    behaviorPathPattern: args.behaviorGlob,
+    behaviorPathPattern: args.behaviorsGlob,
     reporter: args.reporter,
     orderProvider: args.orderProvider,
     failFast: args.failFast,

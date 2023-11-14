@@ -28,7 +28,7 @@ export class TestRunner {
 
   async runBehaviors(pattern: string): Promise<void> {
     await run({
-      behaviorGlob: `./test/fixtures/behaviors/${pattern}`,
+      behaviorsGlob: `./test/fixtures/behaviors/${pattern}`,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,
