@@ -1,6 +1,5 @@
 import path from "path"
 import { OrderProvider, Reporter } from "esbehavior"
-import { BehaviorEnvironment } from "./behaviorMetadata.js"
 import { ViteLocalServer } from "./viteServer.js"
 import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./playwrightBrowser.js"
 import { BrowserBehaviorContext } from "./browserBehavior.js"
@@ -11,9 +10,9 @@ import { createContext, useContext } from "./behaviorContext.js"
 
 export interface RunArguments {
   behaviorsGlob: string
+  browserBehaviorsGlob: string | undefined
   failFast: boolean
   runPickedOnly: boolean
-  behaviorEnvironment: BehaviorEnvironment
   viteConfigPath: string | undefined
   showBrowser: boolean
   reporter: Reporter
@@ -51,11 +50,11 @@ export async function run(args: RunArguments): Promise<void> {
 
   await runner.run({
     behaviorPathPattern: args.behaviorsGlob,
+    browserBehaviorPathPattern: args.browserBehaviorsGlob,
     reporter: args.reporter,
     orderProvider: args.orderProvider,
     failFast: args.failFast,
     runPickedOnly: args.runPickedOnly,
-    defaultEnvironment: args.behaviorEnvironment,
     behaviorContext: useContext()
   })
 

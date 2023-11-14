@@ -1,17 +1,17 @@
 import { getBehaviorsMatchingPattern } from "./behaviorCollector.js"
 import { SequentialValidator } from "./sequentialValidator.js"
 import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior"
-import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js"
+import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { BehaviorContext } from "./behaviorContext.js"
 
 export interface RunOptions {
   behaviorPathPattern: string
+  browserBehaviorPathPattern: string | undefined
   reporter: Reporter
   orderProvider: OrderProvider
   failFast: boolean
   runPickedOnly: boolean
-  defaultEnvironment: BehaviorEnvironment
   behaviorContext: BehaviorContext
 }
 
@@ -33,8 +33,8 @@ export class Runner {
 
   private async getBehaviors(options: RunOptions): Promise<Array<BehaviorMetadata>> {
     return await getBehaviorsMatchingPattern({
-      pattern: options.behaviorPathPattern,
-      defaultEnvironment: options.defaultEnvironment
+      behaviorPattern: options.behaviorPathPattern,
+      browserBehaviorPattern: options.browserBehaviorPathPattern
     })
   }
 

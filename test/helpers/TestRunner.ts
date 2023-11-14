@@ -1,11 +1,15 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { BehaviorEnvironment } from "../../runner/src/behaviorMetadata.js";
 import { run } from "../../runner/src/index.js";
 import { Logger } from "../../runner/src/logger.js";
 
-export function testRunnerContext(environment: BehaviorEnvironment): Context<TestRunner> {
+export interface TestRunnerOptions {
+  browserGlob: string | undefined
+}
+
+
+export function testRunnerContext(options: TestRunnerOptions): Context<TestRunner> {
   return {
-    init: () => new TestRunner(environment)
+    init: () => new TestRunner(options)
   }
 }
 
@@ -16,7 +20,7 @@ export class TestRunner {
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
 
-  constructor(private defaultBehaviorEnvironment: BehaviorEnvironment) { }
+  constructor(private options: TestRunnerOptions) { }
 
   setShouldFailFast(shouldFailFast: boolean) {
     this.shouldFailFast = shouldFailFast
@@ -29,11 +33,11 @@ export class TestRunner {
   async runBehaviors(pattern: string): Promise<void> {
     await run({
       behaviorsGlob: `./test/fixtures/behaviors/${pattern}`,
+      browserBehaviorsGlob: this.options.browserGlob,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,
       viteConfigPath: undefined,
-      behaviorEnvironment: this.defaultBehaviorEnvironment,
       reporter: this.testReporter,
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,

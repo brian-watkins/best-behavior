@@ -1,12 +1,12 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
-import { testRunnerContext } from "./helpers/TestRunner.js"
+import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayWith, assignedWith, equalTo, expect, is } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
-import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js"
 
-export default (environment: BehaviorEnvironment): Array<ConfigurableExample> => [
 
-  example(testRunnerContext(environment))
+export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
+
+  example(testRunnerContext(options))
     .description("running valid and skipped behaviors in the specified order")
     .script({
       perform: [
@@ -44,7 +44,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("failed example in multiple behaviors when not failing fast")
     .script({
       perform: [
@@ -79,7 +79,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("failed example in multiple behaviors when failing fast")
     .script({
       suppose: [
@@ -113,7 +113,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("skipping an entire behavior")
     .script({
       perform: [
@@ -146,7 +146,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("when not running picked examples only")
     .script({
       perform: [
@@ -179,7 +179,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("when running picked examples only")
     .script({
       suppose: [
@@ -212,7 +212,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("when failing fast and running picked only")
     .script({
       suppose: [
@@ -248,7 +248,7 @@ export default (environment: BehaviorEnvironment): Array<ConfigurableExample> =>
       ]
     }),
 
-  example(testRunnerContext(environment))
+  example(testRunnerContext(options))
     .description("when running picked only and a behavior is picked")
     .script({
       suppose: [

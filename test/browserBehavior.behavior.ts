@@ -1,14 +1,13 @@
 import { behavior, effect, example, step } from "esbehavior";
-import { BehaviorOutput, ClaimOutput, ExampleOutput, testRunnerContext } from "./helpers/TestRunner.js";
+import { BehaviorOutput, ClaimOutput, testRunnerContext } from "./helpers/TestRunner.js";
 import { Matcher, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 import { expectedBehavior } from "./helpers/matchers.js";
-import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 
 export default behavior("running behaviors in the browser environment", [
 
-  example(testRunnerContext(BehaviorEnvironment.Local))
-    .description("running behavior in browser when the default is local")
+  example(testRunnerContext({ browserGlob: "**/*" }))
+    .description("running behavior in browser")
     .script({
       perform: [
         step("validate the behaviors", async (context) => {
@@ -50,7 +49,7 @@ export default behavior("running behaviors in the browser environment", [
       ]
     }),
 
-  example(testRunnerContext(BehaviorEnvironment.Browser))
+  example(testRunnerContext({ browserGlob: "**/*" }))
     .description("failed example in browser")
     .script({
       perform: [
@@ -82,7 +81,7 @@ export default behavior("running behaviors in the browser environment", [
       ]
     }),
 
-  example(testRunnerContext(BehaviorEnvironment.Browser))
+  example(testRunnerContext({ browserGlob: "**/*" }))
     .description("failed presuppositions and actions in browser")
     .script({
       perform: [
@@ -100,7 +99,7 @@ export default behavior("running behaviors in the browser environment", [
       ]
     }),
 
-  ...behaviorBehaviors(BehaviorEnvironment.Browser)
+  ...behaviorBehaviors({ browserGlob: "**/*" })
 
 ])
 

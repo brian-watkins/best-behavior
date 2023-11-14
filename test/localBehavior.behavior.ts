@@ -1,14 +1,13 @@
 import { behavior, effect, example, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
-import { BehaviorEnvironment } from "../runner/src/behaviorMetadata.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations";
 
 export default behavior("running behaviors in the local JS environment", [
 
-  ...behaviorBehaviors(BehaviorEnvironment.Local),
+  ...behaviorBehaviors({ browserGlob: undefined }),
 
-  example(testRunnerContext(BehaviorEnvironment.Local))
+  example(testRunnerContext({ browserGlob: undefined }))
     .description("running behaviors that use playwright and local server")
     .script({
       perform: [
@@ -34,7 +33,7 @@ export default behavior("running behaviors in the local JS environment", [
       ]
     }),
 
-  example(testRunnerContext(BehaviorEnvironment.Local))
+  example(testRunnerContext({ browserGlob: undefined }))
     .description("Local behavior that uses a display context")
     .script({
       perform: [
