@@ -1,11 +1,9 @@
 import { Browser, BrowserContext, Page, chromium } from "playwright";
 import { Logger } from "./logger.js";
-import fs from "fs"
 import { pathInNodeModules, pathTo } from "./path.js";
 
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
-  logger: Logger
 }
 
 export function browserLogger(host: string, logger: Logger): Logger {
@@ -46,45 +44,45 @@ export class PlaywrightBrowser {
 
     return this.browser!.newContext()
   }
-
-  async newPage(): Promise<Page> {
-    const context = await this.newBrowserContext()
-    const page = await context.newPage()
-    page.on("console", (message) => {
-      this.options.logger.info(message.text())
-    })
-    page.on("pageerror", (error) => {
-      this.options.logger.error(error)
-    })
-    return page
-  }
 }
 
 const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
+export interface PreparedBrowserOptions {
+  adapterPath?: string
+  logger: Logger
+}
+
 export class PreparedBrowser {
+  private context: BrowserContext | undefined
   private page: Page | undefined
 
-  constructor(private browser: PlaywrightBrowser, private adapterPath: string) { }
+  constructor(private browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
 
   async getPage(): Promise<Page> {
     if (this.page !== undefined) {
       return this.page
     }
 
-    this.page = await this.browser.newPage()
-
-    const adapter = fs.readFileSync(this.adapterPath, "utf8")
-    await this.page.evaluate(adapter)
+    this.context = await this.browser.newBrowserContext()
+    
+    if (this.options.adapterPath) {
+      await this.context.addInitScript({ path: this.options.adapterPath })
+    }
 
     if (sourceMapSupportPath) {
-      await this.page.addScriptTag({
-        path: pathTo(sourceMapSupportPath, "browser-source-map-support.js")
-      })
-      await this.page.addScriptTag({
-        content: "sourceMapSupport.install()"
-      })
+      await this.context.addInitScript({ path: pathTo(sourceMapSupportPath, "browser-source-map-support.js") })
+      await this.context.addInitScript({ content: "sourceMapSupport.install()" })
     }
+
+    this.context.on("console", (message) => {
+      this.options.logger.info(message.text())
+    })
+    this.context.on("weberror", (webError) => {
+      this.options.logger.error(webError.error())
+    })
+
+    this.page = await this.context.newPage()
 
     return this.page
   }

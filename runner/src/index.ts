@@ -28,21 +28,30 @@ export async function run(args: RunArguments): Promise<void> {
   await viteServer.start()
 
   const playwrightBrowser = new PlaywrightBrowser({
-    showBrowser: args.showBrowser,
-    logger: browserLogger(viteServer.host, args.logger)
+    showBrowser: args.showBrowser
   })
 
-  const displayBrowser = new PreparedBrowser(
-    playwrightBrowser,
-    path.join(args.rootPath, "adapter", "displayAdapter.cjs")
-  )
+  const logger = browserLogger(viteServer.host, args.logger)
 
-  createContext(viteServer, playwrightBrowser, displayBrowser)
+  const basicBrowser = new PreparedBrowser(playwrightBrowser, {
+    logger
+  })
 
-  const behaviorBrowser = new PreparedBrowser(
-    playwrightBrowser,
-    path.join(args.rootPath, "adapter", "behaviorAdapter.cjs")
-  )
+  const displayBrowser = new PreparedBrowser(playwrightBrowser, {
+    adapterPath: path.join(args.rootPath, "adapter", "displayAdapter.cjs"),
+    logger
+  })
+
+  createContext({
+    localServer: viteServer,
+    basicBrowser,
+    displayBrowser
+  })
+
+  const behaviorBrowser = new PreparedBrowser(playwrightBrowser, {
+    adapterPath: path.join(args.rootPath, "adapter", "behaviorAdapter.cjs"),
+    logger
+  })
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)

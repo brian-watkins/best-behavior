@@ -1,13 +1,13 @@
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
-import { PlaywrightBrowser, PreparedBrowser } from "./playwrightBrowser.js"
+import { PreparedBrowser } from "./playwrightBrowser.js"
 
 export class BehaviorContext {
   private current: BehaviorMetadata | undefined
 
   constructor (
     readonly localServer: LocalServer,
-    readonly webBrowser: PlaywrightBrowser,
+    readonly basicBrowser: PreparedBrowser,
     readonly displayBrowser: PreparedBrowser
   ) { }
 
@@ -20,8 +20,14 @@ export class BehaviorContext {
   }
 }
 
-export function createContext(localServer: LocalServer, webBrowser: PlaywrightBrowser, displayBrowser: PreparedBrowser) {
-  globalThis.__best_behavior_context = new BehaviorContext(localServer, webBrowser, displayBrowser)
+export interface ContextElements {
+  localServer: LocalServer,
+  basicBrowser: PreparedBrowser,
+  displayBrowser: PreparedBrowser
+}
+
+export function createContext(elements: ContextElements) {
+  globalThis.__best_behavior_context = new BehaviorContext(elements.localServer, elements.basicBrowser, elements.displayBrowser)
 }
 
 export function useContext(): BehaviorContext {

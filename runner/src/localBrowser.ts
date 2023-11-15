@@ -3,7 +3,7 @@ import { LocalServer } from "./localServer.js";
 import { Page } from "playwright";
 
 export async function useLocalBrowser(): Promise<LocalBrowser> {
-  const page = await useContext().webBrowser.newPage()
+  const page = await useContext().basicBrowser.getPage()
   return new PlaywrightLocalBrowser(page, useContext().localServer)
 }
 

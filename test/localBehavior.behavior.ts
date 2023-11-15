@@ -29,6 +29,14 @@ export default behavior("running behaviors in the local JS environment", [
           expect(context.logs.infoLines, is(equalTo([
             "Hello from the browser!"
           ])))
+        }),
+        effect("it prints the proper line number in a stack trace from the browser", (context) => {
+          expect(context.logs.errorLines, is(arrayWith([
+            satisfying([
+              stringContaining("index.ts:6"),
+              stringContaining("http://localhost", { times: 0 })
+            ])
+          ])))
         })
       ]
     }),
