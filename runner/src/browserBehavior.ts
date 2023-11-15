@@ -69,6 +69,17 @@ class BrowserReporter {
   constructor(private page: Page) { }
 
   async start(): Promise<void> {
+    // Note that if we used context.exposeFunction this would not be
+    // vulnerable to loss when the page is reloaded ... I think
+    // And this is more about decorating the browser ... so I wonder if we
+    // subclass PreparedBrowser to add this in?
+    // We're thinking that we might expose a function on displayBrowser as well
+    // so what is the pattern to expose functions on the context?
+    //
+    // We could extend PreparedBrowser and override getContext() ...
+    // And then I guess we'd need to expose BrowserReporter as a property of the
+    // BehaviorBrowser? ...
+
     await this.page.exposeFunction("esb_startExample", (description: string | undefined) => {
       this.reporter?.startExample(description)
     })

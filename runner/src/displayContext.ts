@@ -28,6 +28,11 @@ export async function useDisplay<DisplayModule, ExportName extends keyof Display
   const browser = context.displayBrowser
   const page = await browser.getPage()
 
+  // this is the only other place we need the local server ... could
+  // we remove this somehow?
+  // Actually we /could/ expose a function that the browser page can call
+  // that would translate a path to a local url ...
+  // that could be part of the display browser adapter
   return new Display(page, context.localServer.urlForPath(modulePath), exportName.toString())
 }
 
