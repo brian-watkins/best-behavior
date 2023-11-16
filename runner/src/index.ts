@@ -2,7 +2,7 @@ import path from "path"
 import { OrderProvider, Reporter } from "esbehavior"
 import { ViteLocalServer } from "./viteServer.js"
 import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./playwrightBrowser.js"
-import { BrowserBehaviorContext } from "./browserBehavior.js"
+import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
 import { Logger } from "./logger.js"
@@ -48,7 +48,7 @@ export async function run(args: RunArguments): Promise<void> {
     displayBrowser
   })
 
-  const behaviorBrowser = new PreparedBrowser(playwrightBrowser, {
+  const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: path.join(args.rootPath, "adapter", "behaviorAdapter.cjs"),
     logger
   })

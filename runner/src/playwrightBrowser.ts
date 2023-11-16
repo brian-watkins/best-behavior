@@ -54,35 +54,39 @@ export interface PreparedBrowserOptions {
 }
 
 export class PreparedBrowser {
-  private context: BrowserContext | undefined
   private page: Page | undefined
 
   constructor(private browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
+
+  protected async getContext(): Promise<BrowserContext> {
+    const context = await this.browser.newBrowserContext()
+    
+    if (this.options.adapterPath) {
+      await context.addInitScript({ path: this.options.adapterPath })
+    }
+
+    if (sourceMapSupportPath) {
+      await context.addInitScript({ path: pathTo(sourceMapSupportPath, "browser-source-map-support.js") })
+      await context.addInitScript({ content: "sourceMapSupport.install()" })
+    }
+
+    context.on("console", (message) => {
+      this.options.logger.info(message.text())
+    })
+    context.on("weberror", (webError) => {
+      this.options.logger.error(webError.error())
+    })
+
+    return context
+  }
 
   async getPage(): Promise<Page> {
     if (this.page !== undefined) {
       return this.page
     }
 
-    this.context = await this.browser.newBrowserContext()
-    
-    if (this.options.adapterPath) {
-      await this.context.addInitScript({ path: this.options.adapterPath })
-    }
-
-    if (sourceMapSupportPath) {
-      await this.context.addInitScript({ path: pathTo(sourceMapSupportPath, "browser-source-map-support.js") })
-      await this.context.addInitScript({ content: "sourceMapSupport.install()" })
-    }
-
-    this.context.on("console", (message) => {
-      this.options.logger.info(message.text())
-    })
-    this.context.on("weberror", (webError) => {
-      this.options.logger.error(webError.error())
-    })
-
-    this.page = await this.context.newPage()
+    const context = await this.getContext()
+    this.page = await context.newPage()
 
     return this.page
   }

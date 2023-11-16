@@ -1,31 +1,16 @@
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
-import { Page } from "playwright"
+import { BrowserContext, Page } from "playwright"
 import { PreparedBrowser } from "./playwrightBrowser.js"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
 import { BehaviorData } from "../../types/types.js";
 
 export class BrowserBehaviorContext {
-  private page: Page | undefined
-  private browserReporter: BrowserReporter | undefined
-
-  constructor(private localServer: LocalServer, private behaviorBrowser: PreparedBrowser) { }
-
-  private async getPage(): Promise<Page> {
-    if (this.page !== undefined) {
-      return this.page
-    }
-
-    this.page = await this.behaviorBrowser.getPage()
-
-    this.browserReporter = new BrowserReporter(this.page)
-    await this.browserReporter.start()
-
-    return this.page
-  }
+  constructor(private localServer: LocalServer, private behaviorBrowser: BehaviorBrowser) { }
 
   async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
-    const page = await this.getPage()
+    const page = await this.behaviorBrowser.getPage()
+
     const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.urlForPath(metadata.path))
 
     return (b: BehaviorOptions) => {
@@ -35,7 +20,7 @@ export class BrowserBehaviorContext {
         examples: data.examples.map((mode, index) => {
           return (m) => {
             m.validationMode = mode
-            return new BrowserExample(index, page, this.browserReporter!)
+            return new BrowserExample(index, page, this.behaviorBrowser.reporter)
           }
         })
       }
@@ -62,33 +47,43 @@ class BrowserExample implements Example {
   }
 }
 
+export class BehaviorBrowser extends PreparedBrowser {
+  readonly reporter = new BrowserReporter()
+
+  protected async getContext(): Promise<BrowserContext> {
+    const context = await super.getContext()
+    await this.reporter.decorateContext(context)
+    return context
+  }
+}
+
 class BrowserReporter {
   private reporter: Reporter | undefined
   private currentOrigin: string = ""
 
-  constructor(private page: Page) { }
+  constructor() { }
 
-  async start(): Promise<void> {
-    await this.page.exposeFunction("esb_startExample", (description: string | undefined) => {
+  async decorateContext(context: BrowserContext): Promise<void> {
+    await context.exposeFunction("esb_startExample", (description: string | undefined) => {
       this.reporter?.startExample(description)
     })
-    await this.page.exposeFunction("esb_endExample", () => {
+    await context.exposeFunction("esb_endExample", () => {
       this.reporter?.endExample()
     })
-    await this.page.exposeFunction("esb_startScript", (location: string) => {
+    await context.exposeFunction("esb_startScript", (location: string) => {
       this.setCurrentOrigin(location)
       this.reporter?.startScript(location.replace(this.currentOrigin, ""))
     })
-    await this.page.exposeFunction("esb_endScript", () => {
+    await context.exposeFunction("esb_endScript", () => {
       this.reporter?.endScript()
     })
-    await this.page.exposeFunction("esb_recordPresupposition", (result: ClaimResult) => {
+    await context.exposeFunction("esb_recordPresupposition", (result: ClaimResult) => {
       this.reporter?.recordPresupposition(this.fixStackIfNecessary(result))
     })
-    await this.page.exposeFunction("esb_recordAction", (result: ClaimResult) => {
+    await context.exposeFunction("esb_recordAction", (result: ClaimResult) => {
       this.reporter?.recordAction(this.fixStackIfNecessary(result))
     })
-    await this.page.exposeFunction("esb_recordObservation", (result: ClaimResult) => {
+    await context.exposeFunction("esb_recordObservation", (result: ClaimResult) => {
       this.reporter?.recordObservation(this.fixStackIfNecessary(result))
     })
   }
