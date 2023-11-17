@@ -30,12 +30,12 @@
     "acorn-walk": "^8.3.0",
     "glob": "^10.3.10",
     "minimatch": "^9.0.3",
-    "playwright": "^1.39.0",
     "source-map-support": "^0.5.21",
-    "vite": "^4.5.0",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {
-    "esbehavior": "^4.2.2"
+    "esbehavior": "^4.2.2",
+    "playwright": "^1.40.0",
+    "vite": "^5.0.0"
   }
 }
