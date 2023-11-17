@@ -1,10 +1,23 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
 import { useDisplay } from "../../../../runner/src/displayContext.js"
-import { expect, is } from "great-expectations";
+import { expect, is, resolvesTo } from "great-expectations";
 
 const displayContext = {
   init: () => {
-    return useDisplay(() => import("./testDisplay.js"), "superDisplay")
+    return useDisplay({
+      module: () => import("./testDisplay.js"),
+      export: "superDisplay"
+    })
+  }
+}
+
+const htmlDependentContext = {
+  init: () => {
+    return useDisplay({
+      module: () => import("./testDisplay.js"), 
+      export: "funnyDisplay",
+      html: "./test/fixtures/behaviors/hybrid/testSetup.html"
+    })
   }
 }
 
@@ -63,6 +76,20 @@ export default behavior("display context", [
           expect(counterText, is("Clicks: 4"))
         })
       ]
-    })
+    }),
 
+  example(htmlDependentContext)
+    .description("Use a display context that depends on loaded html")
+    .script({
+      suppose: [
+        fact("a funny component is rendered", async (display) => {
+          display.mount("You are cool!")
+        })
+      ],
+      observe: [
+        effect("the title is rendered as expected", async (display) => {
+          await expect(display.page.locator("h1").innerText({ timeout: 200 }), resolvesTo("You are cool!"))
+        })
+      ]
+    })
 ])

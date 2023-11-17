@@ -12,15 +12,21 @@ type DisplayContextTypes<Module> = {
   [P in keyof Module as Module[P] extends DisplayContext<any, any> ? P : never]: Module[P]
 }
 
-export async function useDisplay<DisplayModule, ExportName extends keyof DisplayContextTypes<DisplayModule>>(loader: () => Promise<DisplayModule>, exportName: ExportName): Promise<Display<DisplayModule[ExportName]>> {
+export interface DisplayOptions<DisplayModule, ExportName extends keyof DisplayContextTypes<DisplayModule>> {
+  module: () => Promise<DisplayModule>
+  export: ExportName
+  html?: string
+}
+
+export async function useDisplay<DisplayModule, ExportName extends keyof DisplayContextTypes<DisplayModule>>(options: DisplayOptions<DisplayModule, ExportName>): Promise<Display<DisplayModule[ExportName]>> {
   const behaviorModulePath = useContext().currentBehavior?.path
   if (behaviorModulePath === undefined) {
     throw new Error("Bad attempt to call useDisplay outside of a behavior module.")
   }
 
-  const modulePath = getModulePathFromLoaderCode(loader.toString())
+  const modulePath = getModulePathFromLoaderCode(options.module.toString())
   if (modulePath === undefined) {
-    throw new Error(`Could not find module path in code: ${loader.toString()}`)
+    throw new Error(`Could not find module path in code: ${options.module.toString()}`)
   }
 
   const context = useContext()
@@ -28,7 +34,12 @@ export async function useDisplay<DisplayModule, ExportName extends keyof Display
   const browser = context.displayBrowser
   const page = await browser.getPage()
 
-  return new Display(page, context.localServer.urlForPath(modulePath), exportName.toString())
+  const displayHtml = options.html ? context.localServer.urlForPath(options.html) : "about:blank"
+  if (page.url() !== displayHtml) {
+    await page.goto(displayHtml)
+  }
+
+  return new Display(page, context.localServer.urlForPath(modulePath), options.export.toString())
 }
 
 function getModulePathFromLoaderCode(code: string): string | undefined {

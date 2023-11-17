@@ -3,7 +3,10 @@ import { useDisplay } from "../../../../runner/src/displayContext.js";
 
 const displayContext = {
   init: () => {
-    return useDisplay(() => import("./badDisplay.js"), "display")
+    return useDisplay({
+      module: () => import("./badDisplay.js"),
+      export: "display"
+    })
   }
 }
 
