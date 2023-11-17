@@ -14,7 +14,7 @@ export interface LocalBrowser {
 
 class PlaywrightLocalBrowser implements LocalBrowser {
   constructor(readonly page: Page, private localServer: LocalServer) { }
-  
+
   async loadLocal(path: string): Promise<void> {
     await this.page.goto(this.localServer.urlForPath(path))
   }

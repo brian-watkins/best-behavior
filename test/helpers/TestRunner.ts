@@ -69,7 +69,7 @@ class TestReporter implements Reporter {
     this.summary = summary
   }
   terminate(error: Failure): void {
-
+    console.log("TEST REPORTER TERMINATE", error)
   }
   startBehavior(description: string): void {
     this.currentBehavior = {
