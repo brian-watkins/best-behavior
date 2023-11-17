@@ -1,5 +1,5 @@
 import { behavior, example, fact, step } from "esbehavior";
-import { useDisplay } from "../../../../runner/src/displayContext.js";
+import { useDisplay } from "../../../../runner/src/index.js";
 
 const displayContext = {
   init: () => {

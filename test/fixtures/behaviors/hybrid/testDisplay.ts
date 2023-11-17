@@ -1,4 +1,4 @@
-import { DisplayContext } from "../../../../runner/src/displayContext.js"
+import { DisplayContext } from "../../../../runner/src/index.js"
 
 export interface MyArgs {
   title: string

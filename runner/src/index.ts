@@ -6,7 +6,11 @@ import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
 import { Logger } from "./logger.js"
-import { createContext, useContext } from "./behaviorContext.js"
+import { createContext, useContext } from "./useContext.js"
+export type { LocalBrowser } from "./useLocalBrowser.js"
+export { useLocalBrowser } from "./useLocalBrowser.js"
+export type { DisplayContext, DisplayOptions } from "./useDisplay.js"
+export { useDisplay, Display } from "./useDisplay.js"
 
 export interface RunArguments {
   behaviorsGlob: string

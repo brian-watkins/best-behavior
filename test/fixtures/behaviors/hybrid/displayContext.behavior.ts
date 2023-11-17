@@ -1,5 +1,5 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
-import { useDisplay } from "../../../../runner/src/displayContext.js"
+import { useDisplay } from "../../../../runner/src/index.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
 const displayContext = {

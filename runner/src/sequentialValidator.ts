@@ -1,7 +1,7 @@
 import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior";
 import { BehaviorMetadata } from "./behaviorMetadata.js";
 import { BehaviorFactory } from "./behaviorFactory.js";
-import { BehaviorContext } from "./behaviorContext.js";
+import { BehaviorContext } from "./useContext.js";
 
 export interface DocumentationValidationOptions {
   reporter: Reporter
