@@ -9,8 +9,8 @@ import { Logger } from "./logger.js"
 import { createContext, useContext } from "./useContext.js"
 export type { LocalBrowser } from "./useLocalBrowser.js"
 export { useLocalBrowser } from "./useLocalBrowser.js"
-export type { DisplayContext, DisplayOptions } from "./useDisplay.js"
-export { useDisplay, Display } from "./useDisplay.js"
+export type { ViewController, ViewOptions } from "./useView.js"
+export { useView, View } from "./useView.js"
 export type { Logger } from "./logger.js"
 
 export interface RunArguments {

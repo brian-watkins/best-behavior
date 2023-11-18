@@ -1,7 +1,7 @@
-import { DisplayContext } from "../../runner/src/useDisplay.js"
+import { ViewController } from "../../runner/src/useView.js"
 
 let currentHandle: any | undefined = undefined
-let currentContext: DisplayContext<any> | undefined = undefined
+let currentContext: ViewController<any> | undefined = undefined
 
 window.loadDisplay = async function (moduleURL: string, exportName: string, args: any) {
   if (currentHandle !== undefined) {

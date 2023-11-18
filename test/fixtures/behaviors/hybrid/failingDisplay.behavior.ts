@@ -1,9 +1,9 @@
 import { behavior, example, fact, step } from "esbehavior";
-import { useDisplay } from "../../../../runner/src/index.js";
+import { useView } from "../../../../runner/src/index.js";
 
-const displayContext = {
+const testContext = {
   init: () => {
-    return useDisplay({
+    return useView({
       module: () => import("./badDisplay.js"),
       export: "display"
     })
@@ -12,7 +12,7 @@ const displayContext = {
 
 export default behavior("failing display", [
 
-  example(displayContext)
+  example(testContext)
     .description("the display fails to mount")
     .script({
       suppose: [

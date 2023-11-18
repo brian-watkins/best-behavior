@@ -3,22 +3,22 @@ import { useContext } from "./useContext.js"
 import * as acorn from "acorn"
 import * as walk from "acorn-walk"
 
-export interface DisplayContext<Args, Handle = void> {
+export interface ViewController<Args, Handle = void> {
   render: (args: Args) => Handle | Promise<Handle>
   teardown?: (handle: Handle) => void | Promise<void>
 }
 
-type DisplayContextTypes<Module> = {
-  [P in keyof Module as Module[P] extends DisplayContext<any, any> ? P : never]: Module[P]
+type ViewControllerTypes<Module> = {
+  [P in keyof Module as Module[P] extends ViewController<any, any> ? P : never]: Module[P]
 }
 
-export interface DisplayOptions<DisplayModule, ExportName extends keyof DisplayContextTypes<DisplayModule>> {
+export interface ViewOptions<DisplayModule, ExportName extends keyof ViewControllerTypes<DisplayModule>> {
   module: () => Promise<DisplayModule>
   export: ExportName
   html?: string
 }
 
-export async function useDisplay<DisplayModule, ExportName extends keyof DisplayContextTypes<DisplayModule>>(options: DisplayOptions<DisplayModule, ExportName>): Promise<Display<DisplayModule[ExportName]>> {
+export async function useView<ViewControllerModule, ExportName extends keyof ViewControllerTypes<ViewControllerModule>>(options: ViewOptions<ViewControllerModule, ExportName>): Promise<View<ViewControllerModule[ExportName]>> {
   const behaviorModulePath = useContext().currentBehavior?.path
   if (behaviorModulePath === undefined) {
     throw new Error("Bad attempt to call useDisplay outside of a behavior module.")
@@ -39,7 +39,7 @@ export async function useDisplay<DisplayModule, ExportName extends keyof Display
     await page.goto(displayHtml)
   }
 
-  return new Display(page, context.localServer.urlForPath(modulePath), options.export.toString())
+  return new View(page, context.localServer.urlForPath(modulePath), options.export.toString())
 }
 
 function getModulePathFromLoaderCode(code: string): string | undefined {
@@ -58,10 +58,10 @@ function getModulePathFromLoaderCode(code: string): string | undefined {
   return modulePath
 }
 
-export class Display<Context> {
+export class View<Controller> {
   constructor(readonly page: Page, private displayModuleURL: string, private displayExportName: string) { }
 
-  async mount(args: Context extends DisplayContext<infer R, any> ? R : never): Promise<void> {
+  async mount(args: Controller extends ViewController<infer Args, any> ? Args : never): Promise<void> {
     await this.page.evaluate((options) => {
       window.loadDisplay(options.displayModuleURL, options.displayExportName, options.args)
     }, {

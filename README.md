@@ -122,30 +122,30 @@ If you need to load any other (non-local) web page, you can just use the
 
 Often it's easier and faster to test parts of your browser-based appliction in
 isolation. You might, for exmple, divide the user interface into sub-components
-that you'd like to test individually.
+or sub-views that you'd like to test individually.
 
 To write these kinds of tests with Best-Behavior, first create a file that contains
 the logic for rendering the browser-based view you'd like to test. This file should
-export a `DisplayContext` which defines a `render` function and an optional
+export a `ViewController` which defines a `render` function and an optional
 `teardown` function. The `render` function can take (serializable) arguments passed
-in from the test. Exports from this file will be loaded in the browser.
+in from the test. Exports from this file will be loaded in the browser, so it can
+reference global objects like `window` that will be available in the browser.
 
-Then, leverage the `useDisplay` function in your test to initialize the `DisplayContext`
-you need and obtain access to a `Display` object. The `Display` object serves
-as a reference to the `DisplayContext` during the test. It provides a `mount` function
-that accepts arguments to pass to the `render` function (from the `DisplayContext`)
-that will be executed in the browser.
+Then, leverage the `useView` function in your test to initialize the `ViewController`
+you need and obtain access to a `View` object. The `View` object provides a `mount`
+function that accepts arguments to pass to the `render` function of the
+`ViewController`. When `mount` is called, the `render` function will be invoked
+in the browser with the provided arguments.
 
 
-#### useDisplay
+#### useView
 
 ```
-useDisplay(options: DisplayOptions): Promise<Display>
+useView(options: ViewControllerOptions): Promise<View>
 ```
 
-Call this function to initialize a `DisplayContext` for use with this test and
-obtain a reference to a `Display` that provides access to the `DisplayContext`
-during the test.
+Call this function to initialize a `ViewController` for use with this test and
+obtain a reference to a corresponding `View`.
 
 
 #### DisplayOptions
@@ -159,10 +159,10 @@ interface DisplayOptions {
 ```
 
 Use an asynchronous import statement to identify the module that exports the
-`DisplayContext` used in this test. You can optionally specify a path to an HTML file
-that will be loaded on the page. Use this HTML file to load stylesheets or do
-any other setup. The HTML will be processed by the Vite development server managed
-by Best-Behavior.
+`ViewController` to be used in this test. In addition, you can optionally specify
+a path to an HTML file that will be loaded on the page. Use this HTML file to
+load stylesheets or do any other setup. The HTML will be processed by the Vite
+development server managed by Best-Behavior.
 
 Here's an example:
 
@@ -173,13 +173,14 @@ useDisplay({
 })
 ```
 
-Best-Behavior uses the asynchronous import only to help with type analysis.
+Best-Behavior uses the asynchronous import to enable type checking during
+development.
 
 
-#### DisplayContext
+#### ViewController
 
 ```
-interface DisplayContext<Args, Handle = void> {
+interface ViewController<Args, Handle = void> {
   render: (args: Args) => Handle | Promise<Handle>
   teardown?: (handle: Handle) => void | Promise<void>
 }
@@ -187,30 +188,32 @@ interface DisplayContext<Args, Handle = void> {
 
 Implement the render function to define how to display the view under test on a
 web page. The render function accepts serializable arguments that can be specified
-via the `mount` function of the `Display`.
+via the `mount` function of the `View`.
 
 The `teardown` function is lazily called to destroy the existing view with
 the `Handle` object that results from the `render` function, only when
-*another* display context is about to be rendered in the browser. 
+*another* view is about to be rendered. This allows the view to remain visible
+in the browser in case the test writer wants to inspect it at the end of a test.
 
 
-#### Display
+#### View
 
 ```
-interface Display {
-  mount(args: DisplayContextRenderArgs): Promise<void>
+interface View {
+  mount(args: ViewControllerRenderArgs): Promise<void>
 }
 ```
 
 Call the `mount` function with serializable arguments that will be passed to the
-`render` function of the relevant `DisplayContext`.
+`render` function of the relevant `ViewController`.
 
 
 ### Running behaviors programatically
 
-Instead of using the `best` CLI, you can write a script that calls the `run`
-function programmatically. This can be useful if you need to provide a custom
-`Reporter` or `OrderProvider` or `Logger`.
+Instead of using the `best` CLI, you can run behaviors via a script that invokes
+the `run` function programmatically. This can be useful if you need to provide
+a custom `Reporter` or `OrderProvider` or `Logger`.
+
 
 #### run
 

@@ -1,10 +1,10 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
-import { useDisplay } from "../../../../runner/src/index.js"
+import { useView } from "../../../../runner/src/index.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
 const displayContext = {
   init: () => {
-    return useDisplay({
+    return useView({
       module: () => import("./testDisplay.js"),
       export: "superDisplay"
     })
@@ -13,7 +13,7 @@ const displayContext = {
 
 const htmlDependentContext = {
   init: () => {
-    return useDisplay({
+    return useView({
       module: () => import("./testDisplay.js"), 
       export: "funnyDisplay",
       html: "./test/fixtures/behaviors/hybrid/testSetup.html"

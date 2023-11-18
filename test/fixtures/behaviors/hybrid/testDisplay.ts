@@ -1,10 +1,10 @@
-import { DisplayContext } from "../../../../runner/src/index.js"
+import { ViewController } from "../../../../runner/src/index.js"
 
 export interface MyArgs {
   title: string
 }
 
-export const superDisplay: DisplayContext<MyArgs, HTMLElement> = {
+export const superDisplay: ViewController<MyArgs, HTMLElement> = {
   render: (args) => {
     const root = document.createElement("div")
     root.id = "display-root"
@@ -36,7 +36,7 @@ export const superDisplay: DisplayContext<MyArgs, HTMLElement> = {
   }
 }
 
-export const funnyDisplay: DisplayContext<string> = {
+export const funnyDisplay: ViewController<string> = {
   render: (arg) => {
     const root = document.getElementById("test-app")
     if (root) {
