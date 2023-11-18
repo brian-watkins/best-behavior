@@ -1,4 +1,4 @@
-import { DisplayContext } from "../../runner/src/displayContext.js"
+import { DisplayContext } from "../../runner/src/useDisplay.js"
 
 let currentHandle: any | undefined = undefined
 let currentContext: DisplayContext<any> | undefined = undefined
