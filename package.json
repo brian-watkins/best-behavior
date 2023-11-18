@@ -1,6 +1,6 @@
 {
   "name": "best-behavior",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Runner for esbehavior behaviors",
   "main": "./dist/runner/index.js",
   "exports": "./dist/runner/index.js",
