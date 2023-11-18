@@ -1,11 +1,9 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { run } from "../../runner/src/index.js";
-import { Logger } from "../../runner/src/logger.js";
+import { run, Logger } from "../../dist/runner/index.js"
 
 export interface TestRunnerOptions {
   browserGlob: string | undefined
 }
-
 
 export function testRunnerContext(options: TestRunnerOptions): Context<TestRunner> {
   return {
@@ -41,7 +39,6 @@ export class TestRunner {
       reporter: this.testReporter,
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,
-      rootPath: "./dist"
     })
   }
 

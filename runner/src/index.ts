@@ -1,4 +1,4 @@
-import path from "path"
+import url from "url"
 import { OrderProvider, Reporter } from "esbehavior"
 import { ViteLocalServer } from "./viteServer.js"
 import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./playwrightBrowser.js"
@@ -11,6 +11,7 @@ export type { LocalBrowser } from "./useLocalBrowser.js"
 export { useLocalBrowser } from "./useLocalBrowser.js"
 export type { DisplayContext, DisplayOptions } from "./useDisplay.js"
 export { useDisplay, Display } from "./useDisplay.js"
+export type { Logger } from "./logger.js"
 
 export interface RunArguments {
   behaviorsGlob: string
@@ -22,7 +23,6 @@ export interface RunArguments {
   reporter: Reporter
   orderProvider: OrderProvider
   logger: Logger
-  rootPath: string
 }
 
 export async function run(args: RunArguments): Promise<void> {
@@ -42,7 +42,7 @@ export async function run(args: RunArguments): Promise<void> {
   })
 
   const displayBrowser = new PreparedBrowser(playwrightBrowser, {
-    adapterPath: path.join(args.rootPath, "adapter", "displayAdapter.cjs"),
+    adapterPath: pathToFile("../adapter/displayAdapter.cjs"),
     logger
   })
 
@@ -53,7 +53,7 @@ export async function run(args: RunArguments): Promise<void> {
   })
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
-    adapterPath: path.join(args.rootPath, "adapter", "behaviorAdapter.cjs"),
+    adapterPath: pathToFile("../adapter/behaviorAdapter.cjs"),
     logger
   })
 
@@ -75,4 +75,8 @@ export async function run(args: RunArguments): Promise<void> {
     await playwrightBrowser.stop()
     await viteServer.stop()
   }
+}
+
+function pathToFile(relativePath: string): string {
+  return url.fileURLToPath(new URL(relativePath, import.meta.url))
 }

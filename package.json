@@ -15,7 +15,7 @@
     "build:runner": "tsc --build",
     "build:adapter": "node ./scripts/build.js",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build:adapter && ts-node --swc --esm ./test/runner.ts"
+    "test": "npm run build && ts-node --swc --esm ./test/runner.ts"
   },
   "devDependencies": {
     "@swc/core": "^1.3.94",

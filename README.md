@@ -196,3 +196,28 @@ interface Display {
 
 Call the `mount` function with serializable arguments that will be passed to the
 `render` function of the relevant `DisplayContext`.
+
+
+### Running behaviors programatically
+
+Instead of using the `best` CLI, you can write a script that calls the `run`
+function programmatically. This can be useful if you need to provide a custom
+`Reporter` or `OrderProvider` or `Logger`.
+
+```
+run(args: RunArguments): Promise<void>
+```
+
+```
+interface RunArguments {
+  behaviorsGlob: string // relative to working dir
+  browserBehaviorsGlob: string | undefined // subset of behaviorsGlob
+  failFast: boolean
+  runPickedOnly: boolean
+  viteConfigPath: string | undefined // relative to working dir
+  showBrowser: boolean
+  reporter: Reporter // from esbehavior
+  orderProvider: OrderProvider // from esbehavior
+  logger: Logger
+}
+```

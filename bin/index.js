@@ -1,7 +1,6 @@
 #!/usr/bin/env node --enable-source-maps
 
 import yargs from "yargs"
-import url from "url"
 import { run } from "../dist/runner/index.js"
 import { consoleLogger } from "../dist/runner/logger.js"
 import { StandardReporter, randomOrder } from "esbehavior"
@@ -55,6 +54,5 @@ await run({
   showBrowser: args.showBrowser,
   reporter: new StandardReporter(),
   orderProvider: randomOrder(args.seed),
-  logger: consoleLogger(),
-  rootPath: url.fileURLToPath(new URL('../dist', import.meta.url))
+  logger: consoleLogger()
 })
