@@ -11,11 +11,12 @@
   "author": "Brian Watkins",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && npm run build:runner && npm run build:adapter",
+    "build": "rm -rf dist && npm run build:all",
     "build:runner": "tsc --build",
     "build:adapter": "node ./scripts/build.js",
+    "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build && ts-node --swc --esm ./test/runner.ts",
+    "test": "npm run build:all && ts-node --swc --esm ./test/runner.ts",
     "create:change": "changeset"
   },
   "devDependencies": {
