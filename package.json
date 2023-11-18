@@ -17,9 +17,9 @@
     "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
     "test": "npm run build:all && ts-node --swc --esm ./test/runner.ts",
-    "create:change": "changeset",
+    "create:change": "changeset add",
     "create:version": "changeset version",
-    "create:release": "npm run build && changeset publish"
+    "create:release": "npm run build && changeset publish && git push --follow-tags"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
