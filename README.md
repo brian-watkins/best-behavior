@@ -141,19 +141,19 @@ in the browser with the provided arguments.
 #### useView
 
 ```
-useView(options: ViewControllerOptions): Promise<View>
+useView(options: ViewOptions): Promise<View>
 ```
 
 Call this function to initialize a `ViewController` for use with this test and
 obtain a reference to a corresponding `View`.
 
 
-#### DisplayOptions
+#### ViewOptions
 
 ```
-interface DisplayOptions {
-  module: () => Promise<T> // async import of the module that exports a DisplayContext
-  export: string // the name of the DisplayContext export to use
+interface ViewOptions {
+  module: () => Promise<T> // async import of the module that exports a ViewController
+  export: string // the name of the ViewController export to use
   html?: string // path to html to load, relative to working dir
 }
 ```
@@ -167,14 +167,16 @@ development server managed by Best-Behavior.
 Here's an example:
 
 ```
-useDisplay({
-  module: => () => import("./myDisplayContextModule.ts"),
-  export: "myDisplayContext"
+useView({
+  module: => () => import("./myViewControllerModule.ts"),
+  export: "myViewController"
 })
 ```
 
 Best-Behavior uses the asynchronous import to enable type checking during
-development.
+development and to find the path to the module to load in the browser. The module
+will be served to the browser by Vite and so anything that can be processed by
+Vite (like Typescript) is fine to use.
 
 
 #### ViewController
