@@ -90,7 +90,11 @@ for you. You can use the `useLocalBrowser` function to obtain a `LocalBrowser`
 that provide access to these managed objects during your test.
 
 
-#### useLocalBrowser(): Promise\<LocalBrowser\>
+#### useLocalBrowser
+
+```
+useLocalBrowser(): Promise<LocalBrowser>
+```
 
 Call this function to get a reference to a `LocalBrowser` instance. A `LocalBrowser`
 is useful in tests that need to load HTML to generate the subject under test.
@@ -133,7 +137,11 @@ that accepts arguments to pass to the `render` function (from the `DisplayContex
 that will be executed in the browser.
 
 
-#### useDisplay(options: DisplayOptions): Promise\<Display\>
+#### useDisplay
+
+```
+useDisplay(options: DisplayOptions): Promise<Display>
+```
 
 Call this function to initialize a `DisplayContext` for use with this test and
 obtain a reference to a `Display` that provides access to the `DisplayContext`
@@ -204,9 +212,14 @@ Instead of using the `best` CLI, you can write a script that calls the `run`
 function programmatically. This can be useful if you need to provide a custom
 `Reporter` or `OrderProvider` or `Logger`.
 
+#### run
+
 ```
 run(args: RunArguments): Promise<void>
 ```
+
+
+#### RunArguments
 
 ```
 interface RunArguments {
