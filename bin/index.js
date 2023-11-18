@@ -7,7 +7,7 @@ import { consoleLogger } from "../dist/runner/logger.js"
 import { StandardReporter, randomOrder } from "esbehavior"
 
 const args = yargs(process.argv.slice(2))
-  .scriptName("behave")
+  .scriptName("best")
   .usage("$0 --behaviors 'some/path/**/*.behavior.ts'")
   .options({
     "behaviors": {

@@ -41,7 +41,7 @@ run your test suite. For example, if your behaviors are all in a directory calle
 them like so:
 
 ```
-$ behave --behaviors 'tests/**/*.behavior.ts'
+$ best --behaviors 'tests/**/*.behavior.ts'
 ```
 
 ## Command Line Interface
@@ -64,10 +64,10 @@ during the test run and only run those behaviors that have explicitly been
 picked (via the esbehavior pick functionality):
 
 ```
-$ behave --behaviors 'tests/**/*.behavior.ts' \
-         --runInBrowser '**/*.browser.behavior.ts' \
-         --showBrowser
-         --picked
+$ best --behaviors 'tests/**/*.behavior.ts' \
+       --runInBrowser '**/*.browser.behavior.ts' \
+       --showBrowser
+       --picked
 ```
 
 ## Working with the Browser

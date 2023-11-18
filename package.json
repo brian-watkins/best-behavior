@@ -5,7 +5,7 @@
   "main": "./dist/runner/index.js",
   "exports": "./dist/runner/index.js",
   "bin": {
-    "behave": "./bin/index.js"
+    "best": "./bin/index.js"
   },
   "type": "module",
   "author": "Brian Watkins",
