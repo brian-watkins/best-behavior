@@ -1,15 +1,24 @@
 {
   "name": "best-behavior",
+  "author": "Brian Watkins",
+  "license": "MIT",
   "version": "0.1.0",
   "description": "Runner for esbehavior behaviors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brian-watkins/best-behavior"
+  },
+  "type": "module",
   "main": "./dist/runner/index.js",
+  "types": "./dist/runner/index.d.ts",
   "exports": "./dist/runner/index.js",
+  "files": [
+    "bin/",
+    "dist/"
+  ],
   "bin": {
     "best": "./bin/index.js"
   },
-  "type": "module",
-  "author": "Brian Watkins",
-  "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && npm run build:all",
     "build:runner": "tsc --build",
