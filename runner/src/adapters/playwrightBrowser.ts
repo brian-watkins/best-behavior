@@ -1,6 +1,6 @@
 import { Browser, BrowserContext, Page, chromium } from "playwright";
-import { Logger } from "./logger.js";
-import { pathInNodeModules, pathTo } from "./path.js";
+import { Logger } from "../logger.js";
+import { pathInNodeModules, pathTo } from "../path.js";
 
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean

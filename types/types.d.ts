@@ -20,6 +20,7 @@ export declare global {
     esb_recordPresupposition(result: ClaimResult): void
     esb_recordAction(result: ClaimResult): void
     esb_recordObservation(result: ClaimResult): void
+    __bb_pageBinding(pageFunction: string, arg: any): Promise<any>
   }
 
   var __best_behavior_context: BehaviorContext

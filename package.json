@@ -11,7 +11,10 @@
   "type": "module",
   "main": "./dist/runner/index.js",
   "types": "./dist/runner/index.d.ts",
-  "exports": "./dist/runner/index.js",
+  "exports": {
+    ".": "./dist/runner/index.js",
+    "./browser": "./dist/runner/browser/index.js"
+  },
   "files": [
     "bin/",
     "dist/"

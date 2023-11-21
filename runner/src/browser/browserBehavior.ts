@@ -1,9 +1,9 @@
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
-import { PreparedBrowser } from "./playwrightBrowser.js"
-import { BehaviorMetadata } from "./behaviorMetadata.js"
-import { LocalServer } from "./localServer.js"
-import { BehaviorData } from "../../types/types.js";
+import { PreparedBrowser } from "../adapters/playwrightBrowser.js"
+import { BehaviorMetadata } from "../behaviorMetadata.js"
+import { LocalServer } from "../localServer.js"
+import { BehaviorData } from "../../../types/types.js";
 
 export class BrowserBehaviorContext {
   constructor(private localServer: LocalServer, private behaviorBrowser: BehaviorBrowser) { }
@@ -52,7 +52,14 @@ export class BehaviorBrowser extends PreparedBrowser {
 
   protected async getContext(): Promise<BrowserContext> {
     const context = await super.getContext()
+
+    context.exposeBinding("__bb_pageBinding", ({page}, ...args) => {
+      const pageFunction = eval(args[0])
+      return pageFunction(page, args[1])
+    })
+
     await this.reporter.decorateContext(context)
+
     return context
   }
 }

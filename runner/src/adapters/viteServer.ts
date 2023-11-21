@@ -1,6 +1,6 @@
 import { ViteDevServer, createServer } from "vite";
-import { LocalServer } from "./localServer.js";
-import { Transpiler } from "./transpiler.js";
+import { LocalServer } from "../localServer.js";
+import { Transpiler } from "../transpiler.js";
 
 export interface ViteLocalServerOptions {
   viteConfigPath: string | undefined

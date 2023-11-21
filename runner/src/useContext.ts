@@ -1,6 +1,6 @@
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "./localServer.js"
-import { PreparedBrowser } from "./playwrightBrowser.js"
+import { PreparedBrowser } from "./adapters/playwrightBrowser.js"
 
 export class BehaviorContext {
   private current: BehaviorMetadata | undefined
