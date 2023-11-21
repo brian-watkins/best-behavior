@@ -70,6 +70,10 @@ $ best --behaviors 'tests/**/*.behavior.ts' \
        --picked
 ```
 
+Note the quotes around the globs ... if you forget those then the shell may
+interpret them itself and you may get unexpected results.
+
+
 ## Working with the Browser
 
 Best-Behavior exposes helper functions that enable tests to utilize a
