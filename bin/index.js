@@ -37,7 +37,7 @@ const args = yargs(process.argv.slice(2))
       type: "boolean",
       default: false
     },
-    "viteConfigPath": {
+    "viteConfig": {
       describe: "path to vite config file",
       type: "string"
     }
@@ -50,7 +50,7 @@ await run({
   browserBehaviorsGlob: args.runInBrowser,
   failFast: args.failFast,
   runPickedOnly: args.picked,
-  viteConfigPath: args.viteConfigPath,
+  viteConfig: args.viteConfig,
   showBrowser: args.showBrowser,
   reporter: new StandardReporter(),
   orderProvider: randomOrder(args.seed),

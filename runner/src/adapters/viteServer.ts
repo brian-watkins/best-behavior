@@ -3,7 +3,7 @@ import { LocalServer } from "../localServer.js";
 import { Transpiler } from "../transpiler.js";
 
 export interface ViteLocalServerOptions {
-  viteConfigPath: string | undefined
+  viteConfig: string | undefined
 }
 
 export class ViteLocalServer implements LocalServer, Transpiler {
@@ -13,7 +13,7 @@ export class ViteLocalServer implements LocalServer, Transpiler {
 
   async start(): Promise<void> {
     this.server = await createServer({
-      configFile: this.options.viteConfigPath,
+      configFile: this.options.viteConfig,
       server: {
         hmr: false,
         headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }

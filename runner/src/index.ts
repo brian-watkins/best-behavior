@@ -18,7 +18,7 @@ export interface RunArguments {
   browserBehaviorsGlob: string | undefined
   failFast: boolean
   runPickedOnly: boolean
-  viteConfigPath: string | undefined
+  viteConfig: string | undefined
   showBrowser: boolean
   reporter: Reporter
   orderProvider: OrderProvider
@@ -27,7 +27,7 @@ export interface RunArguments {
 
 export async function run(args: RunArguments): Promise<void> {
   const viteServer = new ViteLocalServer({
-    viteConfigPath: args.viteConfigPath
+    viteConfig: args.viteConfig
   })
   await viteServer.start()
 
