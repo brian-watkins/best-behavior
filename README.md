@@ -214,6 +214,31 @@ Call the `mount` function with serializable arguments that will be passed to the
 `render` function of the relevant `ViewController`.
 
 
+### When your browser-based test needs to access the Page
+
+This is a niche use case. Sometimes you might run your tests in a browser
+environment but also want those test to be able to access the Playwright Page
+that controls the browser. This can be useful if, for example, the tests
+manipulate the DOM and you'd like to use the Playwright Page API to make
+interact with or make assertions about the DOM.
+
+In this case, leverage the `usePage` function to interact with the Playwright
+Page object from within the browser-based test.
+
+
+#### usePage
+
+```
+usePage<T, S = void>(pageFunction: (page: Page, args: S) => Promise<T>, args?: S): Promise<T>
+```
+
+Call this function from a browser-based test to interact with the current
+Playwright Page. You may only specify a serializable argument to pass to the function, and
+the function may only return a serializable result. Do not attempt to close over
+any values in your pageFunction; these will not be available in the scope where
+the function is executed.
+
+
 ### Running behaviors programatically
 
 Instead of using the `best` CLI, you can run behaviors via a script that invokes
