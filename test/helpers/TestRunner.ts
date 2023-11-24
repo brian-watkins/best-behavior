@@ -35,7 +35,7 @@ export class TestRunner {
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,
-      viteConfigPath: undefined,
+      viteConfig: undefined,
       reporter: this.testReporter,
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,
