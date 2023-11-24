@@ -42,7 +42,6 @@ export async function run(args: RunArguments): Promise<void> {
   })
 
   const displayBrowser = new PreparedBrowser(playwrightBrowser, {
-    adapterPath: pathToFile("../adapter/displayAdapter.cjs"),
     logger
   })
 

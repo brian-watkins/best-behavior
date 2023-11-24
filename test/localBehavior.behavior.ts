@@ -1,7 +1,7 @@
 import { behavior, effect, example, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
-import { arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations";
+import { arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -53,18 +53,18 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 4,
-            valid: 11,
+            examples: 5,
+            valid: 12,
             invalid: 1,
-            skipped: 0
+            skipped: 1
           }))))
         }),
-        effect("it prints the proper line number in a stack trace from the browser", (context) => {
-          expect(context.logs.errorLines, is(arrayWith([
-            satisfying([
+        effect("it prints the proper line number in the invalid claim from the browser", (context) => {
+          expect(context.reporter.invalidClaims, is(arrayWith([
+            objectWithProperty("stack", assignedWith(satisfying([
               stringContaining("badDisplay.ts:11"),
               stringContaining("http://localhost", { times: 0 })
-            ])
+            ])))
           ])))
         })
       ]

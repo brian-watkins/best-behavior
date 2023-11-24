@@ -10,7 +10,6 @@ await build({
     lib: {
       entry: [
         "./src/behaviorAdapter.ts",
-        "./src/displayAdapter.ts"
       ],
       formats: ["cjs"],
       fileName: (_, entry) => {

@@ -1,21 +1,29 @@
-import { behavior, effect, example, fact, step } from "esbehavior";
-import { useView } from "../../../../runner/src/index.js"
+import { Context, behavior, effect, example, fact, step } from "esbehavior";
+import { View, useView } from "../../../../runner/src/index.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
-const displayContext = {
+const viewControllerContext = {
   init: () => {
     return useView({
-      module: () => import("./testDisplay.js"),
-      export: "superDisplay"
+      controller: { loader: () => import("./displays/testDisplay.js") },
     })
+  }
+}
+
+function viewControllerContextWithArgs(name: string): Context<View<any>> {
+  return {
+    init: () => {
+      return useView({
+        controller: { loader: (name) => import(`./displays/${name}.ts`), args: name }
+      })
+    }
   }
 }
 
 const htmlDependentContext = {
   init: () => {
     return useView({
-      module: () => import("./testDisplay.js"), 
-      export: "funnyDisplay",
+      controller: { loader: () => import("./displays/htmlDisplay.js") },
       html: "./test/fixtures/behaviors/hybrid/testSetup.html"
     })
   }
@@ -23,7 +31,7 @@ const htmlDependentContext = {
 
 export default behavior("display context", [
 
-  example(displayContext)
+  example(viewControllerContext)
     .description("use a display context")
     .script({
       suppose: [
@@ -50,7 +58,7 @@ export default behavior("display context", [
       ]
     }),
 
-  example(displayContext)
+  example(viewControllerContext)
     .description("use a display context again")
     .script({
       suppose: [
@@ -74,6 +82,22 @@ export default behavior("display context", [
         effect("it updates in response to events as expected", async (context) => {
           const counterText = await context.page.locator("[data-counter]").innerText({ timeout: 200 })
           expect(counterText, is("Clicks: 4"))
+        })
+      ]
+    }),
+
+  example(viewControllerContextWithArgs("testDisplay"))
+    .description("use variables in dynamic view controller import")
+    .script({
+      suppose: [
+        fact("a component is rendered", async (context) => {
+          await context.mount({ title: "A dynamically radical thing!" })
+        })
+      ],
+      observe: [
+        effect("it uses the render args as expected", async (context) => {
+          const titleText = await context.page.locator("h1").innerText({ timeout: 200 })
+          expect(titleText, is("A dynamically radical thing!"))
         })
       ]
     }),

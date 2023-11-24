@@ -4,8 +4,7 @@ import { useView } from "../../../../runner/src/index.js";
 const testContext = {
   init: () => {
     return useView({
-      module: () => import("./badDisplay.js"),
-      export: "display"
+      controller: { loader: () => import("./displays/badDisplay.js") },
     })
   }
 }
