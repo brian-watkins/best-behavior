@@ -6,7 +6,7 @@ import { BehaviorBrowser, BrowserBehaviorContext } from "./browser/browserBehavi
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
 import { Logger } from "./logger.js"
-import { createContext, useContext } from "./useContext.js"
+import { createContext } from "./useContext.js"
 export type { LocalBrowser } from "./useLocalBrowser.js"
 export { useLocalBrowser } from "./useLocalBrowser.js"
 export type { ViewController, ViewOptions } from "./useView.js"
@@ -66,8 +66,7 @@ export async function run(args: RunArguments): Promise<void> {
     reporter: args.reporter,
     orderProvider: args.orderProvider,
     failFast: args.failFast,
-    runPickedOnly: args.runPickedOnly,
-    behaviorContext: useContext()
+    runPickedOnly: args.runPickedOnly
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {

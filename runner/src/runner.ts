@@ -12,7 +12,6 @@ export interface RunOptions {
   orderProvider: OrderProvider
   failFast: boolean
   runPickedOnly: boolean
-  behaviorContext: BehaviorContext
 }
 
 export class Runner {
@@ -40,7 +39,7 @@ export class Runner {
 
   private async validateBehaviors(behaviors: Array<BehaviorMetadata>, options: RunOptions): Promise<Summary> {
     const runner = new DocumentationRunner(options)
-    const validator = new SequentialValidator(options.behaviorContext, this.behaviorFactory, runner)
+    const validator = new SequentialValidator(this.behaviorFactory, runner)
 
     return await validator.validate(behaviors, options)
   }
