@@ -66,7 +66,7 @@ picked (via the esbehavior pick functionality):
 ```
 $ best --behaviors 'tests/**/*.behavior.ts' \
        --runInBrowser '**/*.browser.behavior.ts' \
-       --showBrowser
+       --showBrowser \
        --picked
 ```
 
@@ -77,21 +77,13 @@ interpret them itself and you may get unexpected results.
 ## Working with the Browser
 
 Best-Behavior exposes helper functions that enable tests to utilize a
-real web browser.
+real web browser and load local files in that web browser for testing as
+necessary.
 
-
-### When your test needs to load HTML
-
-Sometimes you might write a test that loads some HTML into a web browser,
-interacts with that web page, and then observes the results. Typically, such
-tests integrate large parts of a web application (or even the entire application)
-to describe high-level behaviors. Such tests need a web server to serve the HTML
-and a browser that can be driven by the test to interact with the HTML as
-required.
-
-Best-Behavior manages a Vite development server and a Playwright browser instance
-for you. You can use the `useBrowser` function to obtain a `BrowserTestInstrument`
-that provides access to these managed objects during your test.
+To accomplish this, Best-Behavior manages a Vite development server and
+a Playwright browser instance for you. You can use the `useBrowser` function
+to obtain a `BrowserTestInstrument` that provides an interface to these managed
+objects during your test.
 
 
 #### useBrowser
@@ -99,10 +91,6 @@ that provides access to these managed objects during your test.
 ```
 useBrowser(): Promise<BrowserTestInstrument>
 ```
-
-Call this function to get a reference to a `BrowserTestInstrument` instance. A
-`BrowserTestInstrument` is useful in tests that need to load HTML to generate
-the subject under test.
 
 
 #### BrowserTestInstrument
@@ -112,11 +100,28 @@ interface BrowserTestInstrument {
   page: Page // A Playwright Page
   mountView<RenderArgs>(options: ViewOptions<RenderArgs>): Promise<void>
 }
+
+interface ViewOptions {
+  controller: ViewControllerModuleLoader<RenderArgs, any>
+  renderArgs: RenderArgs
+}
 ```
 
+There are two main things you might want to do with a `BrowserTestInstrument`.
+
+
+### (1) Load HTML to produce the subject under test
+
+Sometimes you might write a test that loads some HTML into a web browser,
+interacts with that web page, and then observes the results. Typically, such
+tests integrate large parts of a web application (or even the entire application)
+to describe high-level behaviors.
+
 You may load local HTML pages in the Playwright browser via the `goto` method of
-the `Page` object. Specify the path to the HTML page on disk, relative to the
-current working directory, and the HTML will be served and processed by Vite.
+the `BrowserTestInstrument`'s `page` object. Specify the path to the HTML page
+on disk, relative to the current working directory, and the HTML will be served
+and processed by Vite.
+
 For example:
 
 ```
@@ -125,27 +130,23 @@ await browser.goto("/tests/fixtures/testPage.html")
 ```
 
 If you need to load any other (non-local) web page, just supply a full url to the
-`goto` method of the `Page` object.
+`goto` method of the `page` object.
 
 
-### When your test exercises a browser-based view in isolation
+### (2) Run JS to mount a a browser-based view for testing
 
 Often it's easier and faster to test parts of your browser-based appliction in
-isolation. You might, for exmple, divide the user interface into sub-components
-or sub-views that you'd like to test individually.
+isolation. You might, for example, divide the user interface into sub-components
+or sub-views that you'd like to test individually. 
+
+With Best-Behavior, you can write a test that runs in node, but exercises a
+view that has been mounted in the browser's DOM. This gives you full access to
+Playwright's API for interacting with the DOM, while allowing the subject
+under test (the view) to be exercised in a real browser environment.
 
 To write these kinds of tests with Best-Behavior, first create a file that contains
-the logic for rendering the browser-based view you'd like to test. This file should
-have a default export that exposes a `ViewController`. 
-
-Each `ViewController` defines defines a `render` function and an optional
-`teardown` function. The `render` function can take (serializable) arguments passed
-in from the test. A `ViewController` be loaded in the browser, so it can
-reference global objects like `window` that will be available in the browser.
-
-Then, leverage the `mountView` function of `BrowserTestInstrument` in your test
-to specify the view controller and supply any arguments that should be passed
-to its render function.
+the mechanism for rendering and tearing down the browser-based view you'd like to
+test. This file should have a default export that exposes a `ViewController`.
 
 
 #### ViewController
@@ -157,37 +158,26 @@ interface ViewController<Args, Handle = void> {
 }
 ```
 
-Implement the render function to define how to display the view under test on a
-web page. The render function accepts serializable arguments that can be specified
-via the `mountView` function of the `BrowserTestInstrument`.
+Each `ViewController` defines defines a `render` function and an optional
+`teardown` function.
+
+The `render` function can take (serializable) arguments passed
+in from the test; it may return any value that will be later be passed to the
+`teardown` function. 
 
 The `teardown` function is lazily called to destroy the existing view with
-the `Handle` object that results from the `render` function, only when
+the object that results from the `render` function, only when
 *another* view is about to be rendered. This allows the view to remain visible
 in the browser in case the test writer wants to inspect it at the end of a test.
 
+A `ViewController` will be loaded and executed in the browser,
+so it can reference global objects like `window` that will be available in
+the browser environment.
 
-#### BrowserTestInstrument.mountView
+To identify the `ViewController` to use during a test, you must pass a
+`ViewControllerModuleLoader` to the `mountView` function of `BrowserTestInstrument`.
 
-```
-mountView<RenderArgs>(options: ViewOptions<RenderArgs>): Promise<void>
-```
-
-
-#### ViewOptions
-
-```
-interface ViewOptions {
-  controller: ViewControllerModuleLoader<RenderArgs, any>
-  renderArgs: RenderArgs
-}
-```
-
-#### ViewControllerModuleLoader
-
-A `ViewControllerModuleLoader` specifies the module to load in the browser
-that exports the `ViewController` to be used in the test. Use the following
-function to construct a `ViewControllerModuleLoader`:
+Use the following function to construct a `ViewControllerModuleLoader`:
 
 ```
 function viewControllerModuleLoader<RenderArgs, LoaderArgs>(
@@ -196,20 +186,11 @@ function viewControllerModuleLoader<RenderArgs, LoaderArgs>(
 ): ViewControllerModuleLoader<RenderArgs, LoaderArgs>
 ```
 
-The loader function must contain a dynamic import statement for a module that
-has a default export with the `ViewController` to be used in this test. 
-
-Here's an example:
-
-```
-const browser = await useBrowser()
-browser.mountView({
-  controller: viewControllerModuleLoader(() => import("./myViewControllerModule.js")),
-  renderArgs: { activity: "Fun Stuff" }
-})
-```
-
-Best-Behavior runs the loader function with the dynamic import in the browser.
+Best-Behavior runs the supplied loader function in the browser, so think
+of the `ViewControllerModuleLoader` as a way to tell the browser what module
+to load during the test. The loader function must use a dynamic import
+statement to load and return a module that has a default export that
+exposes the `ViewController` to be used in this test.
 
 You may use variables in this dynamic import statement, but such use is subject
 to the following limitations:
@@ -229,12 +210,32 @@ import(`./view-${name}.ts`)
 - Patterns for dynamic import can only represent files one level deep.
 
 
-### When your browser-based test needs to access the Page
+#### An Example
+
+Use the `mountView` function of `BrowserTestInstrument` in your test
+to specify a `ViewController` and supply any arguments that should be passed
+to its render function.
+
+```
+const browser = await useBrowser()
+browser.mountView({
+  controller: viewControllerModuleLoader(() => import("./myViewControllerModule.js")),
+  renderArgs: { activity: "Fun Stuff" }
+})
+```
+
+If you specify the full name of the `ViewController` module (ie, if you don't use
+variables in the dynamic import), best-behavior will provide type hints to
+ensure that the render args match what's required by the `ViewController`'s
+render function.
+
+
+## Working with the Page
 
 This is a niche use case. Sometimes you might run your tests in a browser
 environment but also want those test to be able to access the Playwright Page
 that controls the browser. This can be useful if, for example, the tests
-manipulate the DOM and you'd like to use the Playwright Page API to make
+manipulate the DOM and you'd like to use the Playwright Page API to
 interact with or make assertions about the DOM.
 
 In this case, leverage the `usePage` function to interact with the Playwright
@@ -248,13 +249,13 @@ usePage<T, S = void>(pageFunction: (page: Page, args: S) => Promise<T>, args?: S
 ```
 
 Call this function from a browser-based test to interact with the current
-Playwright Page. You may only specify a serializable argument to pass to the function, and
-the function may only return a serializable result. Do not attempt to close over
-any values in your pageFunction; these will not be available in the scope where
-the function is executed.
+Playwright Page. You may only specify a serializable argument to pass to the
+function, and the function may only return a serializable result. Do not
+attempt to close over any other values in your pageFunction; these will not be
+available in the scope where the function is executed.
 
 
-### Running behaviors programatically
+## Running behaviors programatically
 
 Instead of using the `best` CLI, you can run behaviors via a script that invokes
 the `run` function programmatically. This can be useful if you need to provide
