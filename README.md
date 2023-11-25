@@ -110,7 +110,7 @@ interface ViewOptions {
 There are two main things you might want to do with a `BrowserTestInstrument`.
 
 
-### (1) Load HTML to produce the subject under test
+### (1) Load HTML for testing
 
 Sometimes you might write a test that loads some HTML into a web browser,
 interacts with that web page, and then observes the results. Typically, such
@@ -126,14 +126,14 @@ For example:
 
 ```
 const browser = await useBrowser()
-await browser.goto("/tests/fixtures/testPage.html")
+await browser.page.goto("/tests/fixtures/testPage.html")
 ```
 
 If you need to load any other (non-local) web page, just supply a full url to the
 `goto` method of the `page` object.
 
 
-### (2) Run JS to mount a a browser-based view for testing
+### (2) Run JS to mount a browser-based view for testing
 
 Often it's easier and faster to test parts of your browser-based appliction in
 isolation. You might, for example, divide the user interface into sub-components
@@ -196,7 +196,9 @@ You may use variables in this dynamic import statement, but such use is subject
 to the following limitations:
 - You must specify any variables to be passed to the dynamic import like so:
 ```
-viewControllerModuleLoader((context) => import("./views/${context.name}.ts"), { name: "superView" }),
+viewControllerModuleLoader((context) => import("./views/${context.name}.ts"), {
+  name: "superView"
+}),
 ```
 - Any variables used must be serializable.
 - The dynamic import must specify a file extension which is identical with that
@@ -205,7 +207,7 @@ belonging to the file you want to load.
 - If you attempt to import a file from the current directory, then you must
 specify a filename pattern, e.g.
 ```
-import(`./view-${name}.ts`)
+import(`./${name}.view.ts`)
 ```
 - Patterns for dynamic import can only represent files one level deep.
 
