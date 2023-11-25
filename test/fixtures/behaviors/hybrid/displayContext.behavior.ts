@@ -100,6 +100,24 @@ export default behavior("display context", [
     }),
 
   example(browserContext)
+    .description("Use a view controller with async render and teardown")
+    .script({
+      suppose: [
+        fact("a funny component is rendered", async (browser) => {
+          await browser.mountView({
+            controller: viewControllerModuleLoader(() => import("./displays/asyncDisplay.js")),
+            renderArgs: { title: "You are asynchronously fabulous!" }
+          })
+        })
+      ],
+      observe: [
+        effect("the title is rendered as expected", async (display) => {
+          await expect(display.page.locator("h1").innerText({ timeout: 200 }), resolvesTo("You are asynchronously fabulous!"))
+        })
+      ]
+    }),
+
+  example(browserContext)
     .description("variable in dynamic view controller import fails to resolve")
     .script({
       suppose: [
@@ -135,4 +153,5 @@ export default behavior("display context", [
         })
       ]
     })
+
 ])

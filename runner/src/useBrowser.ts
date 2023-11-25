@@ -1,6 +1,6 @@
 import { useContext } from "./useContext.js";
 import { BrowserContext, JSHandle, Page } from "playwright";
-import { ViewControllerModuleLoader } from "./view.js";
+import { ViewController, ViewControllerModuleLoader } from "./view.js";
 import { PlaywrightBrowser, PreparedBrowser } from "./adapters/playwrightBrowser.js";
 import { Logger } from "./logger.js";
 
@@ -52,7 +52,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
   }
 
   async mountView(options: ViewOptions<any>): Promise<void> {
-    let moduleHandle: JSHandle
+    let moduleHandle: JSHandle<{ default: ViewController<any, any> }>
     
     try {
       moduleHandle = await this.page.evaluateHandle(options.controller.loader, options.controller.args)
@@ -61,12 +61,12 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
     }
 
     try {
-      await moduleHandle.evaluateHandle((viewControllerModule, context) => {
+      await moduleHandle.evaluateHandle(async (viewControllerModule, context) => {
         if (window.__bb_viewController !== undefined) {
-          window.__bb_viewController.teardown?.(window.__bb_viewHandle)
+          await window.__bb_viewController.teardown?.(window.__bb_viewHandle)
         }
         window.__bb_viewController = viewControllerModule["default"]
-        window.__bb_viewHandle = window.__bb_viewController.render(context.renderArgs)
+        window.__bb_viewHandle = await window.__bb_viewController.render(context.renderArgs)
       }, {
         renderArgs: options.renderArgs
       })

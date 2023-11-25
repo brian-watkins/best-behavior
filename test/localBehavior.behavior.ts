@@ -42,7 +42,7 @@ export default behavior("running behaviors in the local JS environment", [
     }),
 
   example(testRunnerContext({ browserGlob: undefined }))
-    .description("Local behavior that uses a display context")
+    .description("Local behavior that uses a view controller")
     .script({
       perform: [
         step("validate the behaviors", async (context) => {
@@ -53,8 +53,8 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 6,
-            valid: 12,
+            examples: 7,
+            valid: 14,
             invalid: 2,
             skipped: 2
           }))))
