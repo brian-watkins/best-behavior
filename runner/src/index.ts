@@ -1,16 +1,17 @@
 import url from "url"
 import { OrderProvider, Reporter } from "esbehavior"
 import { ViteLocalServer } from "./adapters/viteServer.js"
-import { PlaywrightBrowser, PreparedBrowser, browserLogger } from "./adapters/playwrightBrowser.js"
+import { PlaywrightBrowser, browserLogger } from "./adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browser/browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
 import { Logger } from "./logger.js"
 import { createContext } from "./useContext.js"
-export type { LocalBrowser } from "./useLocalBrowser.js"
-export { useLocalBrowser } from "./useLocalBrowser.js"
-export type { ViewController, ViewOptions } from "./useView.js"
-export { useView, View } from "./useView.js"
+import { PlaywrightTestInstrument } from "./useBrowser.js"
+export type { BrowserTestInstrument } from "./useBrowser.js"
+export { useBrowser } from "./useBrowser.js"
+export { viewControllerModuleLoader } from "./view.js"
+export type { ViewController, ViewControllerModuleLoader } from "./view.js"
 export type { Logger } from "./logger.js"
 
 export interface RunArguments {
@@ -37,18 +38,10 @@ export async function run(args: RunArguments): Promise<void> {
 
   const logger = browserLogger(viteServer.host, args.logger)
 
-  const basicBrowser = new PreparedBrowser(playwrightBrowser, {
-    logger
-  })
-
-  const displayBrowser = new PreparedBrowser(playwrightBrowser, {
-    logger
-  })
+  const browser = new PlaywrightTestInstrument(playwrightBrowser, viteServer.host, logger)
 
   createContext({
-    localServer: viteServer,
-    basicBrowser,
-    displayBrowser
+    browser
   })
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {

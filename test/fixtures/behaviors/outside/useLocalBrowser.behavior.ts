@@ -1,15 +1,15 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
 import { expect, resolvesTo } from "great-expectations";
-import { useLocalBrowser } from "../../../../runner/src/index.js";
+import { useBrowser } from "../../../../runner/src/index.js";
 
-export default behavior("useLocalBrowser", [
+export default behavior("useBrowser", [
 
-  example({ init: () => useLocalBrowser() })
+  example({ init: () => useBrowser() })
     .description("uses a browser with the local server")
     .script({
       suppose: [
-        fact("it loads the local page", async (context) => {
-          await context.loadLocal("/test/fixtures/src/index.html")
+        fact("it loads pages relative to the root", async (context) => {
+          await context.page.goto("/test/fixtures/src/index.html")
         })
       ],
       perform: [

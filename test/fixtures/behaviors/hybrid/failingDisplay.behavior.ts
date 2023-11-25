@@ -1,22 +1,18 @@
 import { behavior, example, fact, step } from "esbehavior";
-import { useView } from "../../../../runner/src/index.js";
+import { useBrowser, viewControllerModuleLoader } from "../../../../runner/src/index.js";
 
-const testContext = {
-  init: () => {
-    return useView({
-      controller: { loader: () => import("./displays/badDisplay.js") },
-    })
-  }
-}
 
 export default behavior("failing display", [
 
-  example(testContext)
+  example({ init: () => useBrowser() })
     .description("the display fails to mount")
     .script({
       suppose: [
         fact("the display renders", async (context) => {
-          await context.mount({ name: "blah" })
+          await context.mountView({
+            controller: viewControllerModuleLoader(() => import("./displays/badDisplay.js")),
+            renderArgs: { name: "blah" }
+          })
         })
       ],
       perform: [

@@ -1,4 +1,4 @@
-import { Browser, BrowserContext, Page, chromium } from "playwright";
+import { Browser, BrowserContext, BrowserContextOptions, Page, chromium } from "playwright";
 import { Logger } from "../logger.js";
 import { pathInNodeModules, pathTo } from "../path.js";
 
@@ -37,12 +37,12 @@ export class PlaywrightBrowser {
     await this.browser?.close()
   }
 
-  async newBrowserContext(): Promise<BrowserContext> {
+  async newBrowserContext(options?: BrowserContextOptions): Promise<BrowserContext> {
     if (!this.browser) {
       await this.start()
     }
 
-    return this.browser!.newContext()
+    return this.browser!.newContext(options)
   }
 }
 
@@ -50,16 +50,19 @@ const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
+  baseUrl?: string
   logger: Logger
 }
 
 export class PreparedBrowser {
-  private page: Page | undefined
+  protected _page: Page | undefined
 
   constructor(private browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
 
   protected async getContext(): Promise<BrowserContext> {
-    const context = await this.browser.newBrowserContext()
+    const context = await this.browser.newBrowserContext({
+      baseURL: this.options.baseUrl
+    })
     
     if (this.options.adapterPath) {
       await context.addInitScript({ path: this.options.adapterPath })
@@ -81,13 +84,13 @@ export class PreparedBrowser {
   }
 
   async getPage(): Promise<Page> {
-    if (this.page !== undefined) {
-      return this.page
+    if (this._page !== undefined) {
+      return this._page
     }
 
     const context = await this.getContext()
-    this.page = await context.newPage()
+    this._page = await context.newPage()
 
-    return this.page
+    return this._page
   }
 }

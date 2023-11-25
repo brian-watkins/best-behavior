@@ -21,8 +21,8 @@ export declare global {
     esb_recordAction(result: ClaimResult): void
     esb_recordObservation(result: ClaimResult): void
     __bb_pageBinding(pageFunction: string, arg: any): Promise<any>
-    currentHandle: any | undefined = undefined
-    currentContext: ViewController<any> | undefined = undefined
+    __bb_viewHandle: any | undefined = undefined
+    __bb_viewController: ViewController<any> | undefined = undefined
   }
 
   var __best_behavior_context: BehaviorContext

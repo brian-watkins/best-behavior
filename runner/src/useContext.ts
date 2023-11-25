@@ -1,22 +1,17 @@
-import { LocalServer } from "./localServer.js"
-import { PreparedBrowser } from "./adapters/playwrightBrowser.js"
+import { PlaywrightTestInstrument } from "./useBrowser.js"
 
 export class BehaviorContext {
   constructor (
-    readonly localServer: LocalServer,
-    readonly basicBrowser: PreparedBrowser,
-    readonly displayBrowser: PreparedBrowser
+    readonly browser: PlaywrightTestInstrument
   ) { }
 }
 
 export interface ContextElements {
-  localServer: LocalServer,
-  basicBrowser: PreparedBrowser,
-  displayBrowser: PreparedBrowser
+  browser: PlaywrightTestInstrument,
 }
 
 export function createContext(elements: ContextElements) {
-  globalThis.__best_behavior_context = new BehaviorContext(elements.localServer, elements.basicBrowser, elements.displayBrowser)
+  globalThis.__best_behavior_context = new BehaviorContext(elements.browser)
 }
 
 export function useContext(): BehaviorContext {

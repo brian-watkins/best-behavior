@@ -1,42 +1,33 @@
 import { Context, behavior, effect, example, fact, step } from "esbehavior";
-import { View, useView } from "../../../../runner/src/index.js"
+import { BrowserTestInstrument, useBrowser, viewControllerModuleLoader } from "../../../../runner/src/index.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
-const viewControllerContext = {
-  init: () => {
-    return useView({
-      controller: { loader: () => import("./displays/testDisplay.js") },
-    })
-  }
+const browserContext: Context<BrowserTestInstrument> = {
+  init: () => useBrowser()
 }
 
-function viewControllerContextWithArgs(name: string): Context<View<any>> {
-  return {
-    init: () => {
-      return useView({
-        controller: { loader: (name) => import(`./displays/${name}.ts`), args: name }
-      })
-    }
-  }
+const viewControllerModule = viewControllerModuleLoader(() => import("./displays/testDisplay.js"))
+
+function viewControllerModuleWithArgs(name: string) {
+  return viewControllerModuleLoader((context) => import(`./displays/${context.name}.ts`), {
+    name
+  })
 }
 
-const htmlDependentContext = {
-  init: () => {
-    return useView({
-      controller: { loader: () => import("./displays/htmlDisplay.js") },
-      html: "./test/fixtures/behaviors/hybrid/testSetup.html"
-    })
-  }
-}
+const htmlViewControllerModule = viewControllerModuleLoader(() => import("./displays/htmlDisplay.js"))
+
 
 export default behavior("display context", [
 
-  example(viewControllerContext)
+  example(browserContext)
     .description("use a display context")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mount({ title: "Something cool" })
+          await context.mountView({
+            controller: viewControllerModule,
+            renderArgs: { title: "Something cool" }
+          })
         })
       ],
       perform: [
@@ -58,12 +49,15 @@ export default behavior("display context", [
       ]
     }),
 
-  example(viewControllerContext)
+  example(browserContext)
     .description("use a display context again")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mount({ title: "Another cool thing!" })
+          await context.mountView({
+            controller: viewControllerModule,
+            renderArgs: { title: "Another cool thing!" }
+          })
         })
       ],
       perform: [
@@ -86,12 +80,15 @@ export default behavior("display context", [
       ]
     }),
 
-  example(viewControllerContextWithArgs("testDisplay"))
+  example(browserContext)
     .description("use variables in dynamic view controller import")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mount({ title: "A dynamically radical thing!" })
+          await context.mountView({
+            controller: viewControllerModuleWithArgs("testDisplay"),
+            renderArgs: { title: "A dynamically radical thing!" }
+          })
         })
       ],
       observe: [
@@ -102,12 +99,16 @@ export default behavior("display context", [
       ]
     }),
 
-  example(htmlDependentContext)
+  example(browserContext)
     .description("Use a display context that depends on loaded html")
     .script({
       suppose: [
-        fact("a funny component is rendered", async (display) => {
-          display.mount("You are cool!")
+        fact("a funny component is rendered", async (browser) => {
+          await browser.page.goto("./test/fixtures/behaviors/hybrid/testSetup.html")
+          await browser.mountView({
+            controller: htmlViewControllerModule,
+            renderArgs: "You are cool!"
+          })
         })
       ],
       observe: [

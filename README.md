@@ -48,15 +48,15 @@ $ best --behaviors 'tests/**/*.behavior.ts'
 
 ```
 Options:
-  --help            Show help
-  --version         Show version number
-  --behaviors       glob that matches behaviors; relative to working dir  [required]
-  --runInBrowser    glob that matches behaviors to run in browser; subset of behaviors
-  --failFast        stop on first invalid claim
-  --picked          run only picked behaviors and examples
-  --seed            specify seed for random ordering
-  --showBrowser     make the browser visible and keep it open
-  --viteConfigPath  path to vite config file; relative to working dir
+  --help          Show help
+  --version       Show version number
+  --behaviors     glob that matches behaviors; relative to working dir  [required]
+  --runInBrowser  glob that matches behaviors to run in browser; subset of behaviors
+  --failFast      stop on first invalid claim
+  --picked        run only picked behaviors and examples
+  --seed          specify seed for random ordering
+  --showBrowser   make the browser visible and keep it open
+  --viteConfig    path to vite config file; relative to working dir
 ```
 
 For example, to run some behaviors in the browser and open the browser
@@ -90,35 +90,41 @@ and a browser that can be driven by the test to interact with the HTML as
 required.
 
 Best-Behavior manages a Vite development server and a Playwright browser instance
-for you. You can use the `useLocalBrowser` function to obtain a `LocalBrowser`
-that provide access to these managed objects during your test.
+for you. You can use the `useBrowser` function to obtain a `BrowserTestInstrument`
+that provides access to these managed objects during your test.
 
 
-#### useLocalBrowser
-
-```
-useLocalBrowser(): Promise<LocalBrowser>
-```
-
-Call this function to get a reference to a `LocalBrowser` instance. A `LocalBrowser`
-is useful in tests that need to load HTML to generate the subject under test.
-
-
-#### LocalBrowser
+#### useBrowser
 
 ```
-interface LocalBrowser {
+useBrowser(): Promise<BrowserTestInstrument>
+```
+
+Call this function to get a reference to a `BrowserTestInstrument` instance. A
+`BrowserTestInstrument` is useful in tests that need to load HTML to generate
+the subject under test.
+
+
+#### BrowserTestInstrument
+
+```
+interface BrowserTestInstrument {
   page: Page // A Playwright Page
-  loadLocal(path: string): Promise<void>
+  mountView<RenderArgs>(options: ViewOptions<RenderArgs>): Promise<void>
 }
 ```
 
-Local HTML page in the Playwright browser via the `loadLocal`
-method. Specify the path to the HTML page on disk, relative to the current working
-directory, and the HTML will be served by Vite and available in a Playwright
-Page object via the LocalBrowser's `Page` property.
+You may load local HTML pages in the Playwright browser via the `goto` method of
+the `Page` object. Specify the path to the HTML page on disk, relative to the
+current working directory, and the HTML will be served and processed by Vite.
+For example:
 
-If you need to load any other (non-local) web page, you can just use the
+```
+const browser = await useBrowser()
+await browser.goto("/tests/fixtures/testPage.html")
+```
+
+If you need to load any other (non-local) web page, just supply a full url to the
 `goto` method of the `Page` object.
 
 
@@ -130,57 +136,16 @@ or sub-views that you'd like to test individually.
 
 To write these kinds of tests with Best-Behavior, first create a file that contains
 the logic for rendering the browser-based view you'd like to test. This file should
-export a `ViewController` which defines a `render` function and an optional
+have a default export that exposes a `ViewController`. 
+
+Each `ViewController` defines defines a `render` function and an optional
 `teardown` function. The `render` function can take (serializable) arguments passed
-in from the test. Exports from this file will be loaded in the browser, so it can
+in from the test. A `ViewController` be loaded in the browser, so it can
 reference global objects like `window` that will be available in the browser.
 
-Then, leverage the `useView` function in your test to initialize the `ViewController`
-you need and obtain access to a `View` object. The `View` object provides a `mount`
-function that accepts arguments to pass to the `render` function of the
-`ViewController`. When `mount` is called, the `render` function will be invoked
-in the browser with the provided arguments.
-
-
-#### useView
-
-```
-useView(options: ViewOptions): Promise<View>
-```
-
-Call this function to initialize a `ViewController` for use with this test and
-obtain a reference to a corresponding `View`.
-
-
-#### ViewOptions
-
-```
-interface ViewOptions {
-  module: () => Promise<T> // async import of the module that exports a ViewController
-  export: string // the name of the ViewController export to use
-  html?: string // path to html to load, relative to working dir
-}
-```
-
-Use an asynchronous import statement to identify the module that exports the
-`ViewController` to be used in this test. In addition, you can optionally specify
-a path to an HTML file that will be loaded on the page. Use this HTML file to
-load stylesheets or do any other setup. The HTML will be processed by the Vite
-development server managed by Best-Behavior.
-
-Here's an example:
-
-```
-useView({
-  module: => () => import("./myViewControllerModule.ts"),
-  export: "myViewController"
-})
-```
-
-Best-Behavior uses the asynchronous import to enable type checking during
-development and to find the path to the module to load in the browser. The module
-will be served to the browser by Vite and so anything that can be processed by
-Vite (like Typescript) is fine to use.
+Then, leverage the `mountView` function of `BrowserTestInstrument` in your test
+to specify the view controller and supply any arguments that should be passed
+to its render function.
 
 
 #### ViewController
@@ -194,7 +159,7 @@ interface ViewController<Args, Handle = void> {
 
 Implement the render function to define how to display the view under test on a
 web page. The render function accepts serializable arguments that can be specified
-via the `mount` function of the `View`.
+via the `mountView` function of the `BrowserTestInstrument`.
 
 The `teardown` function is lazily called to destroy the existing view with
 the `Handle` object that results from the `render` function, only when
@@ -202,16 +167,66 @@ the `Handle` object that results from the `render` function, only when
 in the browser in case the test writer wants to inspect it at the end of a test.
 
 
-#### View
+#### BrowserTestInstrument.mountView
 
 ```
-interface View {
-  mount(args: ViewControllerRenderArgs): Promise<void>
+mountView<RenderArgs>(options: ViewOptions<RenderArgs>): Promise<void>
+```
+
+
+#### ViewOptions
+
+```
+interface ViewOptions {
+  controller: ViewControllerModuleLoader<RenderArgs, any>
+  renderArgs: RenderArgs
 }
 ```
 
-Call the `mount` function with serializable arguments that will be passed to the
-`render` function of the relevant `ViewController`.
+#### ViewControllerModuleLoader
+
+A `ViewControllerModuleLoader` specifies the module to load in the browser
+that exports the `ViewController` to be used in the test. Use the following
+function to construct a `ViewControllerModuleLoader`:
+
+```
+function viewControllerModuleLoader<RenderArgs, LoaderArgs>(
+  loader: (args: LoaderArgs) => Promise<{"default": ViewController<RenderArgs, any>}>,
+  args?: LoaderArgs
+): ViewControllerModuleLoader<RenderArgs, LoaderArgs>
+```
+
+The loader function must contain a dynamic import statement for a module that
+has a default export with the `ViewController` to be used in this test. 
+
+Here's an example:
+
+```
+const browser = await useBrowser()
+browser.mountView({
+  controller: viewControllerModuleLoader(() => import("./myViewControllerModule.js")),
+  renderArgs: { activity: "Fun Stuff" }
+})
+```
+
+Best-Behavior runs the loader function with the dynamic import in the browser.
+
+You may use variables in this dynamic import statement, but such use is subject
+to the following limitations:
+- You must specify any variables to be passed to the dynamic import like so:
+```
+viewControllerModuleLoader((context) => import("./views/${context.name}.ts"), { name: "superView" }),
+```
+- Any variables used must be serializable.
+- The dynamic import must specify a file extension which is identical with that
+belonging to the file you want to load.
+- The dynamic import must be a relative path.
+- If you attempt to import a file from the current directory, then you must
+specify a filename pattern, e.g.
+```
+import(`./view-${name}.ts`)
+```
+- Patterns for dynamic import can only represent files one level deep.
 
 
 ### When your browser-based test needs to access the Page
@@ -261,7 +276,7 @@ interface RunArguments {
   browserBehaviorsGlob: string | undefined // subset of behaviorsGlob
   failFast: boolean
   runPickedOnly: boolean
-  viteConfigPath: string | undefined // relative to working dir
+  viteConfig: string | undefined // relative to working dir
   showBrowser: boolean
   reporter: Reporter // from esbehavior
   orderProvider: OrderProvider // from esbehavior
