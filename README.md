@@ -198,7 +198,7 @@ to the following limitations:
 ```
 viewControllerModuleLoader((context) => import("./views/${context.name}.ts"), {
   name: "superView"
-}),
+}) // would import './views/superView.ts'
 ```
 - Any variables used must be serializable.
 - The dynamic import must specify a file extension which is identical with that
