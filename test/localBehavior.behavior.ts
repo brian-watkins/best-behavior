@@ -53,14 +53,17 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 5,
+            examples: 6,
             valid: 12,
-            invalid: 1,
-            skipped: 1
+            invalid: 2,
+            skipped: 2
           }))))
         }),
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
+            objectWithProperty("stack", assignedWith(satisfying([
+              stringContaining("Unable to load the view controller module in the browser!")
+            ]))),
             objectWithProperty("stack", assignedWith(satisfying([
               stringContaining("badDisplay.ts:11"),
               stringContaining("http://localhost", { times: 0 })

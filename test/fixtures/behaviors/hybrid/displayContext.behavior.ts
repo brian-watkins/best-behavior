@@ -100,6 +100,24 @@ export default behavior("display context", [
     }),
 
   example(browserContext)
+    .description("variable in dynamic view controller import fails to resolve")
+    .script({
+      suppose: [
+        fact("a component is rendered", async (context) => {
+          await context.mountView({
+            controller: viewControllerModuleWithArgs("does-not-exist"),
+            renderArgs: { title: "Something funny!" }
+          })
+        })
+      ],
+      observe: [
+        effect("it will skip this", async (context) => {
+          expect(7, is(5))
+        })
+      ]
+    }),
+
+  example(browserContext)
     .description("Use a display context that depends on loaded html")
     .script({
       suppose: [

@@ -57,7 +57,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
     try {
       moduleHandle = await this.page.evaluateHandle(options.controller.loader, options.controller.args)
     } catch (err) {
-      throw new Error("Unable to load view controller module! If you are using variables in your import statement, make sure they are being passed via the `args` parameter. Furthermore, due to limitations in dynamic import processing, you can only use a relative path, and you must specify the exact file extension that matches the file you want to load.")
+      throw new Error("Unable to load the view controller module in the browser! If you are using variables in your import statement, make sure they are specified via the `args` parameter. Also, check that the dynamic import path is relative and specifies the exact extension of the file you want to load. See the README for other limitations of dynamic import variables.")
     }
 
     try {
