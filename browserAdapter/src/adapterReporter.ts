@@ -1,4 +1,7 @@
 import { ClaimResult, Failure, Reporter, Summary } from "esbehavior";
+import type { BehaviorBrowserWindow } from "../../runner/src/browser/behaviorBrowserWindow";
+
+declare let window: BehaviorBrowserWindow
 
 // this needs to just handle stuff from the example
 export class AdapterReporter implements Reporter {
@@ -19,25 +22,25 @@ export class AdapterReporter implements Reporter {
     
   }
   startExample(description?: string | undefined): void {
-    window.esb_startExample(description)
+    window.__bb_startExample(description)
   }
   endExample(): void {
-    window.esb_endExample()
+    window.__bb_endExample()
   }
   startScript(location: string): void {
-    window.esb_startScript(location)
+    window.__bb_startScript(location)
   }
   endScript(): void {
-    window.esb_endScript()
+    window.__bb_endScript()
   }
   recordPresupposition(result: ClaimResult): void {
-    window.esb_recordPresupposition(result)
+    window.__bb_recordPresupposition(result)
   }
   recordAction(result: ClaimResult): void {
-    window.esb_recordAction(result)
+    window.__bb_recordAction(result)
   }
   recordObservation(result: ClaimResult): void {
-    window.esb_recordObservation(result)
+    window.__bb_recordObservation(result)
   }
 
 }

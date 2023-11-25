@@ -4,6 +4,13 @@ import { ViewController, ViewControllerModuleLoader } from "./view.js";
 import { PlaywrightBrowser, PreparedBrowser } from "./adapters/playwrightBrowser.js";
 import { Logger } from "./logger.js";
 
+interface BrowserTestInstrumentWindow extends Window {
+  __bb_viewHandle: any | undefined
+  __bb_viewController: ViewController<any, any> | undefined
+}
+
+declare let window: BrowserTestInstrumentWindow
+
 export async function useBrowser(): Promise<BrowserTestInstrument> {
   const browser = useContext().browser
   await browser.preparePage()
@@ -31,7 +38,8 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
   protected async getContext(): Promise<BrowserContext> {
     const context = await super.getContext()
 
-    await context.addInitScript({ content: `
+    await context.addInitScript({
+      content: `
       window["__vite_ssr_dynamic_import__"] = (path) => { const url = new URL(path, "${this.baseUrl}"); return import(url.href); };
       window["__vite_ssr_import_0__"] = { default: (map, key) => map[key]() };
     ` })
@@ -41,7 +49,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
 
   async preparePage(): Promise<void> {
     const page = await this.getPage()
-    
+
     if (page.url() !== "about:blank") {
       await page.goto("about:blank")
     }
@@ -53,7 +61,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
 
   async mountView(options: ViewOptions<any>): Promise<void> {
     let moduleHandle: JSHandle<{ default: ViewController<any, any> }>
-    
+
     try {
       moduleHandle = await this.page.evaluateHandle(options.controller.loader, options.controller.args)
     } catch (err) {

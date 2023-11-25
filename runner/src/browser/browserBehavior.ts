@@ -1,9 +1,11 @@
-import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
+import { Behavior, BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary, ValidationMode } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
 import { PreparedBrowser } from "../adapters/playwrightBrowser.js"
 import { BehaviorMetadata } from "../behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
-import { BehaviorData } from "../../../types/types.js";
+import { BehaviorBrowserWindow, BehaviorData } from "./behaviorBrowserWindow.js"
+
+declare let window: BehaviorBrowserWindow
 
 export class BrowserBehaviorContext {
   constructor(private localServer: LocalServer, private behaviorBrowser: BehaviorBrowser) { }
@@ -11,7 +13,7 @@ export class BrowserBehaviorContext {
   async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
     const page = await this.behaviorBrowser.getPage()
 
-    const data: BehaviorData = await page.evaluate((path) => window.loadBehavior(path), this.localServer.urlForPath(metadata.path))
+    const data: BehaviorData = await page.evaluate((path) => window.__bb_loadBehavior(path), this.localServer.urlForPath(metadata.path))
 
     return (b: BehaviorOptions) => {
       b.validationMode = data.validationMode
@@ -33,7 +35,7 @@ class BrowserExample implements Example {
 
   validate(reporter: Reporter, options: ExampleValidationOptions): Promise<Summary> {
     this.browserReporter.setReporter(reporter)
-    return this.page.evaluate((args) => window.validateExample(args.id, args.failFast), {
+    return this.page.evaluate((args) => window.__bb_validateExample(args.id, args.failFast), {
       id: this.id,
       failFast: options.failFast
     })
@@ -41,7 +43,7 @@ class BrowserExample implements Example {
 
   skip(reporter: Reporter, _: ExampleValidationOptions): Promise<Summary> {
     this.browserReporter.setReporter(reporter)
-    return this.page.evaluate((args) => window.skipExample(args.id), {
+    return this.page.evaluate((args) => window.__bb_skipExample(args.id), {
       id: this.id
     })
   }
@@ -71,26 +73,26 @@ class BrowserReporter {
   constructor() { }
 
   async decorateContext(context: BrowserContext): Promise<void> {
-    await context.exposeFunction("esb_startExample", (description: string | undefined) => {
+    await context.exposeFunction("__bb_startExample", (description: string | undefined) => {
       this.reporter?.startExample(description)
     })
-    await context.exposeFunction("esb_endExample", () => {
+    await context.exposeFunction("__bb_endExample", () => {
       this.reporter?.endExample()
     })
-    await context.exposeFunction("esb_startScript", (location: string) => {
+    await context.exposeFunction("__bb_startScript", (location: string) => {
       this.setCurrentOrigin(location)
       this.reporter?.startScript(location.replace(this.currentOrigin, ""))
     })
-    await context.exposeFunction("esb_endScript", () => {
+    await context.exposeFunction("__bb_endScript", () => {
       this.reporter?.endScript()
     })
-    await context.exposeFunction("esb_recordPresupposition", (result: ClaimResult) => {
+    await context.exposeFunction("__bb_recordPresupposition", (result: ClaimResult) => {
       this.reporter?.recordPresupposition(this.fixStackIfNecessary(result))
     })
-    await context.exposeFunction("esb_recordAction", (result: ClaimResult) => {
+    await context.exposeFunction("__bb_recordAction", (result: ClaimResult) => {
       this.reporter?.recordAction(this.fixStackIfNecessary(result))
     })
-    await context.exposeFunction("esb_recordObservation", (result: ClaimResult) => {
+    await context.exposeFunction("__bb_recordObservation", (result: ClaimResult) => {
       this.reporter?.recordObservation(this.fixStackIfNecessary(result))
     })
   }

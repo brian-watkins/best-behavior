@@ -1,8 +1,10 @@
 import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
-import { BehaviorData } from "../../types/types.js"
+import type { BehaviorBrowserWindow, BehaviorData } from "../../runner/src/browser/behaviorBrowserWindow.js"
 
-window.loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
+declare let window: BehaviorBrowserWindow
+
+window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
   const behaviorModule = await import(behaviorModuleUrl)
 
   const configurableBehavior = behaviorModule.default
@@ -12,10 +14,8 @@ window.loadBehavior = async function (behaviorModuleUrl: string): Promise<Behavi
     configurableBehavior(options) :
     configurableBehavior
 
-  window.currentBehavior = behavior
-
   const configuredExamples: Array<ConfiguredExample> = behavior.examples.map(configureExample)
-  this.currentExamples = configuredExamples.map(ex => ex.example)
+  this.__bb_currentExamples = configuredExamples.map(ex => ex.example)
 
   return {
     description: behavior.description,
@@ -24,13 +24,13 @@ window.loadBehavior = async function (behaviorModuleUrl: string): Promise<Behavi
   }
 }
 
-window.validateExample = async function (id: number, failFast: boolean): Promise<Summary> {
-  const example = window.currentExamples[id]
+window.__bb_validateExample = async function (id: number, failFast: boolean): Promise<Summary> {
+  const example = window.__bb_currentExamples[id]
   return example.validate(new AdapterReporter(), { failFast, orderProvider: defaultOrder() })
 }
 
-window.skipExample = async function (id: number): Promise<Summary> {
-  const example = window.currentExamples[id]
+window.__bb_skipExample = async function (id: number): Promise<Summary> {
+  const example = window.__bb_currentExamples[id]
   return example.skip(new AdapterReporter(), { failFast: false, orderProvider: defaultOrder() })
 }
 
