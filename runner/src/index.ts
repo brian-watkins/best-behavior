@@ -16,6 +16,7 @@ export type { Logger } from "./logger.js"
 
 export interface RunArguments {
   behaviorsGlob: string
+  behaviorFilter: string | undefined,
   browserBehaviorsGlob: string | undefined
   failFast: boolean
   runPickedOnly: boolean
@@ -55,11 +56,13 @@ export async function run(args: RunArguments): Promise<void> {
 
   await runner.run({
     behaviorPathPattern: args.behaviorsGlob,
+    behaviorFilter: args.behaviorFilter,
     browserBehaviorPathPattern: args.browserBehaviorsGlob,
     reporter: args.reporter,
     orderProvider: args.orderProvider,
     failFast: args.failFast,
-    runPickedOnly: args.runPickedOnly
+    runPickedOnly: args.runPickedOnly,
+    logger: args.logger
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {

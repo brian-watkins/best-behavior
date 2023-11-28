@@ -17,6 +17,7 @@ export class TestRunner {
   private testLogger = new TestLogger()
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
+  private behaviorFilter: string | undefined
 
   constructor(private options: TestRunnerOptions) { }
 
@@ -28,9 +29,14 @@ export class TestRunner {
     this.shouldRunPickedExamplesOnly = shouldRunPickedOnly
   }
 
+  setBehaviorFilter(filter: string) {
+    this.behaviorFilter = filter
+  }
+
   async runBehaviors(pattern: string): Promise<void> {
     await run({
       behaviorsGlob: `./test/fixtures/behaviors/${pattern}`,
+      behaviorFilter: this.behaviorFilter,
       browserBehaviorsGlob: this.options.browserGlob,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
@@ -58,6 +64,12 @@ class TestReporter implements Reporter {
   currentBehavior: BehaviorOutput | undefined
   currentExample: ExampleOutput | undefined
   invalidClaims: Array<ClaimOutput> = []
+  terminatedWithError: Failure | undefined
+  private shouldTerminate: boolean = false
+
+  expectTermination() {
+    this.shouldTerminate = true
+  }
 
   start(orderDescription: string): void {
     this.orderDescription = orderDescription
@@ -66,7 +78,10 @@ class TestReporter implements Reporter {
     this.summary = summary
   }
   terminate(error: Failure): void {
-    console.log("TEST REPORTER TERMINATE", error)
+    if (!this.shouldTerminate) {
+      console.log("TEST REPORTER TERMINATED UNEXPECTEDLY", error)
+    }
+    this.terminatedWithError = error
   }
   startBehavior(description: string): void {
     this.currentBehavior = {

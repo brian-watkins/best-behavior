@@ -1,10 +1,27 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayWith, assignedWith, equalTo, expect, is } from "great-expectations"
+import { arrayWith, assignedWith, equalTo, expect, is, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
 
 
 export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
+
+  example(testRunnerContext(options))
+    .description("no behaviors found")
+    .script({
+      perform: [
+        step("attempt to validate behaviors", async (context) => {
+          await context.runBehaviors("**/no/behaviors/here/*.ts")
+        })
+      ],
+      observe: [
+        effect("it logs that no behaviors have been found", (context) => {
+          expect(context.logs.infoLines, is(arrayWith([
+            stringContaining("No behaviors found")
+          ])))
+        })
+      ]
+    }),
 
   example(testRunnerContext(options))
     .description("running valid and skipped behaviors in the specified order")
@@ -279,6 +296,63 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             skipped: 4
           }))))
         })
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("when a behavior filter is provided")
+    .script({
+      suppose: [
+        fact("the runner is set to run only certain behaviors", (context) => {
+          context.setBehaviorFilter("valid.behavior")
+        })
+      ],
+      perform: [
+        step("validate behaviors", async (context) => {
+          await context.runBehaviors("**/common/valid/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it reports on the examples from the filtered behaviors only", (context) => {
+          expect(context.reporter.output, is(arrayWith([
+            expectedBehavior("Behavior 1", [
+              "second",
+              "first",
+            ])
+          ])))
+        }),
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 2,
+            valid: 2,
+            invalid: 0,
+            skipped: 0
+          }))))
+        })
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("when an invalid behavior filter is provided")
+    .script({
+      suppose: [
+        fact("the runner uses an invalid behavior filter", (context) => {
+          context.setBehaviorFilter("([abc")
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("validate behaviors", async (context) => {
+          await context.runBehaviors("**/common/valid/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(stringContaining(
+            "Unable to compile behavior filter regular expression!"
+          ))))
+        }),
       ]
     })
 

@@ -1,7 +1,7 @@
 import { behavior, effect, example, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
-import { arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -26,9 +26,9 @@ export default behavior("running behaviors in the local JS environment", [
           }))))
         }),
         effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
-          expect(context.logs.infoLines, is(equalTo([
-            "Hello from the browser!"
-          ])))
+          expect(context.logs.infoLines, is(arrayContaining(
+            equalTo("Hello from the browser!")
+          )))
         }),
         effect("it prints the proper line number in a stack trace from the browser", (context) => {
           expect(context.logs.errorLines, is(arrayWith([

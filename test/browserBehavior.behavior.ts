@@ -1,6 +1,6 @@
 import { behavior, effect, example, step } from "esbehavior";
 import { BehaviorOutput, ClaimOutput, testRunnerContext } from "./helpers/TestRunner.js";
-import { Matcher, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
+import { Matcher, arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 import { expectedBehavior } from "./helpers/matchers.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 
@@ -42,9 +42,9 @@ export default behavior("running behaviors in the browser environment", [
           }))))
         }),
         effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
-          expect(context.logs.infoLines, is(equalTo([
-            "I am in a browser!!!"
-          ])))
+          expect(context.logs.infoLines, is(arrayContaining(
+            equalTo("I am in a browser!!!")
+          )))
         })
       ]
     }),
