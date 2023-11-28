@@ -1,6 +1,7 @@
 import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
 import { BehaviorDataErrorCode, type BehaviorBrowserWindow, type BehaviorData } from "../../runner/src/browser/behaviorBrowserWindow.js"
+import { isConfigurableBehaviorLike } from "../../runner/src/behaviorMetadata.js"
 
 declare let window: BehaviorBrowserWindow
 
@@ -15,6 +16,13 @@ window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<B
   }
 
   const configurableBehavior = behaviorModule.default
+
+  if (!isConfigurableBehaviorLike(configurableBehavior)) {
+    return {
+      type: "error",
+      reason: BehaviorDataErrorCode.NOT_A_BEHAVIOR
+    }
+  }
 
   const options = new BehaviorOptions()
   const behavior = (typeof configurableBehavior === "function") ?

@@ -47,6 +47,75 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
     }),
 
   example(testRunnerContext(options))
+    .description("behavior file default export is not a behavior")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file whose default export is not a behavior", async (context) => {
+          await context.runBehaviors("**/common/error/badDefaultExport.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file default export is not an esbehavior ConfigurableBehavior"),
+            stringContaining("common/error/badDefaultExport.behavior.ts")
+          ]))))
+        }),
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("behavior file default export is a function that does not produce a behavior")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file whose default export is a function that does not produce a behavior", async (context) => {
+          await context.runBehaviors("**/common/error/badDefaultFunctionExport.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file default export is not an esbehavior ConfigurableBehavior"),
+            stringContaining("common/error/badDefaultFunctionExport.behavior.ts")
+          ]))))
+        }),
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("behavior file default export is a function that throws when called")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file whose default export is a function throws when called", async (context) => {
+          await context.runBehaviors("**/common/error/defaultFunctionExportThrows.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file default export is not an esbehavior ConfigurableBehavior"),
+            stringContaining("common/error/defaultFunctionExportThrows.behavior.ts")
+          ]))))
+        }),
+      ]
+    }),
+
+  example(testRunnerContext(options))
     .description("running valid and skipped behaviors in the specified order")
     .script({
       perform: [

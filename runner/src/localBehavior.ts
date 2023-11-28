@@ -1,5 +1,5 @@
 import { ConfigurableBehavior } from "esbehavior"
-import { BehaviorMetadata, NoDefaultExportError } from "./behaviorMetadata.js"
+import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError, isConfigurableBehaviorLike } from "./behaviorMetadata.js"
 import { Transpiler } from "./transpiler.js"
 
 export async function getLocalBehavior(transpiler: Transpiler, behaviorMetadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
@@ -9,5 +9,11 @@ export async function getLocalBehavior(transpiler: Transpiler, behaviorMetadata:
     throw new NoDefaultExportError(behaviorMetadata.path)
   }
 
-  return behaviorModule.default
+  const configurableBehavior = behaviorModule.default
+
+  if (!isConfigurableBehaviorLike(configurableBehavior)) {
+    throw new NotABehaviorError(behaviorMetadata.path)
+  }
+
+  return configurableBehavior
 }

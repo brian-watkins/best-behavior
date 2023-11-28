@@ -2,7 +2,8 @@ import { ClaimResult, Example, Summary, ValidationMode } from "esbehavior"
 
 
 export enum BehaviorDataErrorCode {
-  NO_DEFAULT_EXPORT
+  NO_DEFAULT_EXPORT,
+  NOT_A_BEHAVIOR
 }
 
 export interface BehaviorDataError {
