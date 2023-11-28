@@ -1,5 +1,11 @@
 import { PlaywrightTestInstrument } from "./useBrowser.js"
 
+interface CustomGlobalThis extends Global {
+  __best_behavior_context: BehaviorContext | undefined
+}
+
+declare let globalThis: CustomGlobalThis
+
 export class BehaviorContext {
   constructor (
     readonly browser: PlaywrightTestInstrument
@@ -15,5 +21,5 @@ export function createContext(elements: ContextElements) {
 }
 
 export function useContext(): BehaviorContext {
-  return globalThis.__best_behavior_context
+  return globalThis.__best_behavior_context!
 }
