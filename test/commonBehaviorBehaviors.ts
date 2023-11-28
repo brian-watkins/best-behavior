@@ -1,6 +1,6 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayWith, assignedWith, equalTo, expect, is, stringContaining } from "great-expectations"
+import { arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
 
 
@@ -20,6 +20,29 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             stringContaining("No behaviors found")
           ])))
         })
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("behavior file does not have a default export")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file with no default export", async (context) => {
+          await context.runBehaviors("**/common/error/noDefaultExport.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file has no default export"),
+            stringContaining("common/error/noDefaultExport.behavior.ts")
+          ]))))
+        }),
       ]
     }),
 

@@ -1,10 +1,23 @@
-import { Behavior, ClaimResult, Example, Summary, ValidationMode } from "esbehavior"
+import { ClaimResult, Example, Summary, ValidationMode } from "esbehavior"
 
-export interface BehaviorData {
+
+export enum BehaviorDataErrorCode {
+  NO_DEFAULT_EXPORT
+}
+
+export interface BehaviorDataError {
+  type: "error",
+  reason: BehaviorDataErrorCode
+}
+
+export interface BehaviorDataOk {
+  type: "ok"
   description: string
   examples: Array<ValidationMode>
   validationMode: ValidationMode
 }
+
+export type BehaviorData = BehaviorDataError | BehaviorDataOk
 
 export interface BehaviorBrowserWindow extends Window {
   __bb_currentExamples: Array<Example>

@@ -1,9 +1,9 @@
-import { Behavior, BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary, ValidationMode } from "esbehavior"
+import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
 import { PreparedBrowser } from "../adapters/playwrightBrowser.js"
-import { BehaviorMetadata } from "../behaviorMetadata.js"
+import { BehaviorMetadata, NoDefaultExportError } from "../behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
-import { BehaviorBrowserWindow, BehaviorData } from "./behaviorBrowserWindow.js"
+import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "./behaviorBrowserWindow.js"
 
 declare let window: BehaviorBrowserWindow
 
@@ -14,6 +14,13 @@ export class BrowserBehaviorContext {
     const page = await this.behaviorBrowser.getPage()
 
     const data: BehaviorData = await page.evaluate((path) => window.__bb_loadBehavior(path), this.localServer.urlForPath(metadata.path))
+
+    if (data.type === "error") {
+      switch (data.reason) {
+        case BehaviorDataErrorCode.NO_DEFAULT_EXPORT:
+          throw new NoDefaultExportError(metadata.path)
+      }
+    }
 
     return (b: BehaviorOptions) => {
       b.validationMode = data.validationMode

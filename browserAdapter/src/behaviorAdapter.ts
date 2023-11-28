@@ -1,11 +1,18 @@
 import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
-import type { BehaviorBrowserWindow, BehaviorData } from "../../runner/src/browser/behaviorBrowserWindow.js"
+import { BehaviorDataErrorCode, type BehaviorBrowserWindow, type BehaviorData } from "../../runner/src/browser/behaviorBrowserWindow.js"
 
 declare let window: BehaviorBrowserWindow
 
 window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
   const behaviorModule = await import(behaviorModuleUrl)
+
+  if (!Object.hasOwn(behaviorModule, "default")) {
+    return {
+      type: "error",
+      reason: BehaviorDataErrorCode.NO_DEFAULT_EXPORT
+    }
+  }
 
   const configurableBehavior = behaviorModule.default
 
@@ -18,6 +25,7 @@ window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<B
   this.__bb_currentExamples = configuredExamples.map(ex => ex.example)
 
   return {
+    type: "ok",
     description: behavior.description,
     examples: configuredExamples.map(ex => ex.mode),
     validationMode: options.validationMode
