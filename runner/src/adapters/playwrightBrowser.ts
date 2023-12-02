@@ -8,12 +8,12 @@ export interface PlaywrightBrowserOptions {
 
 export function browserLogger(host: string, logger: Logger): Logger {
   return {
-    info: (line) => {
+    info: (line, source) => {
       if (line.startsWith("[vite]")) return
-      logger.info(line.replaceAll(host, ""))
+      logger.info(line.replaceAll(host, ""), source)
     },
-    error: (err) => {
-      logger.error({ ...err, stack: err.stack?.replaceAll(host, "") })
+    error: (err, source) => {
+      logger.error(err.replaceAll(host, ""), source)
     }
   }
 }
@@ -74,10 +74,10 @@ export class PreparedBrowser {
     }
 
     context.on("console", (message) => {
-      this.options.logger.info(message.text())
+      this.options.logger.info(message.text(), "Browser")
     })
     context.on("weberror", (webError) => {
-      this.options.logger.error(webError.error())
+      this.options.logger.error(`${webError.error().stack}`, "Browser Error")
     })
 
     return context

@@ -1,7 +1,7 @@
 import { glob } from 'glob'
 import { BehaviorEnvironment, BehaviorMetadata } from './behaviorMetadata.js'
 import { Minimatch } from "minimatch"
-import { ANSIFormatter, Logger } from './logger.js'
+import { Logger, bold, red } from './logger.js'
 
 export interface BehaviorCollectionOptions {
   behaviorGlob: string
@@ -10,8 +10,6 @@ export interface BehaviorCollectionOptions {
   logger: Logger
 }
 
-const format = new ANSIFormatter()
-
 export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<Array<BehaviorMetadata>> {
   const allFiles = await glob(options.behaviorGlob, { ignore: 'node_modules/**' })
 
@@ -19,7 +17,7 @@ export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOpt
   const files = fileFilter.filter(allFiles)
 
   if (files.length == 0) {
-    options.logger.info(format.bold(format.red(`No behaviors found!\n`)))
+    options.logger.info(bold(red(`No behaviors found!\n`)))
     return []
   }
 

@@ -1,42 +1,61 @@
 
+
 export interface Logger {
-  info(line: string): void
-  error(err: Error): void
+  info(line: string, source?: string): void
+  error(error: string, source?: string): void
 }
 
 export function consoleLogger(): Logger {
   return {
-    info: console.log,
-    error: console.error
+    info: (line, source) => {
+      if (source) {
+        console.log(cyan(`[${source}]`), line)
+      } else {
+        console.log(line)
+      }
+    },
+    error: (error, source) => {
+      if (source) {
+        console.error(red(`[${source}]`), error)
+      } else {
+        console.error(error)
+      }
+    }
   }
 }
 
-export class ANSIFormatter {
-  private wrap(start: string, end: string, message: string): string {
-    return start + message + end
-  }
-  private wrapColor(code: string, message: string): string {
-    return this.wrap("\x1b[" + code + "m", "\x1b[39m", message)
-  }
-  underline(message: string): string {
-    return this.wrap("\x1b[4m", "\x1b[24m", message)
-  }
-  bold(message: string): string {
-    return this.wrap("\x1b[1m", "\x1b[22m", message)
-  }
-  dim(message: string): string {
-    return this.wrap("\x1b[2m", "\x1b[22m", message)
-  }
-  red(message: string): string {
-    return this.wrapColor("31", message)
-  }
-  yellow(message: string): string {
-    return this.wrapColor("33", message)
-  }
-  green(message: string): string {
-    return this.wrapColor("32", message)
-  }
-  cyan(message: string): string {
-    return this.wrapColor("36", message)
-  }
+export function underline(message: string): string {
+  return wrap("\x1b[4m", "\x1b[24m", message)
+}
+
+export function bold(message: string): string {
+  return wrap("\x1b[1m", "\x1b[22m", message)
+}
+
+export function dim(message: string): string {
+  return wrap("\x1b[2m", "\x1b[22m", message)
+}
+
+export function red(message: string): string {
+  return wrapColor("31", message)
+}
+
+export function yellow(message: string): string {
+  return wrapColor("33", message)
+}
+
+export function green(message: string): string {
+  return wrapColor("32", message)
+}
+
+export function cyan(message: string): string {
+  return wrapColor("36", message)
+}
+
+function wrap(start: string, end: string, message: string): string {
+  return start + message + end
+}
+
+function wrapColor(code: string, message: string): string {
+  return wrap("\x1b[" + code + "m", "\x1b[39m", message)
 }

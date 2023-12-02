@@ -158,7 +158,7 @@ class TestLogger implements Logger {
     this.infoLines.push(line)
   }
 
-  error(err: Error): void {
-    this.errorLines.push(err.stack!)
+  error(err: string): void {
+    this.errorLines.push(err)
   }
 }
