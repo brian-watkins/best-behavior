@@ -8,15 +8,18 @@ import { Runner } from "./runner.js"
 import { Logger } from "./logger.js"
 import { createContext } from "./useContext.js"
 import { PlaywrightTestInstrument } from "./useBrowser.js"
+import { getConfig } from "./config.js"
 export type { BrowserTestInstrument } from "./useBrowser.js"
 export { useBrowser } from "./useBrowser.js"
 export { viewControllerModuleLoader } from "./view.js"
 export type { ViewController, ViewControllerModuleLoader } from "./view.js"
 export type { Logger } from "./logger.js"
 
+
 export interface RunArguments {
+  configFile: string | undefined
   behaviorsGlob: string
-  behaviorFilter: string | undefined,
+  behaviorFilter: string | undefined
   browserBehaviorsGlob: string | undefined
   failFast: boolean
   runPickedOnly: boolean
@@ -27,14 +30,20 @@ export interface RunArguments {
   logger: Logger
 }
 
+// Note that Reporter and Logger both have logging capabilities
+// Is there a way we could consolidate that?
+
 export async function run(args: RunArguments): Promise<void> {
   const viteServer = new ViteLocalServer({
     viteConfig: args.viteConfig
   })
   await viteServer.start()
 
+  const config = await getConfig(viteServer, args.configFile)
+
   const playwrightBrowser = new PlaywrightBrowser({
-    showBrowser: args.showBrowser
+    showBrowser: args.showBrowser,
+    generator: config?.browser
   })
 
   const logger = browserLogger(viteServer.host, args.logger)

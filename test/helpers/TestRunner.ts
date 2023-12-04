@@ -18,8 +18,13 @@ export class TestRunner {
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
   private behaviorFilter: string | undefined
+  private configFile: string | undefined
 
   constructor(private options: TestRunnerOptions) { }
+
+  setConfigFile(path: string) {
+    this.configFile = path
+  }
 
   setShouldFailFast(shouldFailFast: boolean) {
     this.shouldFailFast = shouldFailFast
@@ -35,6 +40,7 @@ export class TestRunner {
 
   async runBehaviors(pattern: string): Promise<void> {
     await run({
+      configFile: this.configFile,
       behaviorsGlob: `./test/fixtures/behaviors/${pattern}`,
       behaviorFilter: this.behaviorFilter,
       browserBehaviorsGlob: this.options.browserGlob,
