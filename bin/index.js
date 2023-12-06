@@ -1,4 +1,4 @@
-#!/usr/bin/env node --enable-source-maps
+#!/usr/bin/env -S node --enable-source-maps
 
 import yargs from "yargs"
 import { run } from "../dist/runner/index.js"
@@ -15,6 +15,10 @@ const args = yargs(process.argv.slice(2))
         type: "string"
       })
       .options({
+        "configFile": {
+          describe: "path to best behavior config file",
+          type: "string"
+        },
         "behaviors": {
           describe: "glob that matches behaviors; relative to working dir",
           demandOption: true,
@@ -54,6 +58,7 @@ const args = yargs(process.argv.slice(2))
   .parseSync()
 
 await run({
+  configFile: args.configFile,
   behaviorsGlob: args.behaviors,
   behaviorFilter: args.behaviorFilter,
   browserBehaviorsGlob: args.runInBrowser,

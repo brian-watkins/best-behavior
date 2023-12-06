@@ -1,4 +1,4 @@
-import { behavior, effect, example, step } from "esbehavior";
+import { behavior, effect, example, fact, step } from "esbehavior";
 import { BehaviorOutput, ClaimOutput, testRunnerContext } from "./helpers/TestRunner.js";
 import { Matcher, arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 import { expectedBehavior } from "./helpers/matchers.js";
@@ -113,6 +113,32 @@ export default behavior("running behaviors in the browser environment", [
             behaviors: 1,
             examples: 1,
             valid: 3,
+            invalid: 0,
+            skipped: 0
+          }))))
+        })
+      ]
+    }),
+
+  example(testRunnerContext({ browserGlob: "**/*" }))
+    .description("use a custom browser generator")
+    .script({
+      suppose: [
+        fact("it uses a config file", (context) => {
+          context.setConfigFile("./test/fixtures/behaviors/browser/custom/bb.config.ts")
+        })
+      ],
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/browser/custom/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 1,
             invalid: 0,
             skipped: 0
           }))))

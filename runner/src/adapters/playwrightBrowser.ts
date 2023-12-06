@@ -2,8 +2,11 @@ import { Browser, BrowserContext, BrowserContextOptions, Page, chromium } from "
 import { Logger } from "../logger.js";
 import { pathInNodeModules, pathTo } from "../path.js";
 
+export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
+
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
+  generator: PlaywrightBrowserGenerator | undefined
 }
 
 export function browserLogger(host: string, logger: Logger): Logger {
@@ -24,9 +27,8 @@ export class PlaywrightBrowser {
   constructor(private options: PlaywrightBrowserOptions) { }
 
   private async start(): Promise<void> {
-    this.browser = await chromium.launch({
-      headless: !this.options.showBrowser
-    })
+    const generator = this.options.generator ?? defaultBrowserGenerator
+    this.browser = await generator(this.options.showBrowser)
   }
 
   get isOpen(): boolean {
@@ -45,6 +47,12 @@ export class PlaywrightBrowser {
     return this.browser!.newContext(options)
   }
 }
+
+const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
+  return chromium.launch({
+    headless: !showBrowser
+  })
+} 
 
 const sourceMapSupportPath = pathInNodeModules("source-map-support")
 
