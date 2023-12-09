@@ -1,6 +1,6 @@
 import { Browser, BrowserContext, BrowserContextOptions, Page, chromium } from "playwright";
 import { Logger } from "../logger.js";
-import { pathInNodeModules, pathTo } from "../path.js";
+import url from "url"
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
@@ -52,9 +52,7 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
   return chromium.launch({
     headless: !showBrowser
   })
-} 
-
-const sourceMapSupportPath = pathInNodeModules("source-map-support")
+}
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
@@ -71,15 +69,12 @@ export class PreparedBrowser {
     const context = await this.browser.newBrowserContext({
       baseURL: this.options.baseUrl
     })
-    
+
     if (this.options.adapterPath) {
       await context.addInitScript({ path: this.options.adapterPath })
     }
 
-    if (sourceMapSupportPath) {
-      await context.addInitScript({ path: pathTo(sourceMapSupportPath, "browser-source-map-support.js") })
-      await context.addInitScript({ content: "sourceMapSupport.install()" })
-    }
+    await context.addInitScript({ path: pathToFile("../../adapter/sourceMapSupport.cjs") })
 
     context.on("console", (message) => {
       this.options.logger.info(message.text(), "Browser")
@@ -101,4 +96,8 @@ export class PreparedBrowser {
 
     return this._page
   }
+}
+
+function pathToFile(relativePath: string): string {
+  return url.fileURLToPath(new URL(relativePath, import.meta.url))
 }

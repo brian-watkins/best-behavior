@@ -1,4 +1,5 @@
 import { build } from "vite"
+import fs from "fs"
 
 await build({
   root: "./browserAdapter",
@@ -18,3 +19,8 @@ await build({
     }
   }
 })
+
+const sourceMapSupport = fs.readFileSync("./node_modules/source-map-support/browser-source-map-support.js")
+
+fs.writeFileSync("./dist/adapter/sourceMapSupport.cjs", sourceMapSupport + "\nsourceMapSupport.install();")
+
