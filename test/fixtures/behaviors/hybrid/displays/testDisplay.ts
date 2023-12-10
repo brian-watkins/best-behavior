@@ -4,7 +4,7 @@ export interface MyArgs {
   title: string
 }
 
-const superDisplay: ViewController<MyArgs, HTMLElement> = {
+const superDisplay: ViewController<MyArgs> = {
   render: (args) => {
     const root = document.createElement("div")
     root.id = "display-root"
@@ -28,11 +28,6 @@ const superDisplay: ViewController<MyArgs, HTMLElement> = {
       clickCountText.nodeValue = `Clicks: ${totalClicks}`
     })
     root.appendChild(button)
-
-    return root
-  },
-  teardown: (handle) => {
-    document.body.removeChild(handle)
   }
 }
 

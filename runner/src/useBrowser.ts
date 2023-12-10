@@ -47,7 +47,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
   }
 
   async mountView(options: ViewOptions<any>): Promise<void> {
-    let moduleHandle: JSHandle<{ default: ViewController<any, any> }>
+    let moduleHandle: JSHandle<{ default: ViewController<any> }>
 
     try {
       moduleHandle = await this.page.evaluateHandle(options.controller.loader, options.controller.args)

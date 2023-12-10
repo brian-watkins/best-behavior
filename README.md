@@ -167,22 +167,14 @@ test. This file should have a default export that exposes a `ViewController`.
 
 ```
 interface ViewController<Args, Handle = void> {
-  render: (args: Args) => Handle | Promise<Handle>
-  teardown?: (handle: Handle) => void | Promise<void>
+  render: (args: Args) => void | Promise<void>
 }
 ```
 
-Each `ViewController` defines defines a `render` function and an optional
-`teardown` function.
+Each `ViewController` defines defines a `render` function.
 
 The `render` function can take (serializable) arguments passed
-in from the test; it may return any value that will be later be passed to the
-`teardown` function. 
-
-The `teardown` function is lazily called to destroy the existing view with
-the object that results from the `render` function, only when
-*another* view is about to be rendered. This allows the view to remain visible
-in the browser in case the test writer wants to inspect it at the end of a test.
+in from the test; it may return a Promise. 
 
 A `ViewController` will be loaded and executed in the browser,
 so it can reference global objects like `window` that will be available in
@@ -195,7 +187,7 @@ Use the following function to construct a `ViewControllerModuleLoader`:
 
 ```
 function viewControllerModuleLoader<RenderArgs, LoaderArgs>(
-  loader: (args: LoaderArgs) => Promise<{"default": ViewController<RenderArgs, any>}>,
+  loader: (args: LoaderArgs) => Promise<{"default": ViewController<RenderArgs>}>,
   args?: LoaderArgs
 ): ViewControllerModuleLoader<RenderArgs, LoaderArgs>
 ```

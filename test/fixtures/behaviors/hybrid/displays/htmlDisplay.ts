@@ -9,12 +9,6 @@ const funnyDisplay: ViewController<string> = {
       title.appendChild(text)
       root.appendChild(title)
     }
-  },
-  teardown: () => {
-    const root = document.getElementById("test-app")!
-    while (root.hasChildNodes()) {
-      root.removeChild(root.lastChild!)
-    }
   }
 }
 

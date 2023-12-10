@@ -4,7 +4,7 @@ export interface CoolArgs {
   title: string
 }
 
-const superDisplay: ViewController<CoolArgs, HTMLElement> = {
+const superDisplay: ViewController<CoolArgs> = {
   render: async (args) => {
     const root = document.createElement("div")
     root.id = "display-root"
@@ -13,11 +13,6 @@ const superDisplay: ViewController<CoolArgs, HTMLElement> = {
     const title = document.createElement("h1")
     title.appendChild(document.createTextNode(args.title))
     root.appendChild(title)
-
-    return root
-  },
-  teardown: async (handle) => {
-    document.body.removeChild(handle)
   }
 }
 
