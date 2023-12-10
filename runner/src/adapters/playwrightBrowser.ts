@@ -15,7 +15,8 @@ const defaultBrowserContextGenerator: PlaywrightBrowserContextGenerator = (brows
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
   baseURL: string
-  generator: PlaywrightBrowserGenerator | undefined
+  browserGenerator: PlaywrightBrowserGenerator | undefined
+  browserContextGenerator: PlaywrightBrowserContextGenerator | undefined
 }
 
 export function browserLogger(host: string, logger: Logger): Logger {
@@ -36,7 +37,7 @@ export class PlaywrightBrowser {
   constructor(private options: PlaywrightBrowserOptions) { }
 
   private async start(): Promise<void> {
-    const generator = this.options.generator ?? defaultBrowserGenerator
+    const generator = this.options.browserGenerator ?? defaultBrowserGenerator
     this.browser = await generator(this.options.showBrowser)
   }
 
@@ -57,7 +58,7 @@ export class PlaywrightBrowser {
       await this.start()
     }
 
-    const generator = contextGenerator ?? defaultBrowserContextGenerator
+    const generator = contextGenerator ?? this.options.browserContextGenerator ?? defaultBrowserContextGenerator
     return generator(this.browser!, this.options.baseURL)
   }
 }

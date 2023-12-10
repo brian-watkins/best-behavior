@@ -44,7 +44,8 @@ export async function run(args: RunArguments): Promise<void> {
   const playwrightBrowser = new PlaywrightBrowser({
     showBrowser: args.showBrowser,
     baseURL: viteServer.host,
-    generator: config?.browser
+    browserGenerator: config?.browser,
+    browserContextGenerator: config?.context
   })
 
   const logger = browserLogger(viteServer.host, args.logger)

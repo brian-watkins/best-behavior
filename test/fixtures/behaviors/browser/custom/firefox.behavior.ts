@@ -9,6 +9,10 @@ export default behavior("Custom Browser", [
       observe: [
         effect("this is running in firefox", () => {
           expect(window.navigator.userAgent, is(stringContaining("firefox", { caseSensitive: false })))
+        }),
+        effect("the viewport is set via the config file", () => {
+          expect(window.innerHeight, is(480))
+          expect(window.innerWidth, is(640))
         })
       ]
     })

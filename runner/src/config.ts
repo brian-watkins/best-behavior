@@ -1,9 +1,10 @@
 import { Options, lilconfig, Loader } from "lilconfig";
-import { PlaywrightBrowserGenerator } from "./adapters/playwrightBrowser.js";
+import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "./adapters/playwrightBrowser.js";
 import { Transpiler } from "./transpiler.js";
 
 export interface BestBehaviorConfig {
-  browser: PlaywrightBrowserGenerator
+  browser?: PlaywrightBrowserGenerator
+  context?: PlaywrightBrowserContextGenerator
 }
 
 function transpilerLoader(transpiler: Transpiler): (path: string) => Promise<Loader> {

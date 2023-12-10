@@ -6,6 +6,15 @@ const config: BestBehaviorConfig = {
     return firefox.launch({
       headless: !showBrowser
     })
+  },
+  context: (browser, localServerURL) => {
+    return browser.newContext({
+      baseURL: localServerURL,
+      viewport: {
+        width: 640,
+        height: 480
+      }
+    })
   }
 }
 
