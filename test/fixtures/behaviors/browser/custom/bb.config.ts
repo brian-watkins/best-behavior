@@ -1,7 +1,7 @@
 import { firefox } from "playwright"
-import { BestBehaviorConfig } from "../../../../../runner/src/config.js"
+import { defineConfig } from "../../../../../runner/src/index.js"
 
-const config: BestBehaviorConfig = {
+export default defineConfig({
   browser: (showBrowser) => {
     return firefox.launch({
       headless: !showBrowser
@@ -16,6 +16,4 @@ const config: BestBehaviorConfig = {
       }
     })
   }
-}
-
-export default config
+})

@@ -14,6 +14,8 @@ export { useBrowser } from "./useBrowser.js"
 export { viewControllerModuleLoader } from "./view.js"
 export type { ViewController, ViewControllerModuleLoader } from "./view.js"
 export type { Logger } from "./logger.js"
+export { defineConfig } from "./config.js"
+export type { BestBehaviorConfig } from "./config.js"
 
 
 export interface RunArguments {

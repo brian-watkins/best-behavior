@@ -7,6 +7,10 @@ export interface BestBehaviorConfig {
   context?: PlaywrightBrowserContextGenerator
 }
 
+export function defineConfig(config: BestBehaviorConfig): BestBehaviorConfig {
+  return config
+}
+
 function transpilerLoader(transpiler: Transpiler): (path: string) => Promise<Loader> {
   return (path) => {
     return transpiler.loadModule(path)
