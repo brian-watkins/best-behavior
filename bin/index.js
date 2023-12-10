@@ -13,7 +13,7 @@ const args = yargs(process.argv.slice(2))
         type: "string"
       })
       .options({
-        "configFile": {
+        "config": {
           describe: "path to best behavior config file",
           type: "string"
         },
@@ -54,7 +54,7 @@ const args = yargs(process.argv.slice(2))
   .parseSync()
 
 await run({
-  configFile: args.configFile,
+  config: args.config,
   behaviorsGlob: args.behaviors,
   behaviorFilter: args.behaviorFilter,
   browserBehaviorsGlob: args.runInBrowser,

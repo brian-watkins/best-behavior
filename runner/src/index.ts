@@ -16,10 +16,11 @@ export type { ViewController, ViewControllerModuleLoader } from "./view.js"
 export type { Logger } from "./logger.js"
 export { defineConfig } from "./config.js"
 export type { BestBehaviorConfig } from "./config.js"
+export type { PlaywrightBrowserGenerator, PlaywrightBrowserContextGenerator } from "./adapters/playwrightBrowser.js"
 
 
 export interface RunArguments {
-  configFile?: string
+  config?: string
   behaviorsGlob?: string
   behaviorFilter?: string
   browserBehaviorsGlob?: string
@@ -42,7 +43,7 @@ export async function run(args: RunArguments): Promise<void> {
   })
   await viteServer.start()
 
-  const config = await getConfig(viteServer, args.configFile)
+  const config = await getConfig(viteServer, args.config)
 
   const logger = args.logger ?? config?.logger ?? consoleLogger()
 

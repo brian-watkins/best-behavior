@@ -40,7 +40,7 @@ export class TestRunner {
 
   async runBehaviors(pattern?: string): Promise<void> {
     await run({
-      configFile: this.configFile,
+      config: this.configFile,
       behaviorsGlob: pattern ? `./test/fixtures/behaviors/${pattern}` : undefined,
       behaviorFilter: this.behaviorFilter,
       browserBehaviorsGlob: this.options.browserGlob,
