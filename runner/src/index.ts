@@ -43,15 +43,18 @@ export async function run(args: RunArguments): Promise<void> {
 
   const playwrightBrowser = new PlaywrightBrowser({
     showBrowser: args.showBrowser,
+    baseURL: viteServer.host,
     generator: config?.browser
   })
 
   const logger = browserLogger(viteServer.host, args.logger)
 
-  const browser = new PlaywrightTestInstrument(playwrightBrowser, viteServer.host, logger)
+  const browserTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
+    logger
+  })
 
   createContext({
-    browser
+    browserTestInstrument: browserTestInstrument
   })
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {

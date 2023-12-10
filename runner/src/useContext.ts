@@ -8,16 +8,16 @@ declare let globalThis: CustomGlobalThis
 
 export class BehaviorContext {
   constructor (
-    readonly browser: PlaywrightTestInstrument
+    readonly browserTestInstrument: PlaywrightTestInstrument
   ) { }
 }
 
 export interface ContextElements {
-  browser: PlaywrightTestInstrument,
+  browserTestInstrument: PlaywrightTestInstrument,
 }
 
 export function createContext(elements: ContextElements) {
-  globalThis.__best_behavior_context = new BehaviorContext(elements.browser)
+  globalThis.__best_behavior_context = new BehaviorContext(elements.browserTestInstrument)
 }
 
 export function useContext(): BehaviorContext {

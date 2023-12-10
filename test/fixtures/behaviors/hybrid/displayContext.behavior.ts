@@ -152,6 +152,27 @@ export default behavior("display context", [
           await expect(display.page.locator("h1").innerText({ timeout: 200 }), resolvesTo("You are cool!"))
         })
       ]
+    }),
+
+  example({
+    init: () => useBrowser((browser) => browser.newContext({
+      viewport: {
+        width: 500,
+        height: 300
+      }
+    }))
+  })
+    .description("use custom browser context")
+    .script({
+      observe: [
+        effect("the viewport is set to the given size", async (context) => {
+          const viewportSize = await context.page.evaluate(() => ({ height: window.innerHeight, width: window.innerWidth }))
+          expect(viewportSize, is({
+            height: 300,
+            width: 500
+          }))
+        })
+      ]
     })
 
 ])

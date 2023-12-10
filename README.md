@@ -89,8 +89,22 @@ objects during your test.
 #### useBrowser
 
 ```
-useBrowser(): Promise<BrowserTestInstrument>
+useBrowser(context?: PlaywrightBrowserContextGenerator): Promise<BrowserTestInstrument>
 ```
+
+Each time `useBrowser` is called, a new `BrowserContext` will be created and any existing
+one will be closed. Optionally supply a `PlaywrightBrowserContextGenerator` to
+configure the `BrowserContext`.
+
+
+#### PlaywrightBrowserContextGenerator
+
+```
+type PlaywrightBrowserContextGenerator = (browser: Browser, localServerURL: string) => Promise<BrowserContext>
+```
+
+This function generates a Playwright `BrowserContext` given a Playwright `Browser` object
+and the base URL of the local vite dev server that is managed by best-behavior.
 
 
 #### BrowserTestInstrument

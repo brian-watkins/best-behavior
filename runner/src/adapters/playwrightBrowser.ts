@@ -1,11 +1,20 @@
-import { Browser, BrowserContext, BrowserContextOptions, Page, chromium } from "playwright";
+import { Browser, BrowserContext, Page, chromium } from "playwright";
 import { Logger } from "../logger.js";
 import url from "url"
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
+export type PlaywrightBrowserContextGenerator = (browser: Browser, localServerURL?: string) => Promise<BrowserContext>
+
+const defaultBrowserContextGenerator: PlaywrightBrowserContextGenerator = (browser, localServerURL) => {
+  return browser.newContext({
+    baseURL: localServerURL
+  })
+}
+
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
+  baseURL: string
   generator: PlaywrightBrowserGenerator | undefined
 }
 
@@ -35,16 +44,21 @@ export class PlaywrightBrowser {
     return this.browser !== undefined
   }
 
+  get baseURL(): string {
+    return this.options.baseURL
+  }
+
   async stop(): Promise<void> {
     await this.browser?.close()
   }
 
-  async newBrowserContext(options?: BrowserContextOptions): Promise<BrowserContext> {
+  async newBrowserContext(contextGenerator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     if (!this.browser) {
       await this.start()
     }
 
-    return this.browser!.newContext(options)
+    const generator = contextGenerator ?? defaultBrowserContextGenerator
+    return generator(this.browser!, this.options.baseURL)
   }
 }
 
@@ -56,19 +70,16 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
-  baseUrl?: string
   logger: Logger
 }
 
 export class PreparedBrowser {
   protected _page: Page | undefined
 
-  constructor(private browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
+  constructor(protected browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
 
-  protected async getContext(): Promise<BrowserContext> {
-    const context = await this.browser.newBrowserContext({
-      baseURL: this.options.baseUrl
-    })
+  protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
+    const context = await this.browser.newBrowserContext(generator)
 
     if (this.options.adapterPath) {
       await context.addInitScript({ path: this.options.adapterPath })

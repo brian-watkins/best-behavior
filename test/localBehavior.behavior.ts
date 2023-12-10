@@ -53,8 +53,8 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 7,
-            valid: 14,
+            examples: 8,
+            valid: 15,
             invalid: 2,
             skipped: 2
           }))))

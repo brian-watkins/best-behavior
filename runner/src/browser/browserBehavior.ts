@@ -1,6 +1,6 @@
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
-import { PreparedBrowser } from "../adapters/playwrightBrowser.js"
+import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "../adapters/playwrightBrowser.js"
 import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError } from "../behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
 import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "./behaviorBrowserWindow.js"
@@ -61,8 +61,8 @@ class BrowserExample implements Example {
 export class BehaviorBrowser extends PreparedBrowser {
   readonly reporter = new BrowserReporter()
 
-  protected async getContext(): Promise<BrowserContext> {
-    const context = await super.getContext()
+  protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
+    const context = await super.getContext(generator)
 
     context.exposeBinding("__bb_pageBinding", ({ page }, ...args) => {
       const pageFunction = eval(args[0])

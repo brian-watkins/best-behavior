@@ -1,20 +1,12 @@
 import { useContext } from "./useContext.js";
 import { BrowserContext, JSHandle, Page } from "playwright";
 import { ViewController, ViewControllerModuleLoader } from "./view.js";
-import { PlaywrightBrowser, PreparedBrowser } from "./adapters/playwrightBrowser.js";
-import { Logger } from "./logger.js";
+import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "./adapters/playwrightBrowser.js";
 
-interface BrowserTestInstrumentWindow extends Window {
-  __bb_viewHandle: any | undefined
-  __bb_viewController: ViewController<any, any> | undefined
-}
-
-declare let window: BrowserTestInstrumentWindow
-
-export async function useBrowser(): Promise<BrowserTestInstrument> {
-  const browser = useContext().browser
-  await browser.preparePage()
-  return browser
+export async function useBrowser(context?: PlaywrightBrowserContextGenerator): Promise<BrowserTestInstrument> {
+  const browserTestInstrument = useContext().browserTestInstrument
+  await browserTestInstrument.reset(context)
+  return browserTestInstrument
 }
 
 export interface ViewOptions<RenderArgs> {
@@ -28,31 +20,26 @@ export interface BrowserTestInstrument {
 }
 
 export class PlaywrightTestInstrument extends PreparedBrowser implements BrowserTestInstrument {
-  constructor(browser: PlaywrightBrowser, private baseUrl: string, logger: Logger) {
-    super(browser, {
-      baseUrl,
-      logger
-    })
-  }
+  private _context: BrowserContext | undefined
 
-  protected async getContext(): Promise<BrowserContext> {
-    const context = await super.getContext()
+  protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
+    const context = await super.getContext(generator)
 
     await context.addInitScript({
       content: `
-      window["__vite_ssr_dynamic_import__"] = (path) => { const url = new URL(path, "${this.baseUrl}"); return import(url.href); };
+      window["__vite_ssr_dynamic_import__"] = (path) => { const url = new URL(path, "${this.browser.baseURL}"); return import(url.href); };
       window["__vite_ssr_import_0__"] = { default: (map, key) => map[key]() };
     ` })
 
     return context
   }
 
-  async preparePage(): Promise<void> {
-    const page = await this.getPage()
-
-    if (page.url() !== "about:blank") {
-      await page.goto("about:blank")
+  async reset(generator?: PlaywrightBrowserContextGenerator): Promise<void> {
+    if (this._context !== undefined) {
+      await this._context.close()
     }
+    this._context = await this.getContext(generator)
+    this._page = await this._context.newPage()
   }
 
   get page(): Page {
@@ -70,16 +57,12 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
 
     try {
       await moduleHandle.evaluateHandle(async (viewControllerModule, context) => {
-        if (window.__bb_viewController !== undefined) {
-          await window.__bb_viewController.teardown?.(window.__bb_viewHandle)
-        }
-        window.__bb_viewController = viewControllerModule["default"]
-        window.__bb_viewHandle = await window.__bb_viewController.render(context.renderArgs)
+        await viewControllerModule["default"].render(context.renderArgs)
       }, {
         renderArgs: options.renderArgs
       })
     } catch (err: any) {
-      throw { ...err, stack: err.stack?.replaceAll(this.baseUrl, "") }
+      throw { ...err, stack: err.stack?.replaceAll(this.browser.baseURL, "") }
     }
   }
 }
