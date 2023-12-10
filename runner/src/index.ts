@@ -1,11 +1,11 @@
 import url from "url"
-import { OrderProvider, Reporter } from "esbehavior"
+import { OrderProvider, Reporter, StandardReporter, randomOrder } from "esbehavior"
 import { ViteLocalServer } from "./adapters/viteServer.js"
 import { PlaywrightBrowser, browserLogger } from "./adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browser/browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Runner } from "./runner.js"
-import { Logger } from "./logger.js"
+import { Logger, bold, consoleLogger, red } from "./logger.js"
 import { createContext } from "./useContext.js"
 import { PlaywrightTestInstrument } from "./useBrowser.js"
 import { getConfig } from "./config.js"
@@ -19,17 +19,18 @@ export type { BestBehaviorConfig } from "./config.js"
 
 
 export interface RunArguments {
-  configFile: string | undefined
-  behaviorsGlob: string
-  behaviorFilter: string | undefined
-  browserBehaviorsGlob: string | undefined
-  failFast: boolean
-  runPickedOnly: boolean
-  viteConfig: string | undefined
-  showBrowser: boolean
-  reporter: Reporter
-  orderProvider: OrderProvider
-  logger: Logger
+  configFile?: string
+  behaviorsGlob?: string
+  behaviorFilter?: string
+  browserBehaviorsGlob?: string
+  failFast?: boolean
+  runPickedOnly?: boolean
+  viteConfig?: string
+  showBrowser?: boolean
+  seed?: string
+  reporter?: Reporter
+  orderProvider?: OrderProvider
+  logger?: Logger
 }
 
 // Note that Reporter and Logger both have logging capabilities
@@ -43,17 +44,26 @@ export async function run(args: RunArguments): Promise<void> {
 
   const config = await getConfig(viteServer, args.configFile)
 
+  const logger = args.logger ?? config?.logger ?? consoleLogger()
+
+  const behaviors = args.behaviorsGlob ?? config?.behaviors
+
+  if (behaviors === undefined) {
+    logger.error(bold(red("No behaviors specified!")))
+    logger.error("Provide a glob via the --behaviors CLI option or the behaviors property of the config file.")
+    await viteServer.stop()
+    return
+  }
+
   const playwrightBrowser = new PlaywrightBrowser({
-    showBrowser: args.showBrowser,
+    showBrowser: args.showBrowser ?? false,
     baseURL: viteServer.host,
     browserGenerator: config?.browser,
     browserContextGenerator: config?.context
   })
 
-  const logger = browserLogger(viteServer.host, args.logger)
-
   const browserTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
-    logger
+    logger: browserLogger(viteServer.host, logger)
   })
 
   createContext({
@@ -70,14 +80,14 @@ export async function run(args: RunArguments): Promise<void> {
   const runner = new Runner(behaviorFactory)
 
   await runner.run({
-    behaviorPathPattern: args.behaviorsGlob,
+    behaviorPathPattern: behaviors,
     behaviorFilter: args.behaviorFilter,
-    browserBehaviorPathPattern: args.browserBehaviorsGlob,
-    reporter: args.reporter,
-    orderProvider: args.orderProvider,
-    failFast: args.failFast,
-    runPickedOnly: args.runPickedOnly,
-    logger: args.logger
+    browserBehaviorPathPattern: args.browserBehaviorsGlob ?? config?.browserBehaviors,
+    reporter: args.reporter ?? config?.reporter ?? new StandardReporter(),
+    orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(args.seed),
+    failFast: args.failFast ?? config?.failFast ?? false,
+    runPickedOnly: args.runPickedOnly ?? false,
+    logger
   })
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {

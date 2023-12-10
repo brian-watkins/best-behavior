@@ -1,10 +1,19 @@
 import { Options, lilconfig, Loader } from "lilconfig";
 import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "./adapters/playwrightBrowser.js";
 import { Transpiler } from "./transpiler.js";
+import { OrderProvider, Reporter } from "esbehavior";
+import { Logger } from "./logger.js";
 
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
+  behaviors?: string
+  browserBehaviors?: string
+  failFast?: boolean
+  viteConfig?: string
+  reporter?: Reporter
+  orderProvider?: OrderProvider
+  logger?: Logger
 }
 
 export function defineConfig(config: BestBehaviorConfig): BestBehaviorConfig {

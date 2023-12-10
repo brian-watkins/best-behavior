@@ -1,10 +1,28 @@
-import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
+import { ConfigurableExample, effect, example, fact, randomOrder, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
+import { consoleLogger } from "../runner/src/logger.js"
 
 
 export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
+
+  example(testRunnerContext(options))
+    .description("no behaviors specified")
+    .script({
+      perform: [
+        step("attempt to validate behaviors", async (context) => {
+          await context.runBehaviors()
+        })
+      ],
+      observe: [
+        effect("it logs that no behaviors have been specified", (context) => {
+          expect(context.logs.errorLines, is(arrayContaining(
+            stringContaining("No behaviors specified!")
+          )))
+        })
+      ]
+    }),
 
   example(testRunnerContext(options))
     .description("no behaviors found")

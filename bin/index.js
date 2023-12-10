@@ -2,8 +2,6 @@
 
 import yargs from "yargs"
 import { run } from "../dist/runner/index.js"
-import { consoleLogger } from "../dist/runner/logger.js"
-import { StandardReporter, randomOrder } from "esbehavior"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")
@@ -21,7 +19,6 @@ const args = yargs(process.argv.slice(2))
         },
         "behaviors": {
           describe: "glob that matches behaviors; relative to working dir",
-          demandOption: true,
           type: "string"
         },
         "runInBrowser": {
@@ -52,7 +49,6 @@ const args = yargs(process.argv.slice(2))
           type: "string"
         }
       })
-
   })
   .wrap(yargs.terminalWidth)
   .parseSync()
@@ -66,7 +62,5 @@ await run({
   runPickedOnly: args.picked,
   viteConfig: args.viteConfig,
   showBrowser: args.showBrowser,
-  reporter: new StandardReporter(),
-  orderProvider: randomOrder(args.seed),
-  logger: consoleLogger()
+  seed: args.seed
 })

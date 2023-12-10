@@ -17,7 +17,7 @@ export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOpt
   const files = fileFilter.filter(allFiles)
 
   if (files.length == 0) {
-    options.logger.info(bold(red(`No behaviors found!\n`)))
+    options.logger.info(bold(red(`No behaviors found!`)))
     return []
   }
 
