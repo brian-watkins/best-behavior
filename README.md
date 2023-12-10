@@ -50,6 +50,7 @@ $ best --behaviors 'tests/**/*.behavior.ts'
 Options:
   --help          Show help
   --version       Show version number
+  --config        path to best behavior config file  [string]
   --behaviors     glob that matches behaviors; relative to working dir  [required]
   --runInBrowser  glob that matches behaviors to run in browser; subset of behaviors
   --failFast      stop on first invalid claim
@@ -72,6 +73,45 @@ $ best --behaviors 'tests/**/*.behavior.ts' \
 
 Note the quotes around the globs ... if you forget those then the shell may
 interpret them itself and you may get unexpected results.
+
+
+## Config File
+
+You may also specify options in a config file. By default, best-behavior will look
+for a file called `bb.config.(js|cjs|mjs|ts|mts)` in the current working directory.
+Alternatively, a config file location may be specified via the `--config` CLI option.
+
+The config file should have one default export of the type `BestBehaviorConfig`:
+
+```
+interface BestBehaviorConfig {
+  browser?: PlaywrightBrowserGenerator
+  context?: PlaywrightBrowserContextGenerator
+  behaviors?: string
+  browserBehaviors?: string
+  failFast?: boolean
+  viteConfig?: string
+  reporter?: Reporter
+  orderProvider?: OrderProvider
+  logger?: Logger
+}
+```
+
+Use the `defineConfig` function to make specifying and exporting the config easy:
+
+```
+import { firefox } from "playwright"
+import { defineConfig } from "best-behavior"
+
+export default defineConfig({
+  behaviors: "./behaviors/**/*.behavior.ts`,
+  browser: (showBrowser) => firefox.launch({ headless: !showBrowser })
+})
+```
+
+Use a config file to do custom configuration of the Playwright `Browser` or the default
+Playwright `BrowserContext`. You can also use a config to supply a `Logger` or a custom
+esbehavior `Reporter` or `OrderProvider`.
 
 
 ## Working with the Browser
