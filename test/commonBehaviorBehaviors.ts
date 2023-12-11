@@ -1,8 +1,7 @@
-import { ConfigurableExample, effect, example, fact, randomOrder, step } from "esbehavior"
+import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
-import { consoleLogger } from "../runner/src/logger.js"
 
 
 export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
