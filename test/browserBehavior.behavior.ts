@@ -146,6 +146,27 @@ export default behavior("running behaviors in the browser environment", [
       ]
     }),
 
+  example(testRunnerContext({ browserGlob: "**/*", browserBehaviorHTML: "./test/fixtures/behaviors/browser/html/index.html" }))
+    .description("browser behavior that needs custom html loaded")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/browser/html/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 1,
+            invalid: 0,
+            skipped: 0
+          }))))
+        })
+      ]
+    }),
+
   ...behaviorBehaviors({ browserGlob: "**/*" })
 
 ])

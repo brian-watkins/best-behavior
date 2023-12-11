@@ -57,7 +57,9 @@ await run({
   config: args.config,
   behaviorsGlob: args.behaviors,
   behaviorFilter: args.behaviorFilter,
-  browserBehaviorsGlob: args.runInBrowser,
+  browserBehaviors: {
+    glob: args.runInBrowser
+  },
   failFast: args.failFast,
   runPickedOnly: args.picked,
   viteConfig: args.viteConfig,

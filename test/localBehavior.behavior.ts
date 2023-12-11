@@ -7,7 +7,7 @@ export default behavior("running behaviors in the local JS environment", [
 
   ...behaviorBehaviors({ browserGlob: undefined }),
 
-  example(testRunnerContext({ browserGlob: undefined }))
+  example(testRunnerContext())
     .description("running behaviors that use playwright and local server")
     .script({
       perform: [
@@ -41,7 +41,7 @@ export default behavior("running behaviors in the local JS environment", [
       ]
     }),
 
-  example(testRunnerContext({ browserGlob: undefined }))
+  example(testRunnerContext())
     .description("Local behavior that uses a view controller")
     .script({
       perform: [

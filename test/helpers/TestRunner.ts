@@ -2,10 +2,11 @@ import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from 
 import { run, Logger } from "../../dist/runner/index.js"
 
 export interface TestRunnerOptions {
-  browserGlob: string | undefined
+  browserGlob?: string
+  browserBehaviorHTML?: string
 }
 
-export function testRunnerContext(options: TestRunnerOptions): Context<TestRunner> {
+export function testRunnerContext(options: TestRunnerOptions = {}): Context<TestRunner> {
   return {
     init: () => new TestRunner(options)
   }
@@ -43,7 +44,10 @@ export class TestRunner {
       config: this.configFile,
       behaviorsGlob: pattern ? `./test/fixtures/behaviors/${pattern}` : undefined,
       behaviorFilter: this.behaviorFilter,
-      browserBehaviorsGlob: this.options.browserGlob,
+      browserBehaviors: {
+        glob: this.options.browserGlob,
+        html: this.options.browserBehaviorHTML
+      },
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,

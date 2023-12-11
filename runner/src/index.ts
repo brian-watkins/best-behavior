@@ -8,14 +8,14 @@ import { Runner } from "./runner.js"
 import { Logger, bold, consoleLogger, red } from "./logger.js"
 import { createContext } from "./useContext.js"
 import { PlaywrightTestInstrument } from "./useBrowser.js"
-import { getConfig } from "./config.js"
+import { BrowserBehaviorOptions, getConfig } from "./config.js"
 export type { BrowserTestInstrument } from "./useBrowser.js"
 export { useBrowser } from "./useBrowser.js"
 export { viewControllerModuleLoader } from "./view.js"
 export type { ViewController, ViewControllerModuleLoader } from "./view.js"
 export type { Logger } from "./logger.js"
 export { defineConfig } from "./config.js"
-export type { BestBehaviorConfig } from "./config.js"
+export type { BestBehaviorConfig, BrowserBehaviorOptions } from "./config.js"
 export type { PlaywrightBrowserGenerator, PlaywrightBrowserContextGenerator } from "./adapters/playwrightBrowser.js"
 
 
@@ -23,7 +23,7 @@ export interface RunArguments {
   config?: string
   behaviorsGlob?: string
   behaviorFilter?: string
-  browserBehaviorsGlob?: string
+  browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   runPickedOnly?: boolean
   viteConfig?: string
@@ -73,6 +73,7 @@ export async function run(args: RunArguments): Promise<void> {
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: pathToFile("../adapter/behaviorAdapter.cjs"),
+    homePage: args.browserBehaviors?.html,
     logger
   })
 
@@ -83,7 +84,7 @@ export async function run(args: RunArguments): Promise<void> {
   await runner.run({
     behaviorPathPattern: behaviors,
     behaviorFilter: args.behaviorFilter,
-    browserBehaviorPathPattern: args.browserBehaviorsGlob ?? config?.browserBehaviors,
+    browserBehaviorPathPattern: args.browserBehaviors?.glob ?? config?.browserBehaviors?.glob,
     reporter: args.reporter ?? config?.reporter ?? new StandardReporter(),
     orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(args.seed),
     failFast: args.failFast ?? config?.failFast ?? false,

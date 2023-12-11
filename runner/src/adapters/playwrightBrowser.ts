@@ -70,6 +70,7 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
 }
 
 export interface PreparedBrowserOptions {
+  homePage?: string
   adapterPath?: string
   logger: Logger
 }
@@ -105,6 +106,10 @@ export class PreparedBrowser {
 
     const context = await this.getContext()
     this._page = await context.newPage()
+
+    if (this.options.homePage !== undefined) {
+      await this._page.goto(this.options.homePage)
+    }
 
     return this._page
   }

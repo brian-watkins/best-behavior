@@ -7,12 +7,12 @@ import { Logger } from "./logger.js"
 
 export interface RunOptions {
   behaviorPathPattern: string
-  behaviorFilter: string | undefined,
-  browserBehaviorPathPattern: string | undefined
+  behaviorFilter?: string
+  browserBehaviorPathPattern?: string
   reporter: Reporter
   orderProvider: OrderProvider
   failFast: boolean
-  runPickedOnly: boolean,
+  runPickedOnly: boolean
   logger: Logger
 }
 

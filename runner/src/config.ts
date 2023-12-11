@@ -4,11 +4,16 @@ import { Transpiler } from "./transpiler.js";
 import { OrderProvider, Reporter } from "esbehavior";
 import { Logger } from "./logger.js";
 
+export interface BrowserBehaviorOptions {
+  glob?: string
+  html?: string
+}
+
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
   behaviors?: string
-  browserBehaviors?: string
+  browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string
   reporter?: Reporter
