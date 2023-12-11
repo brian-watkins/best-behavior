@@ -1294,3 +1294,10 @@ https://github.com/Codex-/cosmiconfig-typescript-loader/blob/main/lib/loader.ts
 And we just want to support: `.js`, `.cjs`, `.mjs`, `.ts`, `.mts`, `.cts` (not
 sure if the last two are real things or not)
 
+### Config file overrides
+
+We need the config file to be loaded by multiple independent processes. Right now,
+we're getting kind of tripped up on the reporter, orderProvider, and logger options.
+
+But really we can fix this by just making the defaults be inside the runner object
+and not always passed in.
