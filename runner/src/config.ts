@@ -5,14 +5,14 @@ import { OrderProvider, Reporter } from "esbehavior";
 import { Logger } from "./logger.js";
 
 export interface BrowserBehaviorOptions {
-  glob?: string
+  globs?: Array<string>
   html?: string
 }
 
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
-  behaviors?: string
+  behaviors?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string

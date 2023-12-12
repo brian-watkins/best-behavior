@@ -50,9 +50,9 @@ $ best --behaviors 'tests/**/*.behavior.ts'
 Options:
   --help          Show help
   --version       Show version number
-  --config        path to best behavior config file  [string]
-  --behaviors     glob that matches behaviors; relative to working dir  [required]
-  --runInBrowser  glob that matches behaviors to run in browser; subset of behaviors
+  --config        path to best behavior config file
+  --behaviors     globs that match behaviors; relative to working dir; may specify multiple
+  --runInBrowser  globs that match behaviors to run in browser; subset of behaviors; may specify multiple
   --failFast      stop on first invalid claim
   --picked        run only picked behaviors and examples
   --seed          specify seed for random ordering
@@ -66,6 +66,7 @@ picked (via the esbehavior pick functionality):
 
 ```
 $ best --behaviors 'tests/**/*.behavior.ts' \
+       --behaviors 'otherTests/**/*.behavior.ts' \
        --runInBrowser '**/*.browser.behavior.ts' \
        --showBrowser \
        --picked
@@ -87,13 +88,18 @@ The config file should have one default export of the type `BestBehaviorConfig`:
 interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
-  behaviors?: string
-  browserBehaviors?: string
+  behaviors?: Array<string>
+  browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string
   reporter?: Reporter
   orderProvider?: OrderProvider
   logger?: Logger
+}
+
+interface BrowserBehaviorOptions {
+  globs?: Array<string>
+  html?: string
 }
 ```
 
@@ -104,7 +110,9 @@ import { firefox } from "playwright"
 import { defineConfig } from "best-behavior"
 
 export default defineConfig({
-  behaviors: "./behaviors/**/*.behavior.ts`,
+  behaviors: [
+    "./behaviors/**/*.behavior.ts`
+  ],
   browser: (showBrowser) => firefox.launch({ headless: !showBrowser })
 })
 ```

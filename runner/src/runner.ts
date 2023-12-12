@@ -6,9 +6,9 @@ import { BehaviorFactory } from "./behaviorFactory.js"
 import { Logger } from "./logger.js"
 
 export interface RunOptions {
-  behaviorPathPattern: string
+  behaviorPathPatterns: Array<string>
   behaviorFilter?: string
-  browserBehaviorPathPattern?: string
+  browserBehaviorPathPatterns?: Array<string>
   reporter: Reporter
   orderProvider: OrderProvider
   failFast: boolean
@@ -40,9 +40,9 @@ export class Runner {
 
   private async getBehaviors(options: RunOptions): Promise<Array<BehaviorMetadata>> {
     return await getBehaviorsMatchingPattern({
-      behaviorGlob: options.behaviorPathPattern,
+      behaviorGlobs: options.behaviorPathPatterns,
       behaviorFilter: options.behaviorFilter,
-      browserBehaviorPattern: options.browserBehaviorPathPattern,
+      browserBehaviorGlobs: options.browserBehaviorPathPatterns,
       logger: options.logger
     })
   }

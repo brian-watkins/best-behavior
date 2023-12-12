@@ -4,14 +4,14 @@ import { Minimatch } from "minimatch"
 import { Logger, bold, red } from './logger.js'
 
 export interface BehaviorCollectionOptions {
-  behaviorGlob: string
+  behaviorGlobs: Array<string>
   behaviorFilter: string | undefined
-  browserBehaviorPattern: string | undefined,
+  browserBehaviorGlobs: Array<string> | undefined,
   logger: Logger
 }
 
 export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<Array<BehaviorMetadata>> {
-  const allFiles = await glob(options.behaviorGlob, { ignore: 'node_modules/**' })
+  const allFiles = await glob(options.behaviorGlobs, { ignore: 'node_modules/**' })
 
   const fileFilter = new FileFilter(options.behaviorFilter)
   const files = fileFilter.filter(allFiles)
@@ -21,7 +21,7 @@ export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOpt
     return []
   }
 
-  const browserPattern = new PathMatcher(options.browserBehaviorPattern)
+  const browserPattern = new PathMatcher(options.browserBehaviorGlobs)
 
   let behaviors: Array<BehaviorMetadata> = []
   for (const file of files) {
@@ -59,17 +59,17 @@ class FileFilter {
 }
 
 class PathMatcher {
-  private browserPattern: Minimatch | undefined
+  private browserPatterns: Array<Minimatch> | undefined
 
-  constructor(pathPattern: string | undefined) {
-    if (pathPattern) {
-      this.browserPattern = new Minimatch(pathPattern)
+  constructor(pathPatterns: Array<string> | undefined) {
+    if (pathPatterns) {
+      this.browserPatterns = pathPatterns.map((pattern) => new Minimatch(pattern))
     }
   }
 
   match(file: string): boolean {
-    if (this.browserPattern) {
-      return this.browserPattern.match(file)
+    if (this.browserPatterns) {
+      return this.browserPatterns.some((pattern) => pattern.match(file))
     } else {
       return false
     }

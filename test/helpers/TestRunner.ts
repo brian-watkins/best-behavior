@@ -42,10 +42,10 @@ export class TestRunner {
   async runBehaviors(pattern?: string): Promise<void> {
     await run({
       config: this.configFile,
-      behaviorsGlob: pattern ? `./test/fixtures/behaviors/${pattern}` : undefined,
+      behaviorGlobs: pattern ? [`./test/fixtures/behaviors/${pattern}`] : undefined,
       behaviorFilter: this.behaviorFilter,
       browserBehaviors: {
-        glob: this.options.browserGlob,
+        globs: this.options.browserGlob ? [this.options.browserGlob] : undefined,
         html: this.options.browserBehaviorHTML
       },
       failFast: this.shouldFailFast,

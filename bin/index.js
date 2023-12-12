@@ -19,11 +19,11 @@ const args = yargs(process.argv.slice(2))
         },
         "behaviors": {
           describe: "glob that matches behaviors; relative to working dir",
-          type: "string"
+          type: "array"
         },
         "runInBrowser": {
           describe: "glob that matches behaviors to run in browser; subset of behaviors",
-          type: "string"
+          type: "array"
         },
         "failFast": {
           describe: "stop on first invalid claim",
@@ -55,10 +55,10 @@ const args = yargs(process.argv.slice(2))
 
 await run({
   config: args.config,
-  behaviorsGlob: args.behaviors,
+  behaviorGlobs: args.behaviors,
   behaviorFilter: args.behaviorFilter,
   browserBehaviors: {
-    glob: args.runInBrowser
+    globs: args.runInBrowser
   },
   failFast: args.failFast,
   runPickedOnly: args.picked,

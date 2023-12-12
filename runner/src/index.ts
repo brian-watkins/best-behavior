@@ -21,7 +21,7 @@ export type { PlaywrightBrowserGenerator, PlaywrightBrowserContextGenerator } fr
 
 export interface RunArguments {
   config?: string
-  behaviorsGlob?: string
+  behaviorGlobs?: Array<string>
   behaviorFilter?: string
   browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
@@ -47,7 +47,7 @@ export async function run(args: RunArguments): Promise<void> {
 
   const logger = args.logger ?? config?.logger ?? consoleLogger()
 
-  const behaviors = args.behaviorsGlob ?? config?.behaviors
+  const behaviors = args.behaviorGlobs ?? config?.behaviors
 
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
@@ -82,9 +82,9 @@ export async function run(args: RunArguments): Promise<void> {
   const runner = new Runner(behaviorFactory)
 
   await runner.run({
-    behaviorPathPattern: behaviors,
+    behaviorPathPatterns: behaviors,
     behaviorFilter: args.behaviorFilter,
-    browserBehaviorPathPattern: args.browserBehaviors?.glob ?? config?.browserBehaviors?.glob,
+    browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? config?.browserBehaviors?.globs,
     reporter: args.reporter ?? config?.reporter ?? new StandardReporter(),
     orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(args.seed),
     failFast: args.failFast ?? config?.failFast ?? false,
