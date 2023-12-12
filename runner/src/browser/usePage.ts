@@ -5,6 +5,10 @@ declare let window: BehaviorBrowserWindow
 
 export type PageFunction<T, S> = (page: Page, arg: S) => Promise<T>
 
-export function usePage<T, S = void>(pageFunction: PageFunction<T, S>, args?: S): Promise<T> {
-  return window.__bb_pageBinding(pageFunction.toString(), args)
+export async function usePage<T, S = void>(pageFunction: PageFunction<T, S>, args?: S): Promise<T> {
+  try {
+    return await window.__bb_pageBinding(pageFunction.toString(), args)
+  } catch (err: any) {
+    throw new Error(err.message)
+  }
 }

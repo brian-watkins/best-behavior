@@ -111,11 +111,19 @@ export default behavior("running behaviors in the browser environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 1,
-            examples: 1,
+            examples: 2,
             valid: 3,
-            invalid: 0,
+            invalid: 1,
             skipped: 0
           }))))
+        }),
+        effect("it prints a reasonable stack for the usePage exception", (context) => {
+          expect(context.reporter.invalidClaims, is(arrayWith([
+            objectWithProperty("stack", assignedWith(satisfying([
+              stringContaining("locator.innerText: Timeout 50ms exceeded"),
+              stringContaining("usePage.behavior.ts:39")
+            ])))
+          ])))
         })
       ]
     }),

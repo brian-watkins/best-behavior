@@ -1,10 +1,17 @@
 import { behavior, effect, example, step } from "esbehavior"
-import { expect, resolvesTo } from "great-expectations"
+import { expect, is, resolvesTo } from "great-expectations"
 import { usePage } from "../../../../../runner/src/browser/index.js"
 
 export default behavior("Behavior 1", [
 
-  example()
+  example({
+    init: () => { },
+    teardown: () => {
+      while (document.body.hasChildNodes()) {
+        document.body.removeChild(document.body.lastChild!)
+      }
+    }
+  })
     .description("first")
     .script({
       perform: [
@@ -20,6 +27,17 @@ export default behavior("Behavior 1", [
         }),
         effect("it uses playwright to make another assertion", async () => {
           await expect(usePage((page) => page.locator("H1").innerText()), resolvesTo("This is amazing!"))
+        })
+      ]
+    }),
+
+  example()
+    .description("a failing observation")
+    .script({
+      observe: [
+        effect("it fails to find something", async () => {
+          const text = await usePage(async (page) => page.locator("H3").innerText({ timeout: 50 }))
+          expect(text, is("something cool"))
         })
       ]
     })
