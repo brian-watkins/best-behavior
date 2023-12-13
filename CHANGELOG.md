@@ -1,5 +1,17 @@
 # best-behavior
 
+## 0.3.0
+
+### Minor Changes
+
+- 64f2305: Configure the Playwright browser and context for tests
+- 64f2305: Filter behaviors to run with a regex from the command line
+- 64f2305: Support for variables when importing a view to mount in the browser
+
+### Patch Changes
+
+- 64f2305: Better error handling when loading behaviors
+
 ## 0.2.0
 
 ### Minor Changes
