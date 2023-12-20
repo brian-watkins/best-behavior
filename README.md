@@ -88,7 +88,7 @@ The config file should have one default export of the type `BestBehaviorConfig`:
 interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
-  behaviors?: Array<string>
+  behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string
@@ -110,7 +110,7 @@ import { firefox } from "playwright"
 import { defineConfig } from "best-behavior"
 
 export default defineConfig({
-  behaviors: [
+  behaviorGlobs: [
     "./behaviors/**/*.behavior.ts`
   ],
   browser: (showBrowser) => firefox.launch({ headless: !showBrowser })
@@ -286,14 +286,16 @@ run(args: RunArguments): Promise<void>
 
 ```
 interface RunArguments {
-  behaviorsGlob: string // relative to working dir
-  browserBehaviorsGlob: string | undefined // subset of behaviorsGlob
-  failFast: boolean
-  runPickedOnly: boolean
-  viteConfig: string | undefined // relative to working dir
-  showBrowser: boolean
-  reporter: Reporter // from esbehavior
-  orderProvider: OrderProvider // from esbehavior
-  logger: Logger
+  config?: string // path to config relative to working dir
+  behaviorGlobs?: Array<string>
+  behaviorFilter?: string // regex to filter behaviors
+  browserBehaviors?: BrowserBehaviorOptions
+  failFast?: boolean
+  runPickedOnly?: boolean
+  viteConfig?: string // relative to working dir
+  showBrowser?: boolean
+  reporter?: Reporter // from esbehavior
+  orderProvider?: OrderProvider // from esbehavior
+  logger?: Logger
 }
 ```

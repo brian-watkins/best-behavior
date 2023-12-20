@@ -12,7 +12,7 @@ export interface BrowserBehaviorOptions {
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
   context?: PlaywrightBrowserContextGenerator
-  behaviors?: Array<string>
+  behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string

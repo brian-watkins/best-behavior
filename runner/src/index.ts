@@ -26,7 +26,6 @@ export interface RunArguments {
   runPickedOnly?: boolean
   viteConfig?: string
   showBrowser?: boolean
-  seed?: string
   reporter?: Reporter
   orderProvider?: OrderProvider
   logger?: Logger
@@ -45,7 +44,7 @@ export async function run(args: RunArguments): Promise<void> {
 
   const logger = args.logger ?? config?.logger ?? consoleLogger()
 
-  const behaviors = args.behaviorGlobs ?? config?.behaviors
+  const behaviors = args.behaviorGlobs ?? config?.behaviorGlobs
 
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
@@ -84,7 +83,7 @@ export async function run(args: RunArguments): Promise<void> {
     behaviorFilter: args.behaviorFilter,
     browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? config?.browserBehaviors?.globs,
     reporter: args.reporter ?? config?.reporter ?? new StandardReporter(),
-    orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(args.seed),
+    orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(),
     failFast: args.failFast ?? config?.failFast ?? false,
     runPickedOnly: args.runPickedOnly ?? false,
     logger
