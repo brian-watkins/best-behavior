@@ -1,6 +1,5 @@
 import { useContext } from "./useContext.js";
-import { BrowserContext, JSHandle, Page } from "playwright";
-import { ViewController, ViewControllerModuleLoader } from "./view.js";
+import { BrowserContext, Page } from "playwright";
 import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "./adapters/playwrightBrowser.js";
 
 export async function useBrowser(context?: PlaywrightBrowserContextGenerator): Promise<BrowserTestInstrument> {
@@ -9,14 +8,8 @@ export async function useBrowser(context?: PlaywrightBrowserContextGenerator): P
   return browserTestInstrument
 }
 
-export interface ViewOptions<RenderArgs> {
-  controller: ViewControllerModuleLoader<RenderArgs, any>
-  renderArgs: RenderArgs
-}
-
 export interface BrowserTestInstrument {
   page: Page
-  mountView<RenderArgs>(options: ViewOptions<RenderArgs>): Promise<void>
 }
 
 export class PlaywrightTestInstrument extends PreparedBrowser implements BrowserTestInstrument {
@@ -27,8 +20,18 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
 
     await context.addInitScript({
       content: `
-      window["__vite_ssr_dynamic_import__"] = (path) => { const url = new URL(path, "${this.browser.baseURL}"); return import(url.href); };
-      window["__vite_ssr_import_0__"] = { default: (map, key) => map[key]() };
+      window["__vite_ssr_dynamic_import__"] = (path) => {
+        const url = new URL(path, "${this.browser.baseURL}");
+        return import(url.href);
+      };
+      window["__vite_ssr_import_0__"] = {
+        default: (map, key) => {
+          if (map[key] === undefined) {
+            throw new Error("Failed to fetch dynamically imported module: " + key)
+          }
+          return map[key]()
+        }
+      };
     ` })
 
     return context
@@ -43,26 +46,36 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
   }
 
   get page(): Page {
-    return this._page!
+    return pageWithBetterExceptionHandling(this._page!, this.browser.baseURL)
   }
+}
 
-  async mountView(options: ViewOptions<any>): Promise<void> {
-    let moduleHandle: JSHandle<{ default: ViewController<any> }>
-
-    try {
-      moduleHandle = await this.page.evaluateHandle(options.controller.loader, options.controller.args)
-    } catch (err) {
-      throw new Error("Unable to load the view controller module in the browser! If you are using variables in your import statement, make sure they are specified via the `args` parameter. Also, check that the dynamic import path is relative and specifies the exact extension of the file you want to load. See the README for other limitations of dynamic import variables.")
+function pageWithBetterExceptionHandling(page: Page, baseURL: string): Page {
+  return new Proxy(page, {
+    get(target, prop) {
+      //@ts-ignore
+      const val = target[prop]
+      if (typeof val === "function") {
+        return (...args: Array<any>) => {
+          try {
+            const result = val.apply(target, args)
+            if (result instanceof Promise) {
+              return result.catch((err: any) => {
+                throw errorWithCorrectedStack(err, baseURL)
+              })
+            }
+            return result
+          } catch (err: any) {
+            throw errorWithCorrectedStack(err, baseURL)
+          }
+        }
+      } else {
+        return val
+      }
     }
+  })
+}
 
-    try {
-      await moduleHandle.evaluateHandle(async (viewControllerModule, context) => {
-        await viewControllerModule["default"].render(context.renderArgs)
-      }, {
-        renderArgs: options.renderArgs
-      })
-    } catch (err: any) {
-      throw { ...err, stack: err.stack?.replaceAll(this.browser.baseURL, "") }
-    }
-  }
+function errorWithCorrectedStack(error: Error, baseURL: string): Error {
+  return { ...error, stack: error.stack?.replaceAll(baseURL, "") }
 }

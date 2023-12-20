@@ -1,33 +1,22 @@
 import { Context, behavior, effect, example, fact, step } from "esbehavior";
-import { BrowserTestInstrument, useBrowser, viewControllerModuleLoader } from "../../../../runner/src/index.js"
+import { BrowserTestInstrument, useBrowser } from "../../../../runner/src/index.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
 const browserContext: Context<BrowserTestInstrument> = {
   init: () => useBrowser()
 }
 
-const viewControllerModule = viewControllerModuleLoader(() => import("./displays/testDisplay.js"))
-
-function viewControllerModuleWithArgs(name: string) {
-  return viewControllerModuleLoader((context) => import(`./displays/${context.name}.ts`), {
-    name
-  })
-}
-
-const htmlViewControllerModule = viewControllerModuleLoader(() => import("./displays/htmlDisplay.js"))
-
-
-export default behavior("display context", [
+export default behavior("component testing", [
 
   example(browserContext)
-    .description("use a display context")
+    .description("use a component")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mountView({
-            controller: viewControllerModule,
-            renderArgs: { title: "Something cool" }
-          })
+          await context.page.evaluate(async (args) => {
+            const module = await import("./displays/testDisplay.js")
+            module.render(args)
+          }, { title: "Something cool" })
         })
       ],
       perform: [
@@ -50,14 +39,14 @@ export default behavior("display context", [
     }),
 
   example(browserContext)
-    .description("use a display context again")
+    .description("use a component again")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mountView({
-            controller: viewControllerModule,
-            renderArgs: { title: "Another cool thing!" }
-          })
+          await context.page.evaluate(async (args) => {
+            const module = await import("./displays/testDisplay.js")
+            module.render(args)
+          }, { title: "Another cool thing!" })
         })
       ],
       perform: [
@@ -81,14 +70,14 @@ export default behavior("display context", [
     }),
 
   example(browserContext)
-    .description("use variables in dynamic view controller import")
+    .description("use variables when importing a component")
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mountView({
-            controller: viewControllerModuleWithArgs("testDisplay"),
-            renderArgs: { title: "A dynamically radical thing!" }
-          })
+          await context.page.evaluate(async (args) => {
+            const module = await import(`./displays/${args.name}.ts`)
+            module.render(args)
+          }, { title: "A dynamically radical thing!", name: "testDisplay" })
         })
       ],
       observe: [
@@ -100,19 +89,20 @@ export default behavior("display context", [
     }),
 
   example(browserContext)
-    .description("Use a view controller with async render and teardown")
+    .description("literal import fails to resolve")
     .script({
       suppose: [
-        fact("a funny component is rendered", async (browser) => {
-          await browser.mountView({
-            controller: viewControllerModuleLoader(() => import("./displays/asyncDisplay.js")),
-            renderArgs: { title: "You are asynchronously fabulous!" }
-          })
+        fact("a component is rendered", async (context) => {
+          await context.page.evaluate(async (args) => {
+            //@ts-ignore
+            const module = await import("./displays/not-a-real-thing.js")
+            module.render(args)
+          }, { title: "A bad thing!" })
         })
       ],
       observe: [
-        effect("the title is rendered as expected", async (display) => {
-          await expect(display.page.locator("h1").innerText({ timeout: 200 }), resolvesTo("You are asynchronously fabulous!"))
+        effect("it will skip this", async (context) => {
+          expect(7, is(5))
         })
       ]
     }),
@@ -122,10 +112,10 @@ export default behavior("display context", [
     .script({
       suppose: [
         fact("a component is rendered", async (context) => {
-          await context.mountView({
-            controller: viewControllerModuleWithArgs("does-not-exist"),
-            renderArgs: { title: "Something funny!" }
-          })
+          await context.page.evaluate(async (args) => {
+            const module = await import(`./displays/${args.name}.js`)
+            module.render(args)
+          }, { title: "A dynamically radical thing!", name: "does-not-exist" })
         })
       ],
       observe: [
@@ -141,10 +131,10 @@ export default behavior("display context", [
       suppose: [
         fact("a funny component is rendered", async (browser) => {
           await browser.page.goto("./test/fixtures/behaviors/hybrid/testSetup.html")
-          await browser.mountView({
-            controller: htmlViewControllerModule,
-            renderArgs: "You are cool!"
-          })
+          await browser.page.evaluate(async (args) => {
+            const module = await import("./displays/htmlDisplay.js")
+            module.render(args)
+          }, "You are cool!")
         })
       ],
       observe: [

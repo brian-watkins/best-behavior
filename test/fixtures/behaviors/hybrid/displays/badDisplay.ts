@@ -1,15 +1,10 @@
-import { ViewController } from "../../../../../runner/src/index.js"
 
 export interface TheArgs {
   name: string
 }
 
-const display: ViewController<TheArgs> = {
-  render() {
-    const div = document.createElement("div")
-    //@ts-ignore
-    div.doFunStuff()
-  }
+export function render(args: TheArgs) {
+  const div = document.createElement("div")
+  //@ts-ignore
+  div.doFunStuff(args.name)
 }
-
-export default display

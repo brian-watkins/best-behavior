@@ -54,18 +54,21 @@ export default behavior("running behaviors in the local JS environment", [
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
             examples: 8,
-            valid: 15,
-            invalid: 2,
-            skipped: 2
+            valid: 13,
+            invalid: 3,
+            skipped: 3
           }))))
         }),
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
             objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("Unable to load the view controller module in the browser!")
+              stringContaining("Failed to fetch dynamically imported module")
             ]))),
             objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("badDisplay.ts:11"),
+              stringContaining("Failed to fetch dynamically imported module")
+            ]))),
+            objectWithProperty("stack", assignedWith(satisfying([
+              stringContaining("badDisplay.ts:9"),
               stringContaining("http://localhost", { times: 0 })
             ])))
           ])))
