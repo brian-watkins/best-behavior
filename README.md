@@ -28,7 +28,7 @@ Best-Behavior treats esbehavior, Vite, and Playwright as peer dependencies,
 -- since your tests will generally utilize these packages directly, it's good
 for you to understand and control their versions -- so you'll
 need to install these separately. To utiliize esbehavior you'll also need a
-matcher library; we recommend also installing great-expectations.
+matcher library; we recommend also installing [great-expectations](https://www.npmjs.com/package/great-expectations).
 
 ```
 $ npm install --save-dev best-behavior esbehavior great-expectations vite playwright
