@@ -34,11 +34,11 @@ function transpilerLoader(transpiler: Transpiler): (path: string) => Promise<Loa
 export async function getConfig(transpiler: Transpiler, path: string | undefined): Promise<BestBehaviorConfig | undefined> {
   const options: Options = {
     searchPlaces: [
-      `bb.config.js`,
-      `bb.config.cjs`,
-      `bb.config.mjs`,
-      `bb.config.ts`,
-      `bb.config.mts`,
+      `best.config.js`,
+      `best.config.cjs`,
+      `best.config.mjs`,
+      `best.config.ts`,
+      `best.config.mts`,
     ],
     loaders: {
       ".js": transpilerLoader(transpiler),

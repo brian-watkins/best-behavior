@@ -79,7 +79,7 @@ interpret them itself and you may get unexpected results.
 ## Config File
 
 You may also specify options in a config file. By default, best-behavior will look
-for a file called `bb.config.(js|cjs|mjs|ts|mts)` in the current working directory.
+for a file called `best.config.(js|cjs|mjs|ts|mts)` in the current working directory.
 Alternatively, a config file location may be specified via the `--config` CLI option.
 
 The config file should have one default export of the type `BestBehaviorConfig`:
