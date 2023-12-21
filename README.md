@@ -1,6 +1,7 @@
 # best-behavior
 
-Best-Behavior is a command line tool that runs esbehavior specs. It brings
+Best-Behavior is a command line tool that runs
+[esbehavior](https://www.npmjs.com/package/esbehavior) specs. It brings
 together Vite and Playwright, along with esbehavior, to allow you to write tests
 that exercise your browser-based web applications in a real web browser.
 
@@ -28,7 +29,8 @@ Best-Behavior treats esbehavior, Vite, and Playwright as peer dependencies,
 -- since your tests will generally utilize these packages directly, it's good
 for you to understand and control their versions -- so you'll
 need to install these separately. To utiliize esbehavior you'll also need a
-matcher library; we recommend also installing [great-expectations](https://www.npmjs.com/package/great-expectations).
+matcher library; we recommend also installing
+[great-expectations](https://www.npmjs.com/package/great-expectations).
 
 ```
 $ npm install --save-dev best-behavior esbehavior great-expectations vite playwright
