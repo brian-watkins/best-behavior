@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.4.0
+
+### Minor Changes
+
+- ede7382: Use Page.evaluate to load views for testing
+
 ## 0.3.0
 
 ### Minor Changes
