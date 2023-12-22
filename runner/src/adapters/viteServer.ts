@@ -3,13 +3,13 @@ import { LocalServer } from "../localServer.js";
 import { Transpiler } from "../transpiler.js";
 
 export interface ViteLocalServerOptions {
-  viteConfig: string | undefined
+  viteConfig?: string
 }
 
 export class ViteLocalServer implements LocalServer, Transpiler {
   private server: ViteDevServer | undefined;
 
-  constructor(private options: ViteLocalServerOptions) { }
+  constructor(private options: ViteLocalServerOptions = {}) { }
 
   async start(): Promise<void> {
     this.server = await createServer({

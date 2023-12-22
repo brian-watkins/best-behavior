@@ -8,7 +8,7 @@ import { Runner } from "./runner.js"
 import { Logger, bold, consoleLogger, red } from "./logger.js"
 import { createContext } from "./useContext.js"
 import { PlaywrightTestInstrument } from "./useBrowser.js"
-import { BrowserBehaviorOptions, getConfig } from "./config.js"
+import { BestBehaviorConfig, BrowserBehaviorOptions, getConfig } from "./config.js"
 export type { BrowserTestInstrument } from "./useBrowser.js"
 export { useBrowser } from "./useBrowser.js"
 export type { Logger } from "./logger.js"
@@ -35,16 +35,16 @@ export interface RunArguments {
 // Is there a way we could consolidate that?
 
 export async function run(args: RunArguments): Promise<void> {
+  const baseConfig = await getBaseConfig(args.config)
+
   const viteServer = new ViteLocalServer({
-    viteConfig: args.viteConfig
+    viteConfig: args.viteConfig ?? baseConfig?.viteConfig
   })
   await viteServer.start()
 
-  const config = await getConfig(viteServer, args.config)
+  const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
 
-  const logger = args.logger ?? config?.logger ?? consoleLogger()
-
-  const behaviors = args.behaviorGlobs ?? config?.behaviorGlobs
+  const behaviors = args.behaviorGlobs ?? baseConfig?.behaviorGlobs
 
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
@@ -56,8 +56,8 @@ export async function run(args: RunArguments): Promise<void> {
   const playwrightBrowser = new PlaywrightBrowser({
     showBrowser: args.showBrowser ?? false,
     baseURL: viteServer.host,
-    browserGenerator: config?.browser,
-    browserContextGenerator: config?.context
+    browserGenerator: baseConfig?.browser,
+    browserContextGenerator: baseConfig?.context
   })
 
   const browserTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
@@ -81,10 +81,10 @@ export async function run(args: RunArguments): Promise<void> {
   await runner.run({
     behaviorPathPatterns: behaviors,
     behaviorFilter: args.behaviorFilter,
-    browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? config?.browserBehaviors?.globs,
-    reporter: args.reporter ?? config?.reporter ?? new StandardReporter(),
-    orderProvider: args.orderProvider ?? config?.orderProvider ?? randomOrder(),
-    failFast: args.failFast ?? config?.failFast ?? false,
+    browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
+    reporter: args.reporter ?? baseConfig?.reporter ?? new StandardReporter(),
+    orderProvider: args.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
+    failFast: args.failFast ?? baseConfig?.failFast ?? false,
     runPickedOnly: args.runPickedOnly ?? false,
     logger
   })
@@ -93,6 +93,17 @@ export async function run(args: RunArguments): Promise<void> {
     await playwrightBrowser.stop()
     await viteServer.stop()
   }
+}
+
+async function getBaseConfig(path: string | undefined): Promise<BestBehaviorConfig | undefined> {
+  const configTranspiler = new ViteLocalServer()
+  await configTranspiler.start()
+
+  const config = await getConfig(configTranspiler, path)
+
+  await configTranspiler.stop()
+
+  return config
 }
 
 function pathToFile(relativePath: string): string {
