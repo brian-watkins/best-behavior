@@ -2,8 +2,9 @@
 
 Best-Behavior is a command line tool that runs
 [esbehavior](https://www.npmjs.com/package/esbehavior) specs. It brings
-together Vite and Playwright, along with esbehavior, to allow you to write tests
-that exercise your browser-based web applications in a real web browser.
+together [Vite](https://vitejs.dev) and [Playwright](https://playwright.dev),
+along with esbehavior, to allow you to write tests that exercise your
+browser-based web applications in a real web browser.
 
 With Best-Behavior you can:
 - Test application logic in Node or a real web browser
