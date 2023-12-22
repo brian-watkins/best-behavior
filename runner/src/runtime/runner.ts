@@ -3,7 +3,7 @@ import { SequentialValidator } from "./sequentialValidator.js"
 import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior"
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
-import { Logger } from "./logger.js"
+import { Logger } from "../logger.js"
 
 export interface RunOptions {
   behaviorPathPatterns: Array<string>

@@ -1,6 +1,6 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
 import { expect, resolvesTo } from "great-expectations";
-import { useBrowser } from "../../../../runner/src/index.js";
+import { useBrowser } from "../../../../runner/src/browser.js";
 
 export default behavior("useBrowser", [
 

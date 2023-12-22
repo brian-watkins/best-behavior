@@ -1,9 +1,9 @@
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
 import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "../adapters/playwrightBrowser.js"
-import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError } from "../behaviorMetadata.js"
+import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError } from "./behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
-import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "./behaviorBrowserWindow.js"
+import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "../behaviorBrowserWindow.js"
 
 declare let window: BehaviorBrowserWindow
 

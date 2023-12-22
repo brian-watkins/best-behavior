@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --enable-source-maps
 
 import yargs from "yargs"
-import { run } from "../dist/runner/index.js"
+import { run } from "../dist/runner/runtime/index.js"
 import { randomOrder } from "esbehavior"
 
 const args = yargs(process.argv.slice(2))

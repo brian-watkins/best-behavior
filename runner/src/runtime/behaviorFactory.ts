@@ -1,6 +1,6 @@
 import { ConfigurableBehavior } from "esbehavior";
-import { Transpiler } from "./transpiler.js";
-import { BrowserBehaviorContext } from "./browser/browserBehavior.js";
+import { Transpiler } from "../transpiler.js";
+import { BrowserBehaviorContext } from "./browserBehavior.js";
 import { getLocalBehavior } from "./localBehavior.js";
 import { BehaviorEnvironment, BehaviorMetadata } from "./behaviorMetadata.js";
 

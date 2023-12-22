@@ -13,7 +13,9 @@
   "types": "./dist/runner/index.d.ts",
   "exports": {
     ".": "./dist/runner/index.js",
-    "./browser": "./dist/runner/browser/index.js"
+    "./browser": "./dist/runner/browser.js",
+    "./page": "./dist/runner/page.js",
+    "./runtime": "./dist/runner/runtime/index.js"
   },
   "files": [
     "bin/",

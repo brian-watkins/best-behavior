@@ -1,7 +1,7 @@
 import { glob } from 'glob'
 import { BehaviorEnvironment, BehaviorMetadata } from './behaviorMetadata.js'
 import { Minimatch } from "minimatch"
-import { Logger, bold, red } from './logger.js'
+import { Logger, bold, red } from '../logger.js'
 
 export interface BehaviorCollectionOptions {
   behaviorGlobs: Array<string>

@@ -1,6 +1,6 @@
 import { behavior, effect, example, step } from "esbehavior"
 import { expect, is, resolvesTo } from "great-expectations"
-import { usePage } from "../../../../../runner/src/browser/index.js"
+import { usePage } from "../../../../../runner/src/page.js"
 
 export default behavior("Behavior 1", [
 

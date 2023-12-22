@@ -1,6 +1,6 @@
 import { behavior, effect, example } from "esbehavior";
 import { expect, is } from "great-expectations"
-import { usePage } from "../../../../../runner/src/browser/index.js";
+import { usePage } from "../../../../../runner/src/page.js";
 
 export default behavior("HTML Behavior", [
 
