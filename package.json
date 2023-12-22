@@ -2,7 +2,7 @@
   "name": "best-behavior",
   "author": "Brian Watkins",
   "license": "MIT",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Runner for esbehavior behaviors",
   "repository": {
     "type": "git",

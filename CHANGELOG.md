@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.6.0
+
+### Minor Changes
+
+- 4cfe54d: Refactor imports for browser, runtime, and page helpers
+
 ## 0.5.0
 
 ### Minor Changes
