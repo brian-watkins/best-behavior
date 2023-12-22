@@ -37,21 +37,21 @@ export interface RunArguments {
 export async function run(args: RunArguments): Promise<void> {
   const baseConfig = await getBaseConfig(args.config)
 
-  const viteServer = new ViteLocalServer({
-    viteConfig: args.viteConfig ?? baseConfig?.viteConfig
-  })
-  await viteServer.start()
-
   const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
 
   const behaviors = args.behaviorGlobs ?? baseConfig?.behaviorGlobs
 
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
-    logger.error("Provide a glob via the --behaviors CLI option or the behaviors property of the config file.")
-    await viteServer.stop()
+    logger.error("Provide a glob via the --behaviors CLI option or the behaviorGlobs property of the config file.")
     return
   }
+
+  const viteServer = new ViteLocalServer({
+    viteConfig: args.viteConfig ?? baseConfig?.viteConfig,
+    behaviorGlobs: behaviors
+  })
+  await viteServer.start()
 
   const playwrightBrowser = new PlaywrightBrowser({
     showBrowser: args.showBrowser ?? false,

@@ -4,6 +4,7 @@ import { Transpiler } from "../transpiler.js";
 
 export interface ViteLocalServerOptions {
   viteConfig?: string
+  behaviorGlobs?: Array<string>
 }
 
 export class ViteTranspiler implements Transpiler {
@@ -41,6 +42,9 @@ export class ViteLocalServer implements LocalServer, Transpiler {
   async start(): Promise<void> {
     this.server = await createServer({
       configFile: this.options.viteConfig,
+      optimizeDeps: {
+        entries: this.options.behaviorGlobs
+      },
       server: {
         hmr: false,
         headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }
