@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.4.2
+
+### Patch Changes
+
+- 17a3e02: Disable dependency optimization when loading config file
+
 ## 0.4.1
 
 ### Patch Changes
