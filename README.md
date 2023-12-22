@@ -136,6 +136,7 @@ a Playwright browser instance for you. You can use the `useBrowser` function
 to obtain a `BrowserTestInstrument` that provides an interface to these managed
 objects during your test.
 
+### best-behavior/browser
 
 #### useBrowser
 
@@ -184,6 +185,8 @@ and processed by Vite.
 For example:
 
 ```
+import { useBrowser } from "best-behavior/browser"
+
 const browser = await useBrowser()
 await browser.page.goto("/tests/fixtures/testPage.html")
 ```
@@ -257,6 +260,7 @@ interact with or make assertions about the DOM.
 In this case, leverage the `usePage` function to interact with the Playwright
 Page object from within the browser-based test.
 
+### best-behavior/page
 
 #### usePage
 
@@ -277,6 +281,7 @@ Instead of using the `best` CLI, you can run behaviors via a script that invokes
 the `run` function programmatically. This can be useful if you need to provide
 a custom `Reporter` or `OrderProvider` or `Logger`.
 
+### best-behavior/runtime
 
 #### run
 
