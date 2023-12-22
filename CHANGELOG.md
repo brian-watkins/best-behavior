@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.5.0
+
+### Minor Changes
+
+- 160ccc2: Automatically optimize dependencies for behaviors
+
 ## 0.4.2
 
 ### Patch Changes
