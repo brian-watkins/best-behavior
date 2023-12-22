@@ -9,13 +9,13 @@
     "url": "https://github.com/brian-watkins/best-behavior"
   },
   "type": "module",
-  "main": "./dist/runner/index.js",
-  "types": "./dist/runner/index.d.ts",
+  "main": "./dist/main/index.js",
+  "types": "./dist/main/index.d.ts",
   "exports": {
-    ".": "./dist/runner/index.js",
-    "./browser": "./dist/runner/browser.js",
-    "./page": "./dist/runner/page.js",
-    "./runtime": "./dist/runner/runtime/index.js"
+    ".": "./dist/main/index.js",
+    "./browser": "./dist/main/browser.js",
+    "./page": "./dist/main/page.js",
+    "./runtime": "./dist/main/runtime/index.js"
   },
   "files": [
     "bin/",

@@ -1,6 +1,6 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Logger } from "../../dist/runner/index.js"
-import { run } from "../../dist/runner/runtime/index.js"
+import { Logger } from "../../dist/main/index.js"
+import { run } from "../../dist/main/runtime/index.js"
 
 export interface TestRunnerOptions {
   browserGlob?: string

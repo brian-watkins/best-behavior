@@ -1,7 +1,7 @@
 import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
-import { BehaviorDataErrorCode, type BehaviorBrowserWindow, type BehaviorData } from "../../runner/src/behaviorBrowserWindow.js"
-import { isConfigurableBehaviorLike } from "../../runner/src/runtime/behaviorMetadata.js"
+import { BehaviorDataErrorCode, type BehaviorBrowserWindow, type BehaviorData } from "../../main/src/behaviorBrowserWindow.js"
+import { isConfigurableBehaviorLike } from "../../main/src/runtime/behaviorMetadata.js"
 
 declare let window: BehaviorBrowserWindow
 

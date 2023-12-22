@@ -104,6 +104,6 @@
     "./src",
   ],
   "references": [
-    { "path": "../runner" }
+    { "path": "../main" }
   ]
 }

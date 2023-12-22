@@ -1,5 +1,5 @@
 import { behavior, example, fact, step } from "esbehavior";
-import { useBrowser } from "../../../../runner/src/browser.js";
+import { useBrowser } from "../../../../main/src/browser.js";
 
 
 export default behavior("failing display", [
