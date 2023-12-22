@@ -1,6 +1,6 @@
 import url from "url"
 import { OrderProvider, Reporter, StandardReporter, randomOrder } from "esbehavior"
-import { ViteLocalServer } from "./adapters/viteServer.js"
+import { ViteLocalServer, ViteTranspiler } from "./adapters/viteServer.js"
 import { PlaywrightBrowser, browserLogger } from "./adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browser/browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
@@ -96,7 +96,7 @@ export async function run(args: RunArguments): Promise<void> {
 }
 
 async function getBaseConfig(path: string | undefined): Promise<BestBehaviorConfig | undefined> {
-  const configTranspiler = new ViteLocalServer()
+  const configTranspiler = new ViteTranspiler()
   await configTranspiler.start()
 
   const config = await getConfig(configTranspiler, path)

@@ -6,6 +6,33 @@ export interface ViteLocalServerOptions {
   viteConfig?: string
 }
 
+export class ViteTranspiler implements Transpiler {
+  private server: ViteDevServer | undefined;
+
+  async start(): Promise<void> {
+    this.server = await createServer({
+      optimizeDeps: {
+        disabled: true
+      },
+      server: {
+        host: false
+      }
+    })
+  }
+
+  async loadModule(path: string): Promise<any> {
+    try {
+      return this.server?.ssrLoadModule(`${path}`)
+    } catch (err) {
+      console.log("Got an error loading module", path, err)
+    }
+  }
+
+  async stop(): Promise<void> {
+    await this.server?.close()
+  }
+}
+
 export class ViteLocalServer implements LocalServer, Transpiler {
   private server: ViteDevServer | undefined;
 
