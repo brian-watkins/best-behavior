@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.4.1
+
+### Patch Changes
+
+- 88ecd04: Fixed ability to specify vite config file from best.config
+
 ## 0.4.0
 
 ### Minor Changes
