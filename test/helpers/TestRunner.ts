@@ -133,7 +133,7 @@ class TestReporter implements Reporter {
     switch (result.type) {
       // we don't assert anything about other claims yet
       case "invalid-claim":
-        this.invalidClaims.push({ description: result.description, stack: result.error.stack })
+        this.invalidClaims.push({ description: result.description, message: result.error.message, stack: result.error.stack })
     }
   }
 }
@@ -150,6 +150,7 @@ export interface ExampleOutput {
 
 export interface ClaimOutput {
   description: string
+  message: string | undefined
   stack: string | undefined
 }
 

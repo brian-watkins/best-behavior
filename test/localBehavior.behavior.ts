@@ -1,7 +1,7 @@
 import { behavior, effect, example, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
-import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -67,10 +67,13 @@ export default behavior("running behaviors in the local JS environment", [
             objectWithProperty("stack", assignedWith(satisfying([
               stringContaining("Failed to fetch dynamically imported module")
             ]))),
-            objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("badDisplay.ts:9"),
-              stringContaining("http://localhost", { times: 0 })
-            ])))
+            objectWith({
+              "message": assignedWith(stringContaining("div.doFunStuff is not a function")),
+              "stack": assignedWith(satisfying([
+                stringContaining("badDisplay.ts:9"),
+                stringContaining("http://localhost", { times: 0 })
+              ]))
+            })
           ])))
         })
       ]

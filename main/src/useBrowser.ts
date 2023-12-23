@@ -77,5 +77,9 @@ function pageWithBetterExceptionHandling(page: Page, baseURL: string): Page {
 }
 
 function errorWithCorrectedStack(error: Error, baseURL: string): Error {
-  return { ...error, stack: error.stack?.replaceAll(baseURL, "") }
+  return {
+    name: error.name,
+    message: error.message,
+    stack: error.stack?.replaceAll(baseURL, "")
+  }
 }
