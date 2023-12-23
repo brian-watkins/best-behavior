@@ -30,7 +30,7 @@
     "build:adapter": "node ./scripts/build.js",
     "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build:all && ts-node --swc --esm ./test/runner.ts",
+    "test": "npm run build:all && node --no-warnings=ExperimentalWarning --loader=ts-node/esm ./test/runner.ts",
     "create:change": "changeset add",
     "create:version": "changeset version",
     "create:release": "npm run build && changeset publish && git push --follow-tags"
@@ -55,5 +55,8 @@
     "esbehavior": "^4.2.3",
     "playwright": "^1.40.0",
     "vite": "^5.0.0"
+  },
+  "volta": {
+    "node": "20.10.0"
   }
 }
