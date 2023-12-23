@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.6.1
+
+### Patch Changes
+
+- 6ad8750: Error messages from useBrowser page function errors are displayed
+
 ## 0.6.0
 
 ### Minor Changes
