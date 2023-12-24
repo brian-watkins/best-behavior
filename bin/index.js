@@ -19,12 +19,12 @@ const args = yargs(process.argv.slice(2))
           type: "string"
         },
         "behaviors": {
-          describe: "glob that matches behaviors; relative to working dir",
-          type: "array"
+          describe: "glob that matches behaviors; relative to working dir; may specify multiple",
+          type: "string"
         },
         "runInBrowser": {
-          describe: "glob that matches behaviors to run in browser; subset of behaviors",
-          type: "array"
+          describe: "glob that matches behaviors to run in browser; subset of behaviors; may specify multiple",
+          type: "string"
         },
         "failFast": {
           describe: "stop on first invalid claim",
@@ -56,10 +56,10 @@ const args = yargs(process.argv.slice(2))
 
 await run({
   config: args.config,
-  behaviorGlobs: args.behaviors,
+  behaviorGlobs: toArray(args.behaviors),
   behaviorFilter: args.behaviorFilter,
   browserBehaviors: {
-    globs: args.runInBrowser
+    globs: toArray(args.runInBrowser)
   },
   failFast: args.failFast,
   runPickedOnly: args.picked,
@@ -67,3 +67,7 @@ await run({
   showBrowser: args.showBrowser,
   orderProvider: args.seed ? randomOrder(args.seed) : undefined
 })
+
+function toArray(value) {
+  return typeof value === "string" ? [ value ] : value
+}
