@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.6.2
+
+### Patch Changes
+
+- 6c26879: Fix problems with filter argument in cli
+
 ## 0.6.1
 
 ### Patch Changes
