@@ -28,12 +28,10 @@ const args = yargs(process.argv.slice(2))
         },
         "failFast": {
           describe: "stop on first invalid claim",
-          default: false,
           type: "boolean"
         },
         "picked": {
           describe: "run only picked behaviors and examples",
-          default: false,
           type: "boolean"
         },
         "seed": {
@@ -43,7 +41,6 @@ const args = yargs(process.argv.slice(2))
         "showBrowser": {
           describe: "make the browser visible and keep it open",
           type: "boolean",
-          default: false
         },
         "viteConfig": {
           describe: "path to vite config file",
