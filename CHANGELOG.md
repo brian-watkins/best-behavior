@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.6.3
+
+### Patch Changes
+
+- 097048b: Fix so that best.config can set failFast
+
 ## 0.6.2
 
 ### Patch Changes
