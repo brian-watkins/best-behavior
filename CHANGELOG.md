@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.6.4
+
+### Patch Changes
+
+- a1b9f60: Internal vite config no longer disables dependency optimizations.
+
 ## 0.6.3
 
 ### Patch Changes
