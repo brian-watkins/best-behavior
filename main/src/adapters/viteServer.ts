@@ -12,9 +12,6 @@ export class ViteTranspiler implements Transpiler {
 
   async start(): Promise<void> {
     this.server = await createServer({
-      optimizeDeps: {
-        disabled: true
-      },
       server: {
         host: false
       }
