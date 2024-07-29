@@ -2,9 +2,9 @@ import { Context, behavior, effect, example, fact, step } from "esbehavior";
 import { BrowserTestInstrument, useBrowser } from "../../../../main/src/browser.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
-const browserContext: Context<BrowserTestInstrument> = {
-  init: () => useBrowser()
-}
+const browserContext: Context<BrowserTestInstrument> = useBrowser({
+  init: (browser) => browser
+})
 
 export default behavior("component testing", [
 
@@ -144,14 +144,14 @@ export default behavior("component testing", [
       ]
     }),
 
-  example({
-    init: () => useBrowser((browser) => browser.newContext({
+  example(useBrowser({ init: (browser) => browser }, {
+    browserContextGenerator: (browser) => browser.newContext({
       viewport: {
         width: 500,
         height: 300
       }
-    }))
-  })
+    })
+  }))
     .description("use custom browser context")
     .script({
       observe: [

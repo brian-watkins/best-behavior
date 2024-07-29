@@ -1,11 +1,30 @@
 import { useContext } from "./useContext.js";
 import { BrowserContext, Page } from "playwright";
 import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "./adapters/playwrightBrowser.js";
+import { Context } from "esbehavior";
 
-export async function useBrowser(context?: PlaywrightBrowserContextGenerator): Promise<BrowserTestInstrument> {
-  const browserTestInstrument = useContext().browserTestInstrument
-  await browserTestInstrument.reset(context)
-  return browserTestInstrument
+export interface ContextWithBrowser<T> {
+  init(browser: BrowserTestInstrument): T | Promise<T>
+  teardown?(context: T): void | Promise<void>
+}
+
+export interface UseBrowserOptions {
+  browserContextGenerator?: PlaywrightBrowserContextGenerator
+}
+
+export function useBrowser<T>(context: ContextWithBrowser<T>, options: UseBrowserOptions = {}): Context<T> {
+  let browserTestInstrument: PlaywrightTestInstrument
+  return {
+    init: async () => {
+      browserTestInstrument = useContext().browserTestInstrument
+      await browserTestInstrument.reset(options.browserContextGenerator)
+
+      return await context.init(browserTestInstrument)
+    },
+    teardown: async (contextValue) => {
+      await context.teardown?.(contextValue)
+    },
+  }
 }
 
 export interface BrowserTestInstrument {
