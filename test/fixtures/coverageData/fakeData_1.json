@@ -1,0 +1,100 @@
+[
+  { 
+    "url": "http://localhost:5173/node_modules/somefileWithASourceMap.js",
+    "scriptId": "18",
+    "source": "console.log('base64, hello!');",
+    "functions": []
+  },
+  {
+    "url": "http://localhost:5173/src/store/meta.ts",
+    "scriptId": "41",
+    "source": "export function ok() {\n  return {\n    type: \"ok\"\n  };\n}\nexport function pending(message) {\n  return {\n    type: \"pending\",\n    message\n  };\n}\nexport function error(message, reason) {\n  return {\n    type: \"error\",\n    message,\n    reason\n  };\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1ldGEudHMiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGludGVyZmFjZSBQZW5kaW5nTWVzc2FnZTxNPiB7XG4gIHR5cGU6IFwicGVuZGluZ1wiXG4gIG1lc3NhZ2U6IE1cbn1cblxuZXhwb3J0IGludGVyZmFjZSBPa01lc3NhZ2Uge1xuICB0eXBlOiBcIm9rXCJcbn1cblxuZXhwb3J0IGludGVyZmFjZSBFcnJvck1lc3NhZ2U8TSwgRT4ge1xuICB0eXBlOiBcImVycm9yXCJcbiAgbWVzc2FnZTogTSB8IHVuZGVmaW5lZFxuICByZWFzb246IEVcbn1cblxuZXhwb3J0IHR5cGUgTWV0YTxNLCBFPiA9ICBPa01lc3NhZ2UgfCBQZW5kaW5nTWVzc2FnZTxNPiB8IEVycm9yTWVzc2FnZTxNLCBFPlxuXG5leHBvcnQgZnVuY3Rpb24gb2soKTogT2tNZXNzYWdlIHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcIm9rXCJcbiAgfVxufVxuXG5leHBvcnQgZnVuY3Rpb24gcGVuZGluZzxNPihtZXNzYWdlOiBNKTogUGVuZGluZ01lc3NhZ2U8TT4ge1xuICByZXR1cm4ge1xuICAgIHR5cGU6IFwicGVuZGluZ1wiLFxuICAgIG1lc3NhZ2VcbiAgfVxufVxuXG5leHBvcnQgZnVuY3Rpb24gZXJyb3I8TSwgRT4obWVzc2FnZTogTSB8IHVuZGVmaW5lZCwgcmVhc29uOiBFKTogRXJyb3JNZXNzYWdlPE0sIEU+IHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcImVycm9yXCIsXG4gICAgbWVzc2FnZSxcbiAgICByZWFzb25cbiAgfVxufVxuIl0sIm1hcHBpbmdzIjoiQUFpQk8sZ0JBQVMsS0FBZ0I7QUFDOUIsU0FBTztBQUFBLElBQ0wsTUFBTTtBQUFBLEVBQ1I7QUFDRjtBQUVPLGdCQUFTLFFBQVcsU0FBK0I7QUFDeEQsU0FBTztBQUFBLElBQ0wsTUFBTTtBQUFBLElBQ047QUFBQSxFQUNGO0FBQ0Y7QUFFTyxnQkFBUyxNQUFZLFNBQXdCLFFBQStCO0FBQ2pGLFNBQU87QUFBQSxJQUNMLE1BQU07QUFBQSxJQUNOO0FBQUEsSUFDQTtBQUFBLEVBQ0Y7QUFDRjsiLCJuYW1lcyI6W119\n//# sourceURL=/Users/bwatkins/workspace/spheres/src/store/meta.ts",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 1579,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "ok",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7,
+            "endOffset": 55,
+            "count": 12
+          }
+        ]
+      },
+      {
+        "functionName": "pending",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 63,
+            "endOffset": 141,
+            "count": 6
+          }
+        ]
+      },
+      {
+        "functionName": "error",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 149,
+            "endOffset": 243,
+            "count": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/derived.ts",
+    "scriptId": "42",
+    "source": "import { DerivedState } from \"/src/store/store.ts\";\nexport function derived(initializer) {\n  return new DerivedState(initializer.id, initializer.name, initializer.query);\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImRlcml2ZWQudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRGVyaXZlZFN0YXRlLCBHZXRTdGF0ZSB9IGZyb20gXCIuL3N0b3JlLmpzXCI7XG5cbmV4cG9ydCBpbnRlcmZhY2UgRGVyaXZlZFN0YXRlSW5pdGlhbGl6ZXI8VD4ge1xuICBpZD86IHN0cmluZ1xuICBxdWVyeTogKGdldDogR2V0U3RhdGUsIGN1cnJlbnQ6IFQgfCB1bmRlZmluZWQpID0+IFRcbiAgbmFtZT86IHN0cmluZ1xufVxuXG5leHBvcnQgZnVuY3Rpb24gZGVyaXZlZDxUPihpbml0aWFsaXplcjogRGVyaXZlZFN0YXRlSW5pdGlhbGl6ZXI8VD4pOiBEZXJpdmVkU3RhdGU8VD4ge1xuICByZXR1cm4gbmV3IERlcml2ZWRTdGF0ZShpbml0aWFsaXplci5pZCwgaW5pdGlhbGl6ZXIubmFtZSwgaW5pdGlhbGl6ZXIucXVlcnkpXG59XG4iXSwibWFwcGluZ3MiOiJBQUFBLFNBQVMsb0JBQThCO0FBUWhDLGdCQUFTLFFBQVcsYUFBMEQ7QUFDbkYsU0FBTyxJQUFJLGFBQWEsWUFBWSxJQUFJLFlBQVksTUFBTSxZQUFZLEtBQUs7QUFDN0U7IiwibmFtZXMiOltdfQ==",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 960,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "derived",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 59,
+            "endOffset": 172,
+            "count": 23
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "/Users/some/absolute/path/behaviorAdapter.cjs",
+    "scriptId": "57",
+    "source": "console.log('hello!');\n\n//# sourceURL=/Users/some/absolute/path/behaviorAdapter.cjs",
+    "functions": []
+  },
+  {
+    "url": "http://localhost:5173/node_modules/.vite/deps/esbehavior.js?v=19aeef61",
+    "scriptId": "36",
+    "source": "console.log('hey!');\n//# sourceMappingURL=esbehavior.js.map\n",
+    "functions": []
+  }
+]

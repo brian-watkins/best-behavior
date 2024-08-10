@@ -1,4 +1,4 @@
-import { behavior, effect, example, step } from "esbehavior";
+import { behavior, effect, example, fact, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
@@ -25,6 +25,11 @@ export default behavior("running behaviors in the local JS environment", [
             skipped: 0
           }))))
         }),
+        effect("it does not produce coverage data", (context) => {
+          expect(context.coverageReporter.isInitialized, is(false))
+          expect(context.coverageReporter.totalReports, is(0))
+          expect(context.coverageReporter.isGenerated, is(false))
+        }),
         effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
           expect(context.logs.infoLines, is(arrayContaining(
             equalTo("Hello from the browser!")
@@ -42,8 +47,13 @@ export default behavior("running behaviors in the local JS environment", [
     }),
 
   example(testRunnerContext())
-    .description("Local behavior that uses a view controller")
+    .description("Local behavior that uses a view controller with coverage")
     .script({
+      suppose: [
+        fact("coverage data should be collected", (context) => {
+          context.setShouldCollectCoverage(true)
+        })
+      ],
       perform: [
         step("validate the behaviors", async (context) => {
           await context.runBehaviors("**/hybrid/*.behavior.ts")
@@ -58,6 +68,11 @@ export default behavior("running behaviors in the local JS environment", [
             invalid: 3,
             skipped: 3
           }))))
+        }),
+        effect("it produces coverage data for each example that isn't skipped", (context) => {
+          expect(context.coverageReporter.isInitialized, is(true))
+          expect(context.coverageReporter.totalReports, is(8))
+          expect(context.coverageReporter.isGenerated, is(true))
         }),
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([

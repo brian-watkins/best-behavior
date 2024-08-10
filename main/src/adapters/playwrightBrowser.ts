@@ -1,6 +1,7 @@
-import { Browser, BrowserContext, Page, chromium } from "playwright";
+import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { Logger } from "../logger.js";
 import url from "url"
+import { CoverageReporter } from "../runtime/coverageReporter.js";
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
@@ -70,48 +71,46 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
 }
 
 export interface PreparedBrowserOptions {
-  homePage?: string
   adapterPath?: string
+  coverageReporter?: CoverageReporter
   logger: Logger
 }
 
 export class PreparedBrowser {
-  protected _page: Page | undefined
-
-  constructor(protected browser: PlaywrightBrowser, private options: PreparedBrowserOptions) { }
+  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) { }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await this.browser.newBrowserContext(generator)
 
-    if (this.options.adapterPath) {
-      await context.addInitScript({ path: this.options.adapterPath })
+    if (this.browserOptions.adapterPath) {
+      await context.addInitScript({ path: this.browserOptions.adapterPath })
     }
 
     await context.addInitScript({ path: pathToFile("../../adapter/sourceMapSupport.cjs") })
 
     context.on("console", (message) => {
-      this.options.logger.info(message.text(), "Browser")
+      this.browserOptions.logger.info(message.text(), "Browser")
     })
     context.on("weberror", (webError) => {
-      this.options.logger.error(`${webError.error().stack}`, "Browser Error")
+      this.browserOptions.logger.error(`${webError.error().stack}`, "Browser Error")
     })
 
     return context
   }
 
-  async getPage(): Promise<Page> {
-    if (this._page !== undefined) {
-      return this._page
+  async startCoverage(page: Page): Promise<void> {
+    if (this.browserOptions.coverageReporter !== undefined) {
+      await page.coverage.startJSCoverage({
+        resetOnNavigation: false
+      })
     }
+  }
 
-    const context = await this.getContext()
-    this._page = await context.newPage()
-
-    if (this.options.homePage !== undefined) {
-      await this._page.goto(this.options.homePage)
+  async stopCoverage(page: Page): Promise<void> {
+    if (this.browserOptions.coverageReporter !== undefined) {
+      const coverageData = await page.coverage.stopJSCoverage()
+      await this.browserOptions.coverageReporter.recordData(coverageData)  
     }
-
-    return this._page
   }
 }
 

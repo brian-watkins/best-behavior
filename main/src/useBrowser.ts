@@ -1,7 +1,8 @@
 import { useContext } from "./useContext.js";
 import { BrowserContext, Page } from "playwright";
-import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "./adapters/playwrightBrowser.js";
+import { PlaywrightBrowser, PlaywrightBrowserContextGenerator, PreparedBrowser, PreparedBrowserOptions } from "./adapters/playwrightBrowser.js";
 import { Context } from "esbehavior";
+import { CoverageReporter } from "./runtime/coverageReporter.js";
 
 export interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
@@ -13,15 +14,20 @@ export interface UseBrowserOptions {
 }
 
 export function useBrowser<T>(context: ContextWithBrowser<T>, options: UseBrowserOptions = {}): Context<T> {
-  let browserTestInstrument: PlaywrightTestInstrument
+  let playwrightTestInstrument: PlaywrightTestInstrument
+
   return {
     init: async () => {
-      browserTestInstrument = useContext().browserTestInstrument
-      await browserTestInstrument.reset(options.browserContextGenerator)
+      playwrightTestInstrument = useContext().playwrightTestInstrument
+      await playwrightTestInstrument.reset(options.browserContextGenerator)
 
-      return await context.init(browserTestInstrument)
+      return await context.init({
+        page: playwrightTestInstrument.getPage()
+      })
     },
     teardown: async (contextValue) => {
+      await playwrightTestInstrument.afterExample()
+
       await context.teardown?.(contextValue)
     },
   }
@@ -31,8 +37,13 @@ export interface BrowserTestInstrument {
   page: Page
 }
 
-export class PlaywrightTestInstrument extends PreparedBrowser implements BrowserTestInstrument {
+export class PlaywrightTestInstrument extends PreparedBrowser {
   private _context: BrowserContext | undefined
+  private _page: Page | undefined
+
+  constructor(browser: PlaywrightBrowser, options: PreparedBrowserOptions) {
+    super(browser, options)
+  }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await super.getContext(generator)
@@ -62,10 +73,16 @@ export class PlaywrightTestInstrument extends PreparedBrowser implements Browser
     }
     this._context = await this.getContext(generator)
     this._page = await this._context.newPage()
+
+    await this.startCoverage(this._page)
   }
 
-  get page(): Page {
+  getPage(): Page {
     return pageWithBetterExceptionHandling(this._page!, this.browser.baseURL)
+  }
+
+  async afterExample(): Promise<void> {
+    await this.stopCoverage(this._page!)
   }
 }
 

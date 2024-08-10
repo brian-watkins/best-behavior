@@ -1,0 +1,1345 @@
+[
+  {
+    "url": "http://localhost:5173/src/store/message.ts",
+    "scriptId": "77",
+    "source": "export function write(container, value) {\n  return {\n    type: \"write\",\n    container,\n    value\n  };\n}\nexport function update(container, generator) {\n  return {\n    type: \"update\",\n    container,\n    generator\n  };\n}\nexport function reset(container) {\n  return {\n    type: \"reset\",\n    container\n  };\n}\nexport function run(effect) {\n  return {\n    type: \"run\",\n    effect\n  };\n}\nexport function batch(messages) {\n  return {\n    type: \"batch\",\n    messages\n  };\n}\nexport function use(rule, ...input) {\n  return {\n    type: \"use\",\n    rule,\n    input: input.length === 0 ? void 0 : input[0]\n  };\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lc3NhZ2UudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQmF0Y2hNZXNzYWdlLCBDb250YWluZXIsIFJ1bk1lc3NhZ2UsIFVzZU1lc3NhZ2UsIFN0b3JlTWVzc2FnZSwgV3JpdGVNZXNzYWdlLCBSdWxlLCBSZXNldE1lc3NhZ2UsIFVwZGF0ZU1lc3NhZ2UgfSBmcm9tIFwiLi9zdG9yZVwiXG5cbmV4cG9ydCBmdW5jdGlvbiB3cml0ZTxULCBNID0gVD4oY29udGFpbmVyOiBDb250YWluZXI8VCwgTT4sIHZhbHVlOiBNKTogV3JpdGVNZXNzYWdlPFQsIE0+IHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcIndyaXRlXCIsXG4gICAgY29udGFpbmVyLFxuICAgIHZhbHVlXG4gIH1cbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHVwZGF0ZTxULCBNID0gVD4oY29udGFpbmVyOiBDb250YWluZXI8VCwgTT4sIGdlbmVyYXRvcjogKGN1cnJlbnQ6IFQpID0+IE0pOiBVcGRhdGVNZXNzYWdlPFQsIE0+IHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcInVwZGF0ZVwiLFxuICAgIGNvbnRhaW5lcixcbiAgICBnZW5lcmF0b3JcbiAgfVxufVxuXG5leHBvcnQgZnVuY3Rpb24gcmVzZXQ8VCwgTSA9IFQ+KGNvbnRhaW5lcjogQ29udGFpbmVyPFQsIE0+KTogUmVzZXRNZXNzYWdlPFQsIE0+IHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcInJlc2V0XCIsXG4gICAgY29udGFpbmVyXG4gIH1cbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHJ1bihlZmZlY3Q6ICgpID0+IHZvaWQpOiBSdW5NZXNzYWdlIHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcInJ1blwiLFxuICAgIGVmZmVjdFxuICB9XG59XG5cbmV4cG9ydCBmdW5jdGlvbiBiYXRjaChtZXNzYWdlczogQXJyYXk8U3RvcmVNZXNzYWdlPGFueT4+KTogQmF0Y2hNZXNzYWdlIHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcImJhdGNoXCIsXG4gICAgbWVzc2FnZXNcbiAgfVxufVxuXG5leHBvcnQgdHlwZSBSdWxlQXJnPFE+ID0gUSBleHRlbmRzIHVuZGVmaW5lZCA/IFtdIDogW1FdXG5cbmV4cG9ydCBmdW5jdGlvbiB1c2U8USA9IHVuZGVmaW5lZD4ocnVsZTogUnVsZTxRPiwgLi4uaW5wdXQ6IFJ1bGVBcmc8UT4pOiBVc2VNZXNzYWdlIHtcbiAgcmV0dXJuIHtcbiAgICB0eXBlOiBcInVzZVwiLFxuICAgIHJ1bGUsXG4gICAgaW5wdXQ6IGlucHV0Lmxlbmd0aCA9PT0gMCA/IHVuZGVmaW5lZCA6IGlucHV0WzBdXG4gIH1cbn1cbiJdLCJtYXBwaW5ncyI6IkFBRU8sZ0JBQVMsTUFBZ0IsV0FBNEIsT0FBOEI7QUFDeEYsU0FBTztBQUFBLElBQ0wsTUFBTTtBQUFBLElBQ047QUFBQSxJQUNBO0FBQUEsRUFDRjtBQUNGO0FBRU8sZ0JBQVMsT0FBaUIsV0FBNEIsV0FBbUQ7QUFDOUcsU0FBTztBQUFBLElBQ0wsTUFBTTtBQUFBLElBQ047QUFBQSxJQUNBO0FBQUEsRUFDRjtBQUNGO0FBRU8sZ0JBQVMsTUFBZ0IsV0FBZ0Q7QUFDOUUsU0FBTztBQUFBLElBQ0wsTUFBTTtBQUFBLElBQ047QUFBQSxFQUNGO0FBQ0Y7QUFFTyxnQkFBUyxJQUFJLFFBQWdDO0FBQ2xELFNBQU87QUFBQSxJQUNMLE1BQU07QUFBQSxJQUNOO0FBQUEsRUFDRjtBQUNGO0FBRU8sZ0JBQVMsTUFBTSxVQUFrRDtBQUN0RSxTQUFPO0FBQUEsSUFDTCxNQUFNO0FBQUEsSUFDTjtBQUFBLEVBQ0Y7QUFDRjtBQUlPLGdCQUFTLElBQW1CLFNBQWtCLE9BQStCO0FBQ2xGLFNBQU87QUFBQSxJQUNMLE1BQU07QUFBQSxJQUNOO0FBQUEsSUFDQSxPQUFPLE1BQU0sV0FBVyxJQUFJLFNBQVksTUFBTSxDQUFDO0FBQUEsRUFDakQ7QUFDRjsiLCJuYW1lcyI6W119",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 2972,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "write",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7,
+            "endOffset": 103,
+            "count": 94
+          }
+        ]
+      },
+      {
+        "functionName": "update",
+        "isBlockCoverage": false,
+        "ranges": [
+          {
+            "startOffset": 111,
+            "endOffset": 217,
+            "count": 0
+          }
+        ]
+      },
+      {
+        "functionName": "reset",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 225,
+            "endOffset": 303,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "run",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 311,
+            "endOffset": 379,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "batch",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 387,
+            "endOffset": 463,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "use",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 471,
+            "endOffset": 596,
+            "count": 8
+          },
+          {
+            "startOffset": 570,
+            "endOffset": 578,
+            "count": 4
+          },
+          {
+            "startOffset": 579,
+            "endOffset": 589,
+            "count": 4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/rule.ts",
+    "scriptId": "79",
+    "source": "export function rule(definition) {\n  return {\n    definition\n  };\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInJ1bGUudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgR2V0U3RhdGUsIFJ1bGUsIFN0b3JlTWVzc2FnZSB9IGZyb20gXCIuL3N0b3JlLmpzXCI7XG5cbmV4cG9ydCBmdW5jdGlvbiBydWxlPFEgPSB1bmRlZmluZWQ+KGRlZmluaXRpb246IChnZXQ6IEdldFN0YXRlLCBpbnB1dFZhbHVlOiBRKSA9PiBTdG9yZU1lc3NhZ2U8YW55Pik6IFJ1bGU8UT4ge1xuICByZXR1cm4ge1xuICAgIGRlZmluaXRpb25cbiAgfVxufVxuXG4iXSwibWFwcGluZ3MiOiJBQUVPLGdCQUFTLEtBQW9CLFlBQTBFO0FBQzVHLFNBQU87QUFBQSxJQUNMO0FBQUEsRUFDRjtBQUNGOyIsIm5hbWVzIjpbXX0=",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 595,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "rule",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7,
+            "endOffset": 67,
+            "count": 4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/container.ts",
+    "scriptId": "80",
+    "source": "import { Container } from \"/src/store/store.ts\";\nexport function container(initializer) {\n  return new Container(\n    initializer.id,\n    initializer.name,\n    initializer.initialValue,\n    initializer.update\n  );\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbnRhaW5lci50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBDb250YWluZXIsIFVwZGF0ZVJlc3VsdCB9IGZyb20gXCIuL3N0b3JlLmpzXCJcblxuZXhwb3J0IGludGVyZmFjZSBDb250YWluZXJJbml0aWFsaXplcjxULCBNPiB7XG4gIGlkPzogc3RyaW5nLFxuICBpbml0aWFsVmFsdWU6IFQsXG4gIHVwZGF0ZT86IChtZXNzYWdlOiBNLCBjdXJyZW50OiBUKSA9PiBVcGRhdGVSZXN1bHQ8VD5cbiAgbmFtZT86IHN0cmluZ1xufVxuXG5leHBvcnQgZnVuY3Rpb24gY29udGFpbmVyPFQsIE0gPSBULCBFID0gYW55Pihpbml0aWFsaXplcjogQ29udGFpbmVySW5pdGlhbGl6ZXI8VCwgTT4pOiBDb250YWluZXI8VCwgTSwgRT4ge1xuICByZXR1cm4gbmV3IENvbnRhaW5lcihcbiAgICBpbml0aWFsaXplci5pZCxcbiAgICBpbml0aWFsaXplci5uYW1lLFxuICAgIGluaXRpYWxpemVyLmluaXRpYWxWYWx1ZSxcbiAgICBpbml0aWFsaXplci51cGRhdGVcbiAgKVxufVxuIl0sIm1hcHBpbmdzIjoiQUFBQSxTQUFTLGlCQUErQjtBQVNqQyxnQkFBUyxVQUE2QixhQUE2RDtBQUN4RyxTQUFPLElBQUk7QUFBQSxJQUNULFlBQVk7QUFBQSxJQUNaLFlBQVk7QUFBQSxJQUNaLFlBQVk7QUFBQSxJQUNaLFlBQVk7QUFBQSxFQUNkO0FBQ0Y7IiwibmFtZXMiOltdfQ==",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 1175,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "container",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 56,
+            "endOffset": 215,
+            "count": 65
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/command.ts",
+    "scriptId": "81",
+    "source": "import { Command } from \"/src/store/store.ts\";\nexport function command(initializer = {}) {\n  return new Command(initializer.trigger);\n}\nexport function exec(command2, message) {\n  return {\n    type: \"exec\",\n    command: command2,\n    message\n  };\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbW1hbmQudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29tbWFuZCwgRXhlY01lc3NhZ2UsIEdldFN0YXRlIH0gZnJvbSBcIi4vc3RvcmVcIjtcblxuZXhwb3J0IGludGVyZmFjZSBDb21tYW5kSW5pdGlhbGl6ZXI8TT4ge1xuICB0cmlnZ2VyPzogKGdldDogR2V0U3RhdGUpID0+IE1cbn1cblxuZXhwb3J0IGZ1bmN0aW9uIGNvbW1hbmQ8TT4oaW5pdGlhbGl6ZXI6IENvbW1hbmRJbml0aWFsaXplcjxNPiA9IHt9KTogQ29tbWFuZDxNPiB7XG4gIHJldHVybiBuZXcgQ29tbWFuZDxNPihpbml0aWFsaXplci50cmlnZ2VyKVxufVxuXG5leHBvcnQgZnVuY3Rpb24gZXhlYzxNPihjb21tYW5kOiBDb21tYW5kPE0+LCBtZXNzYWdlOiBNKTogRXhlY01lc3NhZ2U8TT4ge1xuICByZXR1cm4ge1xuICAgIHR5cGU6IFwiZXhlY1wiLFxuICAgIGNvbW1hbmQsXG4gICAgbWVzc2FnZVxuICB9XG59Il0sIm1hcHBpbmdzIjoiQUFBQSxTQUFTLGVBQXNDO0FBTXhDLGdCQUFTLFFBQVcsY0FBcUMsQ0FBQyxHQUFlO0FBQzlFLFNBQU8sSUFBSSxRQUFXLFlBQVksT0FBTztBQUMzQztBQUVPLGdCQUFTLEtBQVFBLFVBQXFCLFNBQTRCO0FBQ3ZFLFNBQU87QUFBQSxJQUNMLE1BQU07QUFBQSxJQUNOLFNBQUFBO0FBQUEsSUFDQTtBQUFBLEVBQ0Y7QUFDRjsiLCJuYW1lcyI6WyJjb21tYW5kIl19",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 1228,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "command",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 54,
+            "endOffset": 135,
+            "count": 6
+          }
+        ]
+      },
+      {
+        "functionName": "exec",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 143,
+            "endOffset": 248,
+            "count": 8
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/supplied.ts",
+    "scriptId": "84",
+    "source": "import { SuppliedState } from \"/src/store/store.ts\";\nexport function supplied(initializer) {\n  return new SuppliedState(initializer.id, initializer.name, initializer.initialValue);\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN1cHBsaWVkLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IFN1cHBsaWVkU3RhdGUgfSBmcm9tIFwiLi9zdG9yZVwiXG5cbmV4cG9ydCBpbnRlcmZhY2UgU3VwcGxpZWRTdGF0ZUluaXRpYWxpemVyPFQ+IHtcbiAgaWQ/OiBzdHJpbmdcbiAgbmFtZT86IHN0cmluZ1xuICBpbml0aWFsVmFsdWU6IFRcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHN1cHBsaWVkPFQsIE0gPSBhbnksIEUgPSBhbnk+KGluaXRpYWxpemVyOiBTdXBwbGllZFN0YXRlSW5pdGlhbGl6ZXI8VD4pOiBTdXBwbGllZFN0YXRlPFQsIE0sIEU+IHtcbiAgcmV0dXJuIG5ldyBTdXBwbGllZFN0YXRlKGluaXRpYWxpemVyLmlkLCBpbml0aWFsaXplci5uYW1lLCBpbml0aWFsaXplci5pbml0aWFsVmFsdWUpXG59Il0sIm1hcHBpbmdzIjoiQUFBQSxTQUFTLHFCQUFxQjtBQVF2QixnQkFBUyxTQUE4QixhQUFrRTtBQUM5RyxTQUFPLElBQUksY0FBYyxZQUFZLElBQUksWUFBWSxNQUFNLFlBQVksWUFBWTtBQUNyRjsiLCJuYW1lcyI6W119",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 950,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "supplied",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 60,
+            "endOffset": 182,
+            "count": 7
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "url": "http://localhost:5173/src/store/store.ts",
+    "scriptId": "85",
+    "source": "import { SimpleStateController } from \"/src/store/controller.ts\";\nimport { error, ok, pending } from \"/src/store/meta.ts\";\nconst registerState = Symbol(\"registerState\");\nconst initializeCommand = Symbol(\"initializeCommand\");\nconst getController = Symbol(\"getController\");\nconst getContainerController = Symbol(\"getContainerController\");\nconst initialValue = Symbol(\"initialValue\");\nexport class State {\n  constructor(id, name) {\n    this.id = id;\n    this.name = name;\n  }\n  toString() {\n    return this.name && this.id ? `${this.name}-${this.id}` : this.name ?? this.id ?? \"State\";\n  }\n}\nexport class MetaState extends State {\n  constructor(token) {\n    super(token.id ? `meta[${token.id}]` : void 0, `meta[${token.toString()}]`);\n    this.token = token;\n  }\n  [registerState](store) {\n    const tokenController = store[getController](this.token);\n    const controller = new SimpleStateController(ok());\n    tokenController.addListener({\n      notify: () => true,\n      update: () => {\n        controller.write(ok());\n      }\n    }, 0);\n    return controller;\n  }\n}\nexport class SuppliedState extends State {\n  constructor(id, name, initialValue2) {\n    super(id, name);\n    this.initialValue = initialValue2;\n  }\n  _meta;\n  [registerState](_) {\n    return new SimpleStateController(this.initialValue);\n  }\n  get meta() {\n    if (this._meta === void 0) {\n      this._meta = new MetaState(this);\n    }\n    return this._meta;\n  }\n}\nexport class Container extends State {\n  constructor(id, name, initialValue2, update) {\n    super(id, name);\n    this.initialValue = initialValue2;\n    this.update = update;\n  }\n  _meta;\n  get [initialValue]() {\n    return this.initialValue;\n  }\n  [registerState](store) {\n    return this.update ? new MessagePassingStateController(store, this.initialValue, this.update) : new SimpleStateController(this.initialValue);\n  }\n  get meta() {\n    if (this._meta === void 0) {\n      this._meta = new MetaState(this);\n    }\n    return this._meta;\n  }\n}\nexport class DerivedState extends State {\n  constructor(id, name, derivation) {\n    super(id, name);\n    this.derivation = derivation;\n  }\n  [registerState](store) {\n    return new DerivedStateController(store, this.derivation);\n  }\n}\nclass DependencyTrackingStateListener {\n  constructor(store) {\n    this.store = store;\n  }\n  version = 0;\n  updateTracker;\n  notify(version) {\n    if (version !== this.version)\n      return false;\n    if (this.updateTracker === void 0) {\n      this.updateTracker = { notifications: 0, hasChanged: false };\n      this.dependenciesWillUpdate();\n    }\n    this.updateTracker.notifications++;\n    return true;\n  }\n  update(hasChanged) {\n    this.updateTracker.notifications--;\n    if (hasChanged)\n      this.updateTracker.hasChanged = true;\n    if (this.updateTracker.notifications === 0) {\n      this.dependenciesHaveUpdated(this.updateTracker.hasChanged);\n      this.updateTracker = void 0;\n    }\n  }\n  getValue(state) {\n    const controller = this.store[getController](state);\n    controller.addListener(this, this.version);\n    return controller.value;\n  }\n  dependenciesWillUpdate() {\n  }\n  dependenciesHaveUpdated(_) {\n  }\n  resetDependencies() {\n    this.version = this.version + 1;\n  }\n}\nclass DerivedStateController extends DependencyTrackingStateListener {\n  constructor(store, derivation) {\n    super(store);\n    this.derivation = derivation;\n    this._value = this.deriveValue();\n  }\n  listeners = /* @__PURE__ */ new Map();\n  _value;\n  addListener(listener, version) {\n    this.listeners.set(listener, version);\n  }\n  removeListener(listener) {\n    this.listeners.delete(listener);\n  }\n  deriveValue() {\n    return this.derivation((state) => this.getValue(state), this._value);\n  }\n  dependenciesWillUpdate() {\n    for (const [listener, version] of this.listeners) {\n      const accepted = listener.notify(version);\n      if (!accepted) {\n        this.removeListener(listener);\n      }\n    }\n  }\n  updateListeners(hasChanged) {\n    for (const listener of this.listeners.keys()) {\n      listener.update(hasChanged);\n    }\n  }\n  dependenciesHaveUpdated(hasChanged) {\n    if (!hasChanged) {\n      this.updateListeners(false);\n      return;\n    }\n    this.resetDependencies();\n    const derived = this.deriveValue();\n    const derivedValueIsNew = !Object.is(derived, this._value);\n    this._value = derived;\n    this.updateListeners(derivedValueIsNew);\n  }\n  get value() {\n    return this._value;\n  }\n}\nclass ReactiveEffectController extends DependencyTrackingStateListener {\n  constructor(store, effect) {\n    super(store);\n    this.effect = effect;\n    this.init();\n  }\n  init() {\n    if (this.effect.init) {\n      this.effect.init((state) => {\n        return this.getValue(state);\n      });\n    } else {\n      this.effect.run((state) => {\n        return this.getValue(state);\n      });\n    }\n  }\n  dependenciesHaveUpdated(hasChanged) {\n    if (!hasChanged)\n      return;\n    this.resetDependencies();\n    this.effect.run((state) => {\n      return this.getValue(state);\n    });\n  }\n  unsubscribe() {\n    this.resetDependencies();\n  }\n}\nclass DispatchCommandQuery {\n  constructor(store, command, trigger) {\n    this.store = store;\n    this.command = command;\n    this.trigger = trigger;\n  }\n  run(get) {\n    this.store.dispatch({\n      type: \"exec\",\n      command: this.command,\n      message: this.trigger((state) => get(state))\n    });\n  }\n}\nexport class Command {\n  constructor(trigger) {\n    this.trigger = trigger;\n  }\n  [initializeCommand](store) {\n    if (this.trigger !== void 0) {\n      store.useEffect(new DispatchCommandQuery(store, this, this.trigger));\n    }\n  }\n}\nexport class Store {\n  registry = /* @__PURE__ */ new WeakMap();\n  commandRegistry = /* @__PURE__ */ new Map();\n  hooks;\n  tokenIdMap = /* @__PURE__ */ new Map();\n  getKeyForToken(token) {\n    if (token.id === void 0)\n      return token;\n    const key = this.tokenIdMap.get(token.id);\n    if (key === void 0) {\n      this.tokenIdMap.set(token.id, token);\n      return token;\n    }\n    return key;\n  }\n  [getController](token) {\n    const key = this.getKeyForToken(token);\n    let controller = this.registry.get(key);\n    if (controller === void 0) {\n      controller = token[registerState](this);\n      this.registry.set(key, controller);\n      if (this.hooks !== void 0 && token instanceof Container) {\n        this.hooks.onRegister(token);\n      }\n    }\n    return controller;\n  }\n  [getContainerController](token) {\n    return this[getController](token);\n  }\n  useHooks(hooks) {\n    this.hooks = hooks;\n  }\n  useEffect(effect) {\n    return new ReactiveEffectController(this, effect);\n  }\n  useCommand(command, handler) {\n    this.commandRegistry.set(command, handler);\n    command[initializeCommand](this);\n  }\n  containerReadyActions(container, controller) {\n    return {\n      get: (state) => {\n        return this[getController](state).value;\n      },\n      supply: (value) => {\n        controller.publish(value);\n      },\n      pending: (message) => {\n        this[getContainerController](container.meta).publish(pending(message));\n      },\n      error: (message, reason) => {\n        this[getContainerController](container.meta).publish(error(message, reason));\n      },\n      current: controller.value\n    };\n  }\n  containerWriteActions(container, controller) {\n    return {\n      get: (state) => {\n        return this[getController](state).value;\n      },\n      ok: (message) => {\n        controller.accept(message);\n      },\n      pending: (message) => {\n        this[getContainerController](container.meta).write(pending(message));\n      },\n      error: (message, reason) => {\n        this[getContainerController](container.meta).write(error(message, reason));\n      },\n      current: controller.value\n    };\n  }\n  useContainerHooks(container, hooks) {\n    const controllerWithHooks = this.containerControllerWithHooks(container, this[getContainerController](container), hooks);\n    this.registry.set(this.getKeyForToken(container), controllerWithHooks);\n    if (hooks.onReady !== void 0) {\n      hooks.onReady(this.containerReadyActions(container, controllerWithHooks));\n    }\n  }\n  containerControllerWithHooks(container, controller, hooks) {\n    let withHooks = controller;\n    if (hooks.onPublish) {\n      withHooks = new Proxy(withHooks, {\n        get: (target, prop, receiver) => {\n          if (prop === \"accept\") {\n            return (message) => {\n              target.publish(message);\n              hooks.onPublish(target.value, {\n                get: (state) => {\n                  return this[getController](state).value;\n                }\n              });\n            };\n          }\n          return Reflect.get(target, prop, receiver);\n        }\n      });\n    }\n    if (hooks.onWrite) {\n      withHooks = new Proxy(withHooks, {\n        get: (target, prop, receiver) => {\n          if (prop === \"accept\") {\n            return (message) => {\n              hooks.onWrite(message, this.containerWriteActions(container, target));\n            };\n          }\n          return Reflect.get(target, prop, receiver);\n        }\n      });\n    }\n    return withHooks;\n  }\n  dispatch(message) {\n    switch (message.type) {\n      case \"write\":\n        this[getContainerController](message.container).write(message.value);\n        break;\n      case \"update\":\n        const controller = this[getContainerController](message.container);\n        controller.write(message.generator(controller.value));\n        break;\n      case \"exec\":\n        this.commandRegistry.get(message.command)?.exec(message.message, {\n          get: (state) => {\n            return this[getController](state).value;\n          },\n          supply: (token, value) => {\n            this[getContainerController](token).publish(value);\n          },\n          pending: (token, message2) => {\n            this[getContainerController](token.meta).write(pending(message2));\n          },\n          error: (token, message2, reason) => {\n            this[getContainerController](token.meta).write(error(message2, reason));\n          }\n        });\n        break;\n      case \"reset\":\n        console.log(\"GOT RESET!\");\n        this.dispatch({\n          type: \"write\",\n          container: message.container,\n          value: message.container[initialValue]\n        });\n        break;\n      case \"use\":\n        const get = (state) => this[getController](state).value;\n        const result = message.rule.definition(get, message.input);\n        this.dispatch(result);\n        break;\n      case \"run\":\n        message.effect();\n        break;\n      case \"batch\":\n        console.log(\"HANDING BATCH!!!\");\n        for (let i = 0; i < message.messages.length; i++) {\n          this.dispatch(message.messages[i]);\n        }\n        break;\n    }\n  }\n}\nclass MessagePassingStateController extends SimpleStateController {\n  constructor(store, initialValue2, update) {\n    super(initialValue2);\n    this.store = store;\n    this.update = update;\n  }\n  accept(message) {\n    const result = this.update(message, this.value);\n    this.publish(result.value);\n    if (result.message !== void 0) {\n      this.store.dispatch(result.message);\n    }\n  }\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0b3JlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IENvbnRhaW5lckNvbnRyb2xsZXIsIFNpbXBsZVN0YXRlQ29udHJvbGxlciwgU3RhdGVDb250cm9sbGVyLCBTdGF0ZUxpc3RlbmVyIH0gZnJvbSBcIi4vY29udHJvbGxlci5qc1wiXG5pbXBvcnQgeyBNZXRhLCBlcnJvciwgb2ssIHBlbmRpbmcgfSBmcm9tIFwiLi9tZXRhLmpzXCJcblxuZXhwb3J0IHR5cGUgR2V0U3RhdGUgPSA8Uz4oc3RhdGU6IFN0YXRlPFM+KSA9PiBTXG5cbmV4cG9ydCBpbnRlcmZhY2UgUmVhZHlIb29rQWN0aW9uczxULCBNLCBFPiB7XG4gIGdldDogR2V0U3RhdGVcbiAgc3VwcGx5KHZhbHVlOiBUKTogdm9pZFxuICBwZW5kaW5nKHZhbHVlOiBNKTogdm9pZFxuICBlcnJvcih2YWx1ZTogTSwgcmVhc29uOiBFKTogdm9pZFxuICBjdXJyZW50OiBUXG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgV3JpdGVIb29rQWN0aW9uczxULCBNLCBFPiB7XG4gIGdldDogR2V0U3RhdGVcbiAgb2sodmFsdWU6IE0pOiB2b2lkXG4gIHBlbmRpbmcodmFsdWU6IE0pOiB2b2lkXG4gIGVycm9yKHZhbHVlOiBNLCByZWFzb246IEUpOiB2b2lkXG4gIGN1cnJlbnQ6IFRcbn1cblxuZXhwb3J0IGludGVyZmFjZSBQdWJsaXNoSG9va0FjdGlvbnMge1xuICBnZXQ6IEdldFN0YXRlXG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgQ29udGFpbmVySG9va3M8VCwgTSwgRSA9IHVua25vd24+IHtcbiAgb25SZWFkeT8oYWN0aW9uczogUmVhZHlIb29rQWN0aW9uczxULCBNLCBFPik6IHZvaWRcbiAgb25Xcml0ZT8obWVzc2FnZTogTSwgYWN0aW9uczogV3JpdGVIb29rQWN0aW9uczxULCBNLCBFPik6IHZvaWRcbiAgb25QdWJsaXNoPyh2YWx1ZTogVCwgYWN0aW9uczogUHVibGlzaEhvb2tBY3Rpb25zKTogdm9pZFxufVxuXG5leHBvcnQgaW50ZXJmYWNlIFdyaXRlTWVzc2FnZTxULCBNID0gVD4ge1xuICB0eXBlOiBcIndyaXRlXCJcbiAgY29udGFpbmVyOiBDb250YWluZXI8VCwgTT5cbiAgdmFsdWU6IE1cbn1cblxuZXhwb3J0IGludGVyZmFjZSBVcGRhdGVNZXNzYWdlPFQsIE0gPSBUPiB7XG4gIHR5cGU6IFwidXBkYXRlXCJcbiAgY29udGFpbmVyOiBDb250YWluZXI8VCwgTT5cbiAgZ2VuZXJhdG9yOiAoY3VycmVudDogVCkgPT4gTVxufVxuXG5leHBvcnQgaW50ZXJmYWNlIEV4ZWNNZXNzYWdlPE0+IHtcbiAgdHlwZTogXCJleGVjXCJcbiAgY29tbWFuZDogQ29tbWFuZDxNPlxuICBtZXNzYWdlOiBNXG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgUmVzZXRNZXNzYWdlPFQsIE0gPSBUPiB7XG4gIHR5cGU6IFwicmVzZXRcIlxuICBjb250YWluZXI6IENvbnRhaW5lcjxULCBNPlxufVxuXG5leHBvcnQgaW50ZXJmYWNlIFJ1bk1lc3NhZ2Uge1xuICB0eXBlOiBcInJ1blwiXG4gIGVmZmVjdDogKCkgPT4gdm9pZFxufVxuXG5leHBvcnQgaW50ZXJmYWNlIFJ1bGU8QXJndW1lbnQgPSB1bmRlZmluZWQ+IHtcbiAgcmVhZG9ubHkgZGVmaW5pdGlvbjogKGdldDogR2V0U3RhdGUsIGlucHV0OiBBcmd1bWVudCkgPT4gU3RvcmVNZXNzYWdlPGFueT5cbn1cblxuZXhwb3J0IGludGVyZmFjZSBVc2VNZXNzYWdlIHtcbiAgdHlwZTogXCJ1c2VcIlxuICBydWxlOiBSdWxlPGFueT5cbiAgaW5wdXQ6IGFueVxufVxuXG5leHBvcnQgaW50ZXJmYWNlIEJhdGNoTWVzc2FnZSB7XG4gIHR5cGU6IFwiYmF0Y2hcIlxuICBtZXNzYWdlczogQXJyYXk8U3RvcmVNZXNzYWdlPGFueT4+XG59XG5cbmV4cG9ydCB0eXBlIFN0b3JlTWVzc2FnZTxULCBNID0gVD4gPSBXcml0ZU1lc3NhZ2U8VCwgTT4gfCBVcGRhdGVNZXNzYWdlPFQsIE0+IHwgUmVzZXRNZXNzYWdlPFQsIE0+IHwgVXNlTWVzc2FnZSB8IEJhdGNoTWVzc2FnZSB8IFJ1bk1lc3NhZ2UgfCBFeGVjTWVzc2FnZTxNPlxuXG5jb25zdCByZWdpc3RlclN0YXRlID0gU3ltYm9sKFwicmVnaXN0ZXJTdGF0ZVwiKVxuY29uc3QgaW5pdGlhbGl6ZUNvbW1hbmQgPSBTeW1ib2woXCJpbml0aWFsaXplQ29tbWFuZFwiKVxuY29uc3QgZ2V0Q29udHJvbGxlciA9IFN5bWJvbChcImdldENvbnRyb2xsZXJcIilcbmNvbnN0IGdldENvbnRhaW5lckNvbnRyb2xsZXIgPSBTeW1ib2woXCJnZXRDb250YWluZXJDb250cm9sbGVyXCIpXG5jb25zdCBpbml0aWFsVmFsdWUgPSBTeW1ib2woXCJpbml0aWFsVmFsdWVcIilcblxudHlwZSBTdG9yZVJlZ2lzdHJ5S2V5ID0gU3RhdGU8YW55PlxuXG5leHBvcnQgYWJzdHJhY3QgY2xhc3MgU3RhdGU8VD4ge1xuICBjb25zdHJ1Y3RvcihyZWFkb25seSBpZDogc3RyaW5nIHwgdW5kZWZpbmVkLCByZWFkb25seSBuYW1lOiBzdHJpbmcgfCB1bmRlZmluZWQpIHsgfVxuXG4gIGFic3RyYWN0IFtyZWdpc3RlclN0YXRlXShzdG9yZTogU3RvcmUpOiBTdGF0ZUNvbnRyb2xsZXI8VD5cblxuICB0b1N0cmluZygpIHtcbiAgICByZXR1cm4gdGhpcy5uYW1lICYmIHRoaXMuaWQgPyBgJHt0aGlzLm5hbWV9LSR7dGhpcy5pZH1gIDogKHRoaXMubmFtZSA/PyB0aGlzLmlkID8/IFwiU3RhdGVcIilcbiAgfVxufVxuXG5leHBvcnQgY2xhc3MgTWV0YVN0YXRlPFQsIE0sIEUgPSB1bmtub3duPiBleHRlbmRzIFN0YXRlPE1ldGE8TSwgRT4+IHtcbiAgY29uc3RydWN0b3IocHJpdmF0ZSB0b2tlbjogU3RhdGU8VD4pIHtcbiAgICBzdXBlcih0b2tlbi5pZCA/IGBtZXRhWyR7dG9rZW4uaWR9XWAgOiB1bmRlZmluZWQsIGBtZXRhWyR7dG9rZW4udG9TdHJpbmcoKX1dYClcbiAgfVxuXG4gIFtyZWdpc3RlclN0YXRlXShzdG9yZTogU3RvcmUpOiBTdGF0ZUNvbnRyb2xsZXI8TWV0YTxNLCBFPj4ge1xuICAgIGNvbnN0IHRva2VuQ29udHJvbGxlciA9IHN0b3JlW2dldENvbnRyb2xsZXJdKHRoaXMudG9rZW4pXG5cbiAgICBjb25zdCBjb250cm9sbGVyID0gbmV3IFNpbXBsZVN0YXRlQ29udHJvbGxlcjxNZXRhPE0sIEU+PihvaygpKVxuXG4gICAgdG9rZW5Db250cm9sbGVyLmFkZExpc3RlbmVyKHtcbiAgICAgIG5vdGlmeTogKCkgPT4gdHJ1ZSxcbiAgICAgIHVwZGF0ZTogKCkgPT4ge1xuICAgICAgICBjb250cm9sbGVyLndyaXRlKG9rKCkpXG4gICAgICB9XG4gICAgfSwgMClcblxuICAgIHJldHVybiBjb250cm9sbGVyXG4gIH1cbn1cblxuZXhwb3J0IGNsYXNzIFN1cHBsaWVkU3RhdGU8VCwgTSA9IGFueSwgRSA9IGFueT4gZXh0ZW5kcyBTdGF0ZTxUPiB7XG4gIHByaXZhdGUgX21ldGE6IE1ldGFTdGF0ZTxULCBNLCBFPiB8IHVuZGVmaW5lZFxuXG4gIGNvbnN0cnVjdG9yKGlkOiBzdHJpbmcgfCB1bmRlZmluZWQsIG5hbWU6IHN0cmluZyB8IHVuZGVmaW5lZCwgcHJpdmF0ZSBpbml0aWFsVmFsdWU6IFQpIHtcbiAgICBzdXBlcihpZCwgbmFtZSlcbiAgfVxuXG4gIFtyZWdpc3RlclN0YXRlXShfOiBTdG9yZSk6IENvbnRhaW5lckNvbnRyb2xsZXI8VCwgTT4ge1xuICAgIHJldHVybiBuZXcgU2ltcGxlU3RhdGVDb250cm9sbGVyKHRoaXMuaW5pdGlhbFZhbHVlKVxuICB9XG5cbiAgZ2V0IG1ldGEoKTogTWV0YVN0YXRlPFQsIE0sIEU+IHtcbiAgICBpZiAodGhpcy5fbWV0YSA9PT0gdW5kZWZpbmVkKSB7XG4gICAgICB0aGlzLl9tZXRhID0gbmV3IE1ldGFTdGF0ZSh0aGlzKVxuICAgIH1cbiAgICByZXR1cm4gdGhpcy5fbWV0YVxuICB9XG59XG5cbmV4cG9ydCBjbGFzcyBDb250YWluZXI8VCwgTSA9IFQsIEUgPSBhbnk+IGV4dGVuZHMgU3RhdGU8VD4ge1xuICBwcml2YXRlIF9tZXRhOiBNZXRhU3RhdGU8VCwgTSwgRT4gfCB1bmRlZmluZWRcblxuICBjb25zdHJ1Y3RvcihcbiAgICBpZDogc3RyaW5nIHwgdW5kZWZpbmVkLFxuICAgIG5hbWU6IHN0cmluZyB8IHVuZGVmaW5lZCxcbiAgICBwcml2YXRlIGluaXRpYWxWYWx1ZTogVCxcbiAgICBwcml2YXRlIHVwZGF0ZTogKChtZXNzYWdlOiBNLCBjdXJyZW50OiBUKSA9PiBVcGRhdGVSZXN1bHQ8VD4pIHwgdW5kZWZpbmVkLFxuICApIHtcbiAgICBzdXBlcihpZCwgbmFtZSlcbiAgfVxuXG4gIGdldCBbaW5pdGlhbFZhbHVlXSgpOiBUIHtcbiAgICByZXR1cm4gdGhpcy5pbml0aWFsVmFsdWVcbiAgfVxuXG4gIFtyZWdpc3RlclN0YXRlXShzdG9yZTogU3RvcmUpOiBDb250YWluZXJDb250cm9sbGVyPFQsIE0+IHtcbiAgICByZXR1cm4gdGhpcy51cGRhdGUgP1xuICAgICAgbmV3IE1lc3NhZ2VQYXNzaW5nU3RhdGVDb250cm9sbGVyKHN0b3JlLCB0aGlzLmluaXRpYWxWYWx1ZSwgdGhpcy51cGRhdGUpIDpcbiAgICAgIG5ldyBTaW1wbGVTdGF0ZUNvbnRyb2xsZXIodGhpcy5pbml0aWFsVmFsdWUpXG4gIH1cblxuICBnZXQgbWV0YSgpOiBNZXRhU3RhdGU8VCwgTSwgRT4ge1xuICAgIGlmICh0aGlzLl9tZXRhID09PSB1bmRlZmluZWQpIHtcbiAgICAgIHRoaXMuX21ldGEgPSBuZXcgTWV0YVN0YXRlKHRoaXMpXG4gICAgfVxuICAgIHJldHVybiB0aGlzLl9tZXRhXG4gIH1cbn1cblxuZXhwb3J0IGNsYXNzIERlcml2ZWRTdGF0ZTxUPiBleHRlbmRzIFN0YXRlPFQ+IHtcbiAgY29uc3RydWN0b3IoaWQ6IHN0cmluZyB8IHVuZGVmaW5lZCwgbmFtZTogc3RyaW5nIHwgdW5kZWZpbmVkLCBwcml2YXRlIGRlcml2YXRpb246IChnZXQ6IEdldFN0YXRlLCBjdXJyZW50OiBUIHwgdW5kZWZpbmVkKSA9PiBUKSB7XG4gICAgc3VwZXIoaWQsIG5hbWUpXG4gIH1cblxuICBbcmVnaXN0ZXJTdGF0ZV0oc3RvcmU6IFN0b3JlKTogU3RhdGVDb250cm9sbGVyPFQ+IHtcbiAgICByZXR1cm4gbmV3IERlcml2ZWRTdGF0ZUNvbnRyb2xsZXIoc3RvcmUsIHRoaXMuZGVyaXZhdGlvbilcbiAgfVxufVxuXG5pbnRlcmZhY2UgVXBkYXRlVHJhY2tlciB7XG4gIG5vdGlmaWNhdGlvbnM6IG51bWJlclxuICBoYXNDaGFuZ2VkOiBib29sZWFuXG59XG5cbmNsYXNzIERlcGVuZGVuY3lUcmFja2luZ1N0YXRlTGlzdGVuZXIgaW1wbGVtZW50cyBTdGF0ZUxpc3RlbmVyIHtcbiAgcHJpdmF0ZSB2ZXJzaW9uID0gMFxuICBwcml2YXRlIHVwZGF0ZVRyYWNrZXI6IFVwZGF0ZVRyYWNrZXIgfCB1bmRlZmluZWRcblxuICBjb25zdHJ1Y3Rvcihwcml2YXRlIHN0b3JlOiBTdG9yZSkgeyB9XG5cbiAgbm90aWZ5KHZlcnNpb246IG51bWJlcik6IGJvb2xlYW4ge1xuICAgIGlmICh2ZXJzaW9uICE9PSB0aGlzLnZlcnNpb24pIHJldHVybiBmYWxzZVxuXG4gICAgaWYgKHRoaXMudXBkYXRlVHJhY2tlciA9PT0gdW5kZWZpbmVkKSB7XG4gICAgICB0aGlzLnVwZGF0ZVRyYWNrZXIgPSB7IG5vdGlmaWNhdGlvbnM6IDAsIGhhc0NoYW5nZWQ6IGZhbHNlIH1cbiAgICAgIHRoaXMuZGVwZW5kZW5jaWVzV2lsbFVwZGF0ZSgpXG4gICAgfVxuXG4gICAgdGhpcy51cGRhdGVUcmFja2VyIS5ub3RpZmljYXRpb25zKytcblxuICAgIHJldHVybiB0cnVlXG4gIH1cblxuICB1cGRhdGUoaGFzQ2hhbmdlZDogYm9vbGVhbik6IHZvaWQge1xuICAgIHRoaXMudXBkYXRlVHJhY2tlciEubm90aWZpY2F0aW9ucy0tXG4gICAgaWYgKGhhc0NoYW5nZWQpIHRoaXMudXBkYXRlVHJhY2tlciEuaGFzQ2hhbmdlZCA9IHRydWVcblxuICAgIGlmICh0aGlzLnVwZGF0ZVRyYWNrZXIhLm5vdGlmaWNhdGlvbnMgPT09IDApIHtcbiAgICAgIHRoaXMuZGVwZW5kZW5jaWVzSGF2ZVVwZGF0ZWQodGhpcy51cGRhdGVUcmFja2VyIS5oYXNDaGFuZ2VkKVxuICAgICAgdGhpcy51cGRhdGVUcmFja2VyID0gdW5kZWZpbmVkXG4gICAgfVxuICB9XG5cbiAgcHJvdGVjdGVkIGdldFZhbHVlPFM+KHN0YXRlOiBTdGF0ZTxTPik6IFMge1xuICAgIGNvbnN0IGNvbnRyb2xsZXIgPSB0aGlzLnN0b3JlW2dldENvbnRyb2xsZXJdKHN0YXRlKVxuICAgIGNvbnRyb2xsZXIuYWRkTGlzdGVuZXIodGhpcywgdGhpcy52ZXJzaW9uKVxuICAgIHJldHVybiBjb250cm9sbGVyLnZhbHVlXG4gIH1cblxuICBwcm90ZWN0ZWQgZGVwZW5kZW5jaWVzV2lsbFVwZGF0ZSgpOiB2b2lkIHsgfVxuXG4gIHByb3RlY3RlZCBkZXBlbmRlbmNpZXNIYXZlVXBkYXRlZChfOiBib29sZWFuKTogdm9pZCB7IH1cblxuICByZXNldERlcGVuZGVuY2llcygpOiB2b2lkIHtcbiAgICB0aGlzLnZlcnNpb24gPSB0aGlzLnZlcnNpb24gKyAxXG4gIH1cbn1cblxuY2xhc3MgRGVyaXZlZFN0YXRlQ29udHJvbGxlcjxUPiBleHRlbmRzIERlcGVuZGVuY3lUcmFja2luZ1N0YXRlTGlzdGVuZXIgaW1wbGVtZW50cyBTdGF0ZUNvbnRyb2xsZXI8VD4ge1xuICBwcml2YXRlIGxpc3RlbmVyczogTWFwPFN0YXRlTGlzdGVuZXIsIG51bWJlcj4gPSBuZXcgTWFwKClcbiAgcHJpdmF0ZSBfdmFsdWU6IFRcblxuICBjb25zdHJ1Y3RvcihzdG9yZTogU3RvcmUsIHByaXZhdGUgZGVyaXZhdGlvbjogKGdldDogR2V0U3RhdGUsIGN1cnJlbnQ6IFQgfCB1bmRlZmluZWQpID0+IFQpIHtcbiAgICBzdXBlcihzdG9yZSlcbiAgICB0aGlzLl92YWx1ZSA9IHRoaXMuZGVyaXZlVmFsdWUoKVxuICB9XG5cbiAgYWRkTGlzdGVuZXIobGlzdGVuZXI6IFN0YXRlTGlzdGVuZXIsIHZlcnNpb246IG51bWJlcik6IHZvaWQge1xuICAgIHRoaXMubGlzdGVuZXJzLnNldChsaXN0ZW5lciwgdmVyc2lvbilcbiAgfVxuXG4gIHJlbW92ZUxpc3RlbmVyKGxpc3RlbmVyOiBTdGF0ZUxpc3RlbmVyKTogdm9pZCB7XG4gICAgdGhpcy5saXN0ZW5lcnMuZGVsZXRlKGxpc3RlbmVyKVxuICB9XG5cbiAgcHJpdmF0ZSBkZXJpdmVWYWx1ZSgpIHtcbiAgICByZXR1cm4gdGhpcy5kZXJpdmF0aW9uKChzdGF0ZSkgPT4gdGhpcy5nZXRWYWx1ZShzdGF0ZSksIHRoaXMuX3ZhbHVlKVxuICB9XG5cbiAgcHJvdGVjdGVkIGRlcGVuZGVuY2llc1dpbGxVcGRhdGUoKTogdm9pZCB7XG4gICAgZm9yIChjb25zdCBbbGlzdGVuZXIsIHZlcnNpb25dIG9mIHRoaXMubGlzdGVuZXJzKSB7XG4gICAgICBjb25zdCBhY2NlcHRlZCA9IGxpc3RlbmVyLm5vdGlmeSh2ZXJzaW9uKVxuICAgICAgaWYgKCFhY2NlcHRlZCkge1xuICAgICAgICB0aGlzLnJlbW92ZUxpc3RlbmVyKGxpc3RlbmVyKVxuICAgICAgfVxuICAgIH1cbiAgfVxuXG4gIHByaXZhdGUgdXBkYXRlTGlzdGVuZXJzKGhhc0NoYW5nZWQ6IGJvb2xlYW4pIHtcbiAgICBmb3IgKGNvbnN0IGxpc3RlbmVyIG9mIHRoaXMubGlzdGVuZXJzLmtleXMoKSkge1xuICAgICAgbGlzdGVuZXIudXBkYXRlKGhhc0NoYW5nZWQpXG4gICAgfVxuICB9XG5cbiAgcHJvdGVjdGVkIGRlcGVuZGVuY2llc0hhdmVVcGRhdGVkKGhhc0NoYW5nZWQ6IGJvb2xlYW4pOiB2b2lkIHtcbiAgICBpZiAoIWhhc0NoYW5nZWQpIHtcbiAgICAgIHRoaXMudXBkYXRlTGlzdGVuZXJzKGZhbHNlKVxuICAgICAgcmV0dXJuXG4gICAgfVxuXG4gICAgdGhpcy5yZXNldERlcGVuZGVuY2llcygpXG4gICAgY29uc3QgZGVyaXZlZCA9IHRoaXMuZGVyaXZlVmFsdWUoKVxuXG4gICAgY29uc3QgZGVyaXZlZFZhbHVlSXNOZXcgPSAhT2JqZWN0LmlzKGRlcml2ZWQsIHRoaXMuX3ZhbHVlKVxuXG4gICAgdGhpcy5fdmFsdWUgPSBkZXJpdmVkXG5cbiAgICB0aGlzLnVwZGF0ZUxpc3RlbmVycyhkZXJpdmVkVmFsdWVJc05ldylcbiAgfVxuXG4gIGdldCB2YWx1ZSgpOiBUIHtcbiAgICByZXR1cm4gdGhpcy5fdmFsdWVcbiAgfVxufVxuXG5jbGFzcyBSZWFjdGl2ZUVmZmVjdENvbnRyb2xsZXIgZXh0ZW5kcyBEZXBlbmRlbmN5VHJhY2tpbmdTdGF0ZUxpc3RlbmVyIHtcbiAgY29uc3RydWN0b3Ioc3RvcmU6IFN0b3JlLCBwcml2YXRlIGVmZmVjdDogUmVhY3RpdmVFZmZlY3QpIHtcbiAgICBzdXBlcihzdG9yZSlcbiAgICB0aGlzLmluaXQoKVxuICB9XG5cbiAgcHJpdmF0ZSBpbml0KCk6IHZvaWQge1xuICAgIGlmICh0aGlzLmVmZmVjdC5pbml0KSB7XG4gICAgICB0aGlzLmVmZmVjdC5pbml0KChzdGF0ZSkgPT4ge1xuICAgICAgICByZXR1cm4gdGhpcy5nZXRWYWx1ZShzdGF0ZSlcbiAgICAgIH0pXG4gICAgfSBlbHNlIHtcbiAgICAgIHRoaXMuZWZmZWN0LnJ1bigoc3RhdGUpID0+IHtcbiAgICAgICAgcmV0dXJuIHRoaXMuZ2V0VmFsdWUoc3RhdGUpXG4gICAgICB9KVxuICAgIH1cbiAgfVxuXG4gIHByb3RlY3RlZCBkZXBlbmRlbmNpZXNIYXZlVXBkYXRlZChoYXNDaGFuZ2VkOiBib29sZWFuKTogdm9pZCB7XG4gICAgaWYgKCFoYXNDaGFuZ2VkKSByZXR1cm5cblxuICAgIHRoaXMucmVzZXREZXBlbmRlbmNpZXMoKVxuICAgIHRoaXMuZWZmZWN0LnJ1bigoc3RhdGUpID0+IHtcbiAgICAgIHJldHVybiB0aGlzLmdldFZhbHVlKHN0YXRlKVxuICAgIH0pXG4gIH1cblxuICB1bnN1YnNjcmliZSgpIHtcbiAgICB0aGlzLnJlc2V0RGVwZW5kZW5jaWVzKClcbiAgfVxufVxuXG5leHBvcnQgaW50ZXJmYWNlIFJlYWN0aXZlRWZmZWN0IHtcbiAgaW5pdD86IChnZXQ6IEdldFN0YXRlKSA9PiB2b2lkXG4gIHJ1bjogKGdldDogR2V0U3RhdGUpID0+IHZvaWRcbn1cblxuZXhwb3J0IGludGVyZmFjZSBSZWFjdGl2ZUVmZmVjdEhhbmRsZSB7XG4gIHVuc3Vic2NyaWJlOiAoKSA9PiB2b2lkXG59XG5cbmNsYXNzIERpc3BhdGNoQ29tbWFuZFF1ZXJ5PE0+IGltcGxlbWVudHMgUmVhY3RpdmVFZmZlY3Qge1xuICBjb25zdHJ1Y3Rvcihwcml2YXRlIHN0b3JlOiBTdG9yZSwgcHJpdmF0ZSBjb21tYW5kOiBDb21tYW5kPE0+LCBwcml2YXRlIHRyaWdnZXI6IChnZXQ6IEdldFN0YXRlKSA9PiBNKSB7IH1cblxuICBydW4oZ2V0OiBHZXRTdGF0ZSk6IHZvaWQge1xuICAgIHRoaXMuc3RvcmUuZGlzcGF0Y2goe1xuICAgICAgdHlwZTogXCJleGVjXCIsXG4gICAgICBjb21tYW5kOiB0aGlzLmNvbW1hbmQsXG4gICAgICBtZXNzYWdlOiB0aGlzLnRyaWdnZXIhKChzdGF0ZSkgPT4gZ2V0KHN0YXRlKSlcbiAgICB9KVxuICB9XG59XG5cbmV4cG9ydCBjbGFzcyBDb21tYW5kPE0+IHtcbiAgY29uc3RydWN0b3IocHJpdmF0ZSB0cmlnZ2VyOiAoKGdldDogR2V0U3RhdGUpID0+IE0pIHwgdW5kZWZpbmVkKSB7IH1cblxuICBbaW5pdGlhbGl6ZUNvbW1hbmRdKHN0b3JlOiBTdG9yZSk6IHZvaWQge1xuICAgIGlmICh0aGlzLnRyaWdnZXIgIT09IHVuZGVmaW5lZCkge1xuICAgICAgc3RvcmUudXNlRWZmZWN0KG5ldyBEaXNwYXRjaENvbW1hbmRRdWVyeShzdG9yZSwgdGhpcywgdGhpcy50cmlnZ2VyKSlcbiAgICB9XG4gIH1cbn1cblxuZXhwb3J0IGludGVyZmFjZSBDb21tYW5kQWN0aW9ucyB7XG4gIGdldDxUPihzdGF0ZTogU3RhdGU8VD4pOiBUXG4gIHN1cHBseTxULCBNLCBFPihzdGF0ZTogU3VwcGxpZWRTdGF0ZTxULCBNLCBFPiwgdmFsdWU6IFQpOiB2b2lkXG4gIHBlbmRpbmc8VCwgTSwgRT4oc3RhdGU6IFN1cHBsaWVkU3RhdGU8VCwgTSwgRT4sIG1lc3NhZ2U6IE0pOiB2b2lkXG4gIGVycm9yPFQsIE0sIEU+KHN0YXRlOiBTdXBwbGllZFN0YXRlPFQsIE0sIEU+LCBtZXNzYWdlOiBNLCByZWFzb246IEUpOiB2b2lkXG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgQ29tbWFuZE1hbmFnZXI8TT4ge1xuICBleGVjKG1lc3NhZ2U6IE0sIGFjdGlvbnM6IENvbW1hbmRBY3Rpb25zKTogdm9pZFxufVxuXG5leHBvcnQgaW50ZXJmYWNlIFN0b3JlSG9va3Mge1xuICBvblJlZ2lzdGVyKGNvbnRhaW5lcjogQ29udGFpbmVyPGFueT4pOiB2b2lkXG59XG5cbmV4cG9ydCBjbGFzcyBTdG9yZSB7XG4gIHByaXZhdGUgcmVnaXN0cnk6IFdlYWtNYXA8U3RvcmVSZWdpc3RyeUtleSwgU3RhdGVDb250cm9sbGVyPGFueT4+ID0gbmV3IFdlYWtNYXAoKTtcbiAgcHJpdmF0ZSBjb21tYW5kUmVnaXN0cnk6IE1hcDxDb21tYW5kPGFueT4sIENvbW1hbmRNYW5hZ2VyPGFueT4+ID0gbmV3IE1hcCgpXG4gIHByaXZhdGUgaG9va3M6IFN0b3JlSG9va3MgfCB1bmRlZmluZWRcbiAgcHJpdmF0ZSB0b2tlbklkTWFwOiBNYXA8c3RyaW5nLCBTdG9yZVJlZ2lzdHJ5S2V5PiA9IG5ldyBNYXAoKTtcblxuICBwcml2YXRlIGdldEtleUZvclRva2VuKHRva2VuOiBTdGF0ZTxhbnk+KTogU3RvcmVSZWdpc3RyeUtleSB7XG4gICAgaWYgKHRva2VuLmlkID09PSB1bmRlZmluZWQpIHJldHVybiB0b2tlblxuXG4gICAgY29uc3Qga2V5ID0gdGhpcy50b2tlbklkTWFwLmdldCh0b2tlbi5pZClcbiAgICBpZiAoa2V5ID09PSB1bmRlZmluZWQpIHtcbiAgICAgIHRoaXMudG9rZW5JZE1hcC5zZXQodG9rZW4uaWQsIHRva2VuKVxuICAgICAgcmV0dXJuIHRva2VuXG4gICAgfVxuICAgIHJldHVybiBrZXlcbiAgfVxuXG4gIFtnZXRDb250cm9sbGVyXTxUPih0b2tlbjogU3RhdGU8VD4pOiBTdGF0ZUNvbnRyb2xsZXI8VD4ge1xuICAgIGNvbnN0IGtleSA9IHRoaXMuZ2V0S2V5Rm9yVG9rZW4odG9rZW4pXG4gICAgbGV0IGNvbnRyb2xsZXIgPSB0aGlzLnJlZ2lzdHJ5LmdldChrZXkpXG4gICAgaWYgKGNvbnRyb2xsZXIgPT09IHVuZGVmaW5lZCkge1xuICAgICAgY29udHJvbGxlciA9IHRva2VuW3JlZ2lzdGVyU3RhdGVdKHRoaXMpXG4gICAgICB0aGlzLnJlZ2lzdHJ5LnNldChrZXksIGNvbnRyb2xsZXIpXG4gICAgICBpZiAodGhpcy5ob29rcyAhPT0gdW5kZWZpbmVkICYmIHRva2VuIGluc3RhbmNlb2YgQ29udGFpbmVyKSB7XG4gICAgICAgIHRoaXMuaG9va3Mub25SZWdpc3Rlcih0b2tlbilcbiAgICAgIH1cbiAgICB9XG4gICAgcmV0dXJuIGNvbnRyb2xsZXJcbiAgfVxuXG4gIFtnZXRDb250YWluZXJDb250cm9sbGVyXTxULCBNPih0b2tlbjogU3RhdGU8VD4pOiBDb250YWluZXJDb250cm9sbGVyPFQsIE0+IHtcbiAgICByZXR1cm4gdGhpc1tnZXRDb250cm9sbGVyXSh0b2tlbikgYXMgQ29udGFpbmVyQ29udHJvbGxlcjxULCBNPlxuICB9XG5cbiAgdXNlSG9va3MoaG9va3M6IFN0b3JlSG9va3MpIHtcbiAgICB0aGlzLmhvb2tzID0gaG9va3NcbiAgfVxuXG4gIHVzZUVmZmVjdChlZmZlY3Q6IFJlYWN0aXZlRWZmZWN0KTogUmVhY3RpdmVFZmZlY3RIYW5kbGUge1xuICAgIHJldHVybiBuZXcgUmVhY3RpdmVFZmZlY3RDb250cm9sbGVyKHRoaXMsIGVmZmVjdClcbiAgfVxuXG4gIHVzZUNvbW1hbmQ8TT4oY29tbWFuZDogQ29tbWFuZDxNPiwgaGFuZGxlcjogQ29tbWFuZE1hbmFnZXI8TT4pIHtcbiAgICB0aGlzLmNvbW1hbmRSZWdpc3RyeS5zZXQoY29tbWFuZCwgaGFuZGxlcilcbiAgICBjb21tYW5kW2luaXRpYWxpemVDb21tYW5kXSh0aGlzKVxuICB9XG5cbiAgcHJpdmF0ZSBjb250YWluZXJSZWFkeUFjdGlvbnM8VCwgTSwgRT4oY29udGFpbmVyOiBDb250YWluZXI8VCwgTT4sIGNvbnRyb2xsZXI6IENvbnRhaW5lckNvbnRyb2xsZXI8VCwgTT4pOiBSZWFkeUhvb2tBY3Rpb25zPFQsIE0sIEU+IHtcbiAgICByZXR1cm4ge1xuICAgICAgZ2V0OiAoc3RhdGUpID0+IHtcbiAgICAgICAgcmV0dXJuIHRoaXNbZ2V0Q29udHJvbGxlcl0oc3RhdGUpLnZhbHVlXG4gICAgICB9LFxuICAgICAgc3VwcGx5OiAodmFsdWUpID0+IHtcbiAgICAgICAgY29udHJvbGxlci5wdWJsaXNoKHZhbHVlKVxuICAgICAgfSxcbiAgICAgIHBlbmRpbmc6IChtZXNzYWdlKSA9PiB7XG4gICAgICAgIHRoaXNbZ2V0Q29udGFpbmVyQ29udHJvbGxlcl0oY29udGFpbmVyLm1ldGEpLnB1Ymxpc2gocGVuZGluZyhtZXNzYWdlKSlcbiAgICAgIH0sXG4gICAgICBlcnJvcjogKG1lc3NhZ2UsIHJlYXNvbikgPT4ge1xuICAgICAgICB0aGlzW2dldENvbnRhaW5lckNvbnRyb2xsZXJdKGNvbnRhaW5lci5tZXRhKS5wdWJsaXNoKGVycm9yKG1lc3NhZ2UsIHJlYXNvbikpXG4gICAgICB9LFxuICAgICAgY3VycmVudDogY29udHJvbGxlci52YWx1ZVxuICAgIH1cbiAgfVxuXG4gIHByaXZhdGUgY29udGFpbmVyV3JpdGVBY3Rpb25zPFQsIE0sIEU+KGNvbnRhaW5lcjogQ29udGFpbmVyPFQsIE0+LCBjb250cm9sbGVyOiBDb250YWluZXJDb250cm9sbGVyPFQsIE0+KTogV3JpdGVIb29rQWN0aW9uczxULCBNLCBFPiB7XG4gICAgcmV0dXJuIHtcbiAgICAgIGdldDogKHN0YXRlKSA9PiB7XG4gICAgICAgIHJldHVybiB0aGlzW2dldENvbnRyb2xsZXJdKHN0YXRlKS52YWx1ZVxuICAgICAgfSxcbiAgICAgIG9rOiAobWVzc2FnZSkgPT4ge1xuICAgICAgICBjb250cm9sbGVyLmFjY2VwdChtZXNzYWdlKVxuICAgICAgfSxcbiAgICAgIHBlbmRpbmc6IChtZXNzYWdlKSA9PiB7XG4gICAgICAgIHRoaXNbZ2V0Q29udGFpbmVyQ29udHJvbGxlcl0oY29udGFpbmVyLm1ldGEpLndyaXRlKHBlbmRpbmcobWVzc2FnZSkpXG4gICAgICB9LFxuICAgICAgZXJyb3I6IChtZXNzYWdlLCByZWFzb24pID0+IHtcbiAgICAgICAgdGhpc1tnZXRDb250YWluZXJDb250cm9sbGVyXShjb250YWluZXIubWV0YSkud3JpdGUoZXJyb3IobWVzc2FnZSwgcmVhc29uKSlcbiAgICAgIH0sXG4gICAgICBjdXJyZW50OiBjb250cm9sbGVyLnZhbHVlXG4gICAgfVxuICB9XG5cbiAgdXNlQ29udGFpbmVySG9va3M8VCwgTSwgRT4oY29udGFpbmVyOiBDb250YWluZXI8VCwgTT4sIGhvb2tzOiBDb250YWluZXJIb29rczxULCBNLCBFPikge1xuICAgIGNvbnN0IGNvbnRyb2xsZXJXaXRoSG9va3MgPSB0aGlzLmNvbnRhaW5lckNvbnRyb2xsZXJXaXRoSG9va3MoY29udGFpbmVyLCB0aGlzW2dldENvbnRhaW5lckNvbnRyb2xsZXJdKGNvbnRhaW5lciksIGhvb2tzKVxuICAgIHRoaXMucmVnaXN0cnkuc2V0KHRoaXMuZ2V0S2V5Rm9yVG9rZW4oY29udGFpbmVyKSwgY29udHJvbGxlcldpdGhIb29rcylcblxuICAgIGlmIChob29rcy5vblJlYWR5ICE9PSB1bmRlZmluZWQpIHtcbiAgICAgIGhvb2tzLm9uUmVhZHkodGhpcy5jb250YWluZXJSZWFkeUFjdGlvbnMoY29udGFpbmVyLCBjb250cm9sbGVyV2l0aEhvb2tzKSlcbiAgICB9XG4gIH1cblxuICBwcml2YXRlIGNvbnRhaW5lckNvbnRyb2xsZXJXaXRoSG9va3M8VCwgTSwgRT4oY29udGFpbmVyOiBDb250YWluZXI8VCwgTSwgRT4sIGNvbnRyb2xsZXI6IENvbnRhaW5lckNvbnRyb2xsZXI8VCwgTT4sIGhvb2tzOiBDb250YWluZXJIb29rczxULCBNLCBFPik6IENvbnRhaW5lckNvbnRyb2xsZXI8VCwgTT4ge1xuICAgIGxldCB3aXRoSG9va3M6IENvbnRhaW5lckNvbnRyb2xsZXI8VCwgTT4gPSBjb250cm9sbGVyXG4gICAgaWYgKGhvb2tzLm9uUHVibGlzaCkge1xuICAgICAgd2l0aEhvb2tzID0gbmV3IFByb3h5KHdpdGhIb29rcywge1xuICAgICAgICBnZXQ6ICh0YXJnZXQsIHByb3AsIHJlY2VpdmVyKSA9PiB7XG4gICAgICAgICAgaWYgKHByb3AgPT09IFwiYWNjZXB0XCIpIHtcbiAgICAgICAgICAgIHJldHVybiAobWVzc2FnZTogYW55KSA9PiB7XG4gICAgICAgICAgICAgIHRhcmdldC5wdWJsaXNoKG1lc3NhZ2UpXG4gICAgICAgICAgICAgIGhvb2tzLm9uUHVibGlzaCEodGFyZ2V0LnZhbHVlLCB7XG4gICAgICAgICAgICAgICAgZ2V0OiAoc3RhdGUpID0+IHtcbiAgICAgICAgICAgICAgICAgIHJldHVybiB0aGlzW2dldENvbnRyb2xsZXJdKHN0YXRlKS52YWx1ZVxuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgICAgcmV0dXJuIFJlZmxlY3QuZ2V0KHRhcmdldCwgcHJvcCwgcmVjZWl2ZXIpXG4gICAgICAgIH1cbiAgICAgIH0pXG4gICAgfVxuICAgIGlmIChob29rcy5vbldyaXRlKSB7XG4gICAgICB3aXRoSG9va3MgPSBuZXcgUHJveHkod2l0aEhvb2tzLCB7XG4gICAgICAgIGdldDogKHRhcmdldCwgcHJvcCwgcmVjZWl2ZXIpID0+IHtcbiAgICAgICAgICBpZiAocHJvcCA9PT0gXCJhY2NlcHRcIikge1xuICAgICAgICAgICAgcmV0dXJuIChtZXNzYWdlOiBhbnkpID0+IHtcbiAgICAgICAgICAgICAgaG9va3Mub25Xcml0ZSEobWVzc2FnZSwgdGhpcy5jb250YWluZXJXcml0ZUFjdGlvbnMoY29udGFpbmVyLCB0YXJnZXQpKVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgICByZXR1cm4gUmVmbGVjdC5nZXQodGFyZ2V0LCBwcm9wLCByZWNlaXZlcilcbiAgICAgICAgfVxuICAgICAgfSlcbiAgICB9XG4gICAgcmV0dXJuIHdpdGhIb29rc1xuICB9XG5cbiAgZGlzcGF0Y2gobWVzc2FnZTogU3RvcmVNZXNzYWdlPGFueT4pIHtcbiAgICBzd2l0Y2ggKG1lc3NhZ2UudHlwZSkge1xuICAgICAgY2FzZSBcIndyaXRlXCI6XG4gICAgICAgIHRoaXNbZ2V0Q29udGFpbmVyQ29udHJvbGxlcl0obWVzc2FnZS5jb250YWluZXIpLndyaXRlKG1lc3NhZ2UudmFsdWUpXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIFwidXBkYXRlXCI6XG4gICAgICAgIGNvbnN0IGNvbnRyb2xsZXIgPSB0aGlzW2dldENvbnRhaW5lckNvbnRyb2xsZXJdKG1lc3NhZ2UuY29udGFpbmVyKVxuICAgICAgICBjb250cm9sbGVyLndyaXRlKG1lc3NhZ2UuZ2VuZXJhdG9yKGNvbnRyb2xsZXIudmFsdWUpKVxuICAgICAgICBicmVha1xuICAgICAgY2FzZSBcImV4ZWNcIjpcbiAgICAgICAgdGhpcy5jb21tYW5kUmVnaXN0cnkuZ2V0KG1lc3NhZ2UuY29tbWFuZCk/LmV4ZWMobWVzc2FnZS5tZXNzYWdlLCB7XG4gICAgICAgICAgZ2V0OiAoc3RhdGUpID0+IHtcbiAgICAgICAgICAgIHJldHVybiB0aGlzW2dldENvbnRyb2xsZXJdKHN0YXRlKS52YWx1ZVxuICAgICAgICAgIH0sXG4gICAgICAgICAgc3VwcGx5OiAodG9rZW4sIHZhbHVlKSA9PiB7XG4gICAgICAgICAgICB0aGlzW2dldENvbnRhaW5lckNvbnRyb2xsZXJdKHRva2VuKS5wdWJsaXNoKHZhbHVlKVxuICAgICAgICAgIH0sXG4gICAgICAgICAgcGVuZGluZzogKHRva2VuLCBtZXNzYWdlKSA9PiB7XG4gICAgICAgICAgICB0aGlzW2dldENvbnRhaW5lckNvbnRyb2xsZXJdKHRva2VuLm1ldGEpLndyaXRlKHBlbmRpbmcobWVzc2FnZSkpXG4gICAgICAgICAgfSxcbiAgICAgICAgICBlcnJvcjogKHRva2VuLCBtZXNzYWdlLCByZWFzb24pID0+IHtcbiAgICAgICAgICAgIHRoaXNbZ2V0Q29udGFpbmVyQ29udHJvbGxlcl0odG9rZW4ubWV0YSkud3JpdGUoZXJyb3IobWVzc2FnZSwgcmVhc29uKSlcbiAgICAgICAgICB9XG4gICAgICAgIH0pXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIFwicmVzZXRcIjpcbiAgICAgICAgY29uc29sZS5sb2coXCJHT1QgUkVTRVQhXCIpXG4gICAgICAgIHRoaXMuZGlzcGF0Y2goe1xuICAgICAgICAgIHR5cGU6IFwid3JpdGVcIixcbiAgICAgICAgICBjb250YWluZXI6IG1lc3NhZ2UuY29udGFpbmVyLFxuICAgICAgICAgIHZhbHVlOiBtZXNzYWdlLmNvbnRhaW5lcltpbml0aWFsVmFsdWVdXG4gICAgICAgIH0pXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIFwidXNlXCI6XG4gICAgICAgIGNvbnN0IGdldDogR2V0U3RhdGUgPSAoc3RhdGUpID0+IHRoaXNbZ2V0Q29udHJvbGxlcl0oc3RhdGUpLnZhbHVlXG4gICAgICAgIGNvbnN0IHJlc3VsdCA9IG1lc3NhZ2UucnVsZS5kZWZpbml0aW9uKGdldCwgbWVzc2FnZS5pbnB1dClcbiAgICAgICAgdGhpcy5kaXNwYXRjaChyZXN1bHQpXG4gICAgICAgIGJyZWFrXG4gICAgICBjYXNlIFwicnVuXCI6XG4gICAgICAgIG1lc3NhZ2UuZWZmZWN0KClcbiAgICAgICAgYnJlYWtcbiAgICAgIGNhc2UgXCJiYXRjaFwiOlxuICAgICAgICBjb25zb2xlLmxvZyhcIkhBTkRJTkcgQkFUQ0ghISFcIilcbiAgICAgICAgZm9yIChsZXQgaSA9IDA7IGkgPCBtZXNzYWdlLm1lc3NhZ2VzLmxlbmd0aDsgaSsrKSB7XG4gICAgICAgICAgdGhpcy5kaXNwYXRjaChtZXNzYWdlLm1lc3NhZ2VzW2ldKVxuICAgICAgICB9XG4gICAgICAgIGJyZWFrXG4gICAgfVxuICB9XG59XG5cblxuZXhwb3J0IGludGVyZmFjZSBVcGRhdGVSZXN1bHQ8VD4ge1xuICB2YWx1ZTogVFxuICBtZXNzYWdlPzogU3RvcmVNZXNzYWdlPGFueT5cbn1cblxuY2xhc3MgTWVzc2FnZVBhc3NpbmdTdGF0ZUNvbnRyb2xsZXI8VCwgTT4gZXh0ZW5kcyBTaW1wbGVTdGF0ZUNvbnRyb2xsZXI8VD4gaW1wbGVtZW50cyBDb250YWluZXJDb250cm9sbGVyPFQsIE0+IHtcbiAgY29uc3RydWN0b3IocHJpdmF0ZSBzdG9yZTogU3RvcmUsIGluaXRpYWxWYWx1ZTogVCwgcHJpdmF0ZSB1cGRhdGU6ICgobWVzc2FnZTogTSwgY3VycmVudDogVCkgPT4gVXBkYXRlUmVzdWx0PFQ+KSkge1xuICAgIHN1cGVyKGluaXRpYWxWYWx1ZSlcbiAgfVxuXG4gIGFjY2VwdChtZXNzYWdlOiBNKTogdm9pZCB7XG4gICAgY29uc3QgcmVzdWx0ID0gdGhpcy51cGRhdGUobWVzc2FnZSwgdGhpcy52YWx1ZSlcbiAgICB0aGlzLnB1Ymxpc2gocmVzdWx0LnZhbHVlKVxuICAgIGlmIChyZXN1bHQubWVzc2FnZSAhPT0gdW5kZWZpbmVkKSB7XG4gICAgICB0aGlzLnN0b3JlLmRpc3BhdGNoKHJlc3VsdC5tZXNzYWdlKVxuICAgIH1cbiAgfVxufSJdLCJtYXBwaW5ncyI6IkFBQUEsU0FBOEIsNkJBQTZEO0FBQzNGLFNBQWUsT0FBTyxJQUFJLGVBQWU7QUEyRXpDLE1BQU0sZ0JBQWdCLE9BQU8sZUFBZTtBQUM1QyxNQUFNLG9CQUFvQixPQUFPLG1CQUFtQjtBQUNwRCxNQUFNLGdCQUFnQixPQUFPLGVBQWU7QUFDNUMsTUFBTSx5QkFBeUIsT0FB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",
+    "functions": [
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 0,
+            "endOffset": 43587,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "State",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 405,
+            "endOffset": 472,
+            "count": 106
+          }
+        ]
+      },
+      {
+        "functionName": "toString",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 475,
+            "endOffset": 586,
+            "count": 22
+          },
+          {
+            "startOffset": 509,
+            "endOffset": 519,
+            "count": 7
+          },
+          {
+            "startOffset": 520,
+            "endOffset": 547,
+            "count": 3
+          },
+          {
+            "startOffset": 548,
+            "endOffset": 581,
+            "count": 19
+          },
+          {
+            "startOffset": 560,
+            "endOffset": 570,
+            "count": 15
+          },
+          {
+            "startOffset": 571,
+            "endOffset": 581,
+            "count": 8
+          }
+        ]
+      },
+      {
+        "functionName": "MetaState",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 630,
+            "endOffset": 759,
+            "count": 11
+          },
+          {
+            "startOffset": 670,
+            "endOffset": 691,
+            "count": 4
+          },
+          {
+            "startOffset": 692,
+            "endOffset": 700,
+            "count": 7
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 762,
+            "endOffset": 1064,
+            "count": 8
+          }
+        ]
+      },
+      {
+        "functionName": "notify",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 953,
+            "endOffset": 963,
+            "count": 4
+          }
+        ]
+      },
+      {
+        "functionName": "update",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 979,
+            "endOffset": 1026,
+            "count": 4
+          }
+        ]
+      },
+      {
+        "functionName": "<instance_members_initializer>",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1108,
+            "endOffset": 1430,
+            "count": 7
+          }
+        ]
+      },
+      {
+        "functionName": "SuppliedState",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1112,
+            "endOffset": 1214,
+            "count": 7
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1226,
+            "endOffset": 1307,
+            "count": 3
+          }
+        ]
+      },
+      {
+        "functionName": "get meta",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1310,
+            "endOffset": 1428,
+            "count": 6
+          },
+          {
+            "startOffset": 1354,
+            "endOffset": 1401,
+            "count": 3
+          }
+        ]
+      },
+      {
+        "functionName": "<instance_members_initializer>",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1468,
+            "endOffset": 1976,
+            "count": 65
+          }
+        ]
+      },
+      {
+        "functionName": "Container",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1472,
+            "endOffset": 1608,
+            "count": 65
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1620,
+            "endOffset": 1676,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1679,
+            "endOffset": 1853,
+            "count": 53
+          },
+          {
+            "startOffset": 1727,
+            "endOffset": 1801,
+            "count": 7
+          },
+          {
+            "startOffset": 1802,
+            "endOffset": 1848,
+            "count": 46
+          }
+        ]
+      },
+      {
+        "functionName": "get meta",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 1856,
+            "endOffset": 1974,
+            "count": 15
+          },
+          {
+            "startOffset": 1900,
+            "endOffset": 1947,
+            "count": 8
+          }
+        ]
+      },
+      {
+        "functionName": "DerivedState",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2021,
+            "endOffset": 2115,
+            "count": 23
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2118,
+            "endOffset": 2209,
+            "count": 19
+          }
+        ]
+      },
+      {
+        "functionName": "<instance_members_initializer>",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2250,
+            "endOffset": 3203,
+            "count": 71
+          }
+        ]
+      },
+      {
+        "functionName": "DependencyTrackingStateListener",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2254,
+            "endOffset": 2302,
+            "count": 71
+          }
+        ]
+      },
+      {
+        "functionName": "notify",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2337,
+            "endOffset": 2621,
+            "count": 137
+          },
+          {
+            "startOffset": 2395,
+            "endOffset": 2408,
+            "count": 5
+          },
+          {
+            "startOffset": 2408,
+            "endOffset": 2448,
+            "count": 132
+          },
+          {
+            "startOffset": 2448,
+            "endOffset": 2560,
+            "count": 130
+          },
+          {
+            "startOffset": 2560,
+            "endOffset": 2620,
+            "count": 132
+          }
+        ]
+      },
+      {
+        "functionName": "update",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2624,
+            "endOffset": 2910,
+            "count": 132
+          },
+          {
+            "startOffset": 2711,
+            "endOffset": 2748,
+            "count": 131
+          },
+          {
+            "startOffset": 2797,
+            "endOffset": 2906,
+            "count": 130
+          }
+        ]
+      },
+      {
+        "functionName": "getValue",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 2913,
+            "endOffset": 3068,
+            "count": 239
+          }
+        ]
+      },
+      {
+        "functionName": "dependenciesWillUpdate",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3071,
+            "endOffset": 3101,
+            "count": 91
+          }
+        ]
+      },
+      {
+        "functionName": "dependenciesHaveUpdated",
+        "isBlockCoverage": false,
+        "ranges": [
+          {
+            "startOffset": 3104,
+            "endOffset": 3136,
+            "count": 0
+          }
+        ]
+      },
+      {
+        "functionName": "resetDependencies",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3139,
+            "endOffset": 3201,
+            "count": 130
+          }
+        ]
+      },
+      {
+        "functionName": "<instance_members_initializer>",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3273,
+            "endOffset": 4419,
+            "count": 19
+          }
+        ]
+      },
+      {
+        "functionName": "DerivedStateController",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3277,
+            "endOffset": 3403,
+            "count": 19
+          }
+        ]
+      },
+      {
+        "functionName": "addListener",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3457,
+            "endOffset": 3536,
+            "count": 66
+          }
+        ]
+      },
+      {
+        "functionName": "removeListener",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3539,
+            "endOffset": 3606,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "deriveValue",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3609,
+            "endOffset": 3702,
+            "count": 58
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3652,
+            "endOffset": 3683,
+            "count": 86
+          }
+        ]
+      },
+      {
+        "functionName": "dependenciesWillUpdate",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3705,
+            "endOffset": 3916,
+            "count": 39
+          },
+          {
+            "startOffset": 3858,
+            "endOffset": 3906,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "updateListeners",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 3919,
+            "endOffset": 4045,
+            "count": 39
+          },
+          {
+            "startOffset": 3999,
+            "endOffset": 4041,
+            "count": 38
+          }
+        ]
+      },
+      {
+        "functionName": "dependenciesHaveUpdated",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4048,
+            "endOffset": 4373,
+            "count": 39
+          },
+          {
+            "startOffset": 4107,
+            "endOffset": 4163,
+            "count": 0
+          }
+        ]
+      },
+      {
+        "functionName": "get value",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4376,
+            "endOffset": 4417,
+            "count": 66
+          }
+        ]
+      },
+      {
+        "functionName": "ReactiveEffectController",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4495,
+            "endOffset": 4588,
+            "count": 52
+          }
+        ]
+      },
+      {
+        "functionName": "init",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4591,
+            "endOffset": 4815,
+            "count": 52
+          },
+          {
+            "startOffset": 4626,
+            "endOffset": 4716,
+            "count": 1
+          },
+          {
+            "startOffset": 4716,
+            "endOffset": 4811,
+            "count": 51
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4651,
+            "endOffset": 4708,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4746,
+            "endOffset": 4803,
+            "count": 54
+          }
+        ]
+      },
+      {
+        "functionName": "dependenciesHaveUpdated",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4818,
+            "endOffset": 5000,
+            "count": 91
+          },
+          {
+            "startOffset": 4883,
+            "endOffset": 4890,
+            "count": 1
+          },
+          {
+            "startOffset": 4890,
+            "endOffset": 4999,
+            "count": 90
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 4941,
+            "endOffset": 4994,
+            "count": 98
+          }
+        ]
+      },
+      {
+        "functionName": "unsubscribe",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5003,
+            "endOffset": 5052,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "DispatchCommandQuery",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5086,
+            "endOffset": 5208,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "run",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5211,
+            "endOffset": 5359,
+            "count": 5
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5325,
+            "endOffset": 5346,
+            "count": 7
+          }
+        ]
+      },
+      {
+        "functionName": "Command",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5387,
+            "endOffset": 5441,
+            "count": 6
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5444,
+            "endOffset": 5593,
+            "count": 6
+          },
+          {
+            "startOffset": 5506,
+            "endOffset": 5589,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "<instance_members_initializer>",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5615,
+            "endOffset": 10708,
+            "count": 49
+          }
+        ]
+      },
+      {
+        "functionName": "getKeyForToken",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5761,
+            "endOffset": 5996,
+            "count": 392
+          },
+          {
+            "startOffset": 5820,
+            "endOffset": 5833,
+            "count": 366
+          },
+          {
+            "startOffset": 5833,
+            "endOffset": 5905,
+            "count": 26
+          },
+          {
+            "startOffset": 5905,
+            "endOffset": 5976,
+            "count": 6
+          },
+          {
+            "startOffset": 5976,
+            "endOffset": 5995,
+            "count": 20
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 5999,
+            "endOffset": 6378,
+            "count": 384
+          },
+          {
+            "startOffset": 6144,
+            "endOffset": 6351,
+            "count": 83
+          },
+          {
+            "startOffset": 6267,
+            "endOffset": 6296,
+            "count": 1
+          },
+          {
+            "startOffset": 6298,
+            "endOffset": 6345,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6381,
+            "endOffset": 6457,
+            "count": 119
+          }
+        ]
+      },
+      {
+        "functionName": "useHooks",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6460,
+            "endOffset": 6505,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "useEffect",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6508,
+            "endOffset": 6586,
+            "count": 52
+          }
+        ]
+      },
+      {
+        "functionName": "useCommand",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6589,
+            "endOffset": 6709,
+            "count": 6
+          }
+        ]
+      },
+      {
+        "functionName": "containerReadyActions",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6712,
+            "endOffset": 7217,
+            "count": 5
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6783,
+            "endOffset": 6852,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "supply",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6868,
+            "endOffset": 6923,
+            "count": 4
+          }
+        ]
+      },
+      {
+        "functionName": "pending",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 6940,
+            "endOffset": 7042,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "error",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7057,
+            "endOffset": 7173,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "containerWriteActions",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7220,
+            "endOffset": 7720,
+            "count": 9
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7291,
+            "endOffset": 7360,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "ok",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7372,
+            "endOffset": 7430,
+            "count": 5
+          }
+        ]
+      },
+      {
+        "functionName": "pending",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7447,
+            "endOffset": 7547,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "error",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7562,
+            "endOffset": 7676,
+            "count": 3
+          }
+        ]
+      },
+      {
+        "functionName": "useContainerHooks",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 7723,
+            "endOffset": 8089,
+            "count": 8
+          },
+          {
+            "startOffset": 7997,
+            "endOffset": 8085,
+            "count": 5
+          }
+        ]
+      },
+      {
+        "functionName": "containerControllerWithHooks",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8092,
+            "endOffset": 9081,
+            "count": 8
+          },
+          {
+            "startOffset": 8210,
+            "endOffset": 8685,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8266,
+            "endOffset": 8669,
+            "count": 42
+          },
+          {
+            "startOffset": 8329,
+            "endOffset": 8605,
+            "count": 2
+          },
+          {
+            "startOffset": 8605,
+            "endOffset": 8668,
+            "count": 40
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8350,
+            "endOffset": 8592,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8471,
+            "endOffset": 8560,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8765,
+            "endOffset": 9039,
+            "count": 92
+          },
+          {
+            "startOffset": 8828,
+            "endOffset": 8975,
+            "count": 9
+          },
+          {
+            "startOffset": 8975,
+            "endOffset": 9038,
+            "count": 83
+          }
+        ]
+      },
+      {
+        "functionName": "",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 8849,
+            "endOffset": 8962,
+            "count": 9
+          }
+        ]
+      },
+      {
+        "functionName": "dispatch",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 9084,
+            "endOffset": 10706,
+            "count": 120
+          },
+          {
+            "startOffset": 9138,
+            "endOffset": 9244,
+            "count": 95
+          },
+          {
+            "startOffset": 9251,
+            "endOffset": 9419,
+            "count": 0
+          },
+          {
+            "startOffset": 9426,
+            "endOffset": 10028,
+            "count": 13
+          },
+          {
+            "startOffset": 10035,
+            "endOffset": 10248,
+            "count": 1
+          },
+          {
+            "startOffset": 10255,
+            "endOffset": 10445,
+            "count": 8
+          },
+          {
+            "startOffset": 10452,
+            "endOffset": 10504,
+            "count": 1
+          },
+          {
+            "startOffset": 10511,
+            "endOffset": 10696,
+            "count": 2
+          },
+          {
+            "startOffset": 10624,
+            "endOffset": 10681,
+            "count": 4
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 9529,
+            "endOffset": 9606,
+            "count": 3
+          }
+        ]
+      },
+      {
+        "functionName": "supply",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 9626,
+            "endOffset": 9721,
+            "count": 5
+          }
+        ]
+      },
+      {
+        "functionName": "pending",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 9742,
+            "endOffset": 9855,
+            "count": 3
+          }
+        ]
+      },
+      {
+        "functionName": "error",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 9874,
+            "endOffset": 10001,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "functionName": "get",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 10287,
+            "endOffset": 10330,
+            "count": 10
+          }
+        ]
+      },
+      {
+        "functionName": "MessagePassingStateController",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 10779,
+            "endOffset": 10902,
+            "count": 7
+          }
+        ]
+      },
+      {
+        "functionName": "accept",
+        "isBlockCoverage": true,
+        "ranges": [
+          {
+            "startOffset": 10905,
+            "endOffset": 11097,
+            "count": 12
+          },
+          {
+            "startOffset": 11043,
+            "endOffset": 11093,
+            "count": 4
+          }
+        ]
+      }
+    ]
+  }
+]

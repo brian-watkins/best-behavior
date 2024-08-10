@@ -1,6 +1,7 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
 import { Logger } from "../../dist/main/index.js"
 import { run } from "../../dist/main/runtime/index.js"
+import { CoverageReporter } from "../../main/src/runtime/coverageReporter.js";
 
 export interface TestRunnerOptions {
   browserGlob?: string
@@ -21,11 +22,18 @@ export class TestRunner {
   private shouldRunPickedExamplesOnly: boolean = false
   private behaviorFilter: string | undefined
   private configFile: string | undefined
+  private testCoverageReporter = new TestCoverageReporter()
 
-  constructor(private options: TestRunnerOptions) { }
+  constructor(private options: TestRunnerOptions) {
+    this.setShouldCollectCoverage(false)
+  }
 
   setConfigFile(path: string) {
     this.configFile = path
+  }
+
+  setShouldCollectCoverage(shouldCollectCoverage: boolean) {
+    this.coverageReporter.shouldCollectCoverage = shouldCollectCoverage
   }
 
   setShouldFailFast(shouldFailFast: boolean) {
@@ -54,6 +62,7 @@ export class TestRunner {
       showBrowser: false,
       viteConfig: undefined,
       reporter: this.testReporter,
+      coverageReporter: this.testCoverageReporter,
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,
     })
@@ -61,6 +70,10 @@ export class TestRunner {
 
   get reporter(): TestReporter {
     return this.testReporter
+  }
+
+  get coverageReporter(): TestCoverageReporter {
+    return this.testCoverageReporter!
   }
 
   get logs(): TestLogger {
@@ -135,6 +148,41 @@ class TestReporter implements Reporter {
       case "invalid-claim":
         this.invalidClaims.push({ description: result.description, message: result.error.message, stack: result.error.stack })
     }
+  }
+}
+
+class TestCoverageReporter implements CoverageReporter {
+  private reports: Array<any>[] = []
+  private didStart = false
+  private hasFinished = false
+  public shouldCollectCoverage = false
+
+  async start(): Promise<void> {
+    this.didStart = true
+  }
+
+  isEnabled(): boolean {
+    return this.shouldCollectCoverage
+  }
+
+  async recordData(coverageData: any): Promise<void> {
+    this.reports.push(coverageData)
+  }
+
+  async end(): Promise<void> {
+    this.hasFinished = true
+  }
+
+  get totalReports(): number {
+    return this.reports.length
+  }
+
+  get isInitialized(): boolean {
+    return this.didStart
+  }
+
+  get isGenerated(): boolean {
+    return this.hasFinished
   }
 }
 

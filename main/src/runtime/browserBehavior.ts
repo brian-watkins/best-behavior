@@ -1,6 +1,6 @@
 import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
-import { PlaywrightBrowserContextGenerator, PreparedBrowser } from "../adapters/playwrightBrowser.js"
+import { PlaywrightBrowser, PreparedBrowser, PreparedBrowserOptions } from "../adapters/playwrightBrowser.js"
 import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError } from "./behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
 import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "../behaviorBrowserWindow.js"
@@ -43,7 +43,7 @@ class BrowserExample implements Example {
   constructor(private id: number, private page: Page, private browserReporter: BrowserReporter) { }
 
   validate(reporter: Reporter, options: ExampleValidationOptions): Promise<Summary> {
-    this.browserReporter.setReporter(reporter)
+    this.browserReporter.setDelegate(reporter)
     return this.page.evaluate((args) => window.__bb_validateExample(args.id, args.failFast), {
       id: this.id,
       failFast: options.failFast
@@ -51,18 +51,27 @@ class BrowserExample implements Example {
   }
 
   skip(reporter: Reporter, _: ExampleValidationOptions): Promise<Summary> {
-    this.browserReporter.setReporter(reporter)
+    this.browserReporter.setDelegate(reporter)
     return this.page.evaluate((args) => window.__bb_skipExample(args.id), {
       id: this.id
     })
   }
 }
 
+export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
+  homePage?: string
+}
+
 export class BehaviorBrowser extends PreparedBrowser {
   readonly reporter = new BrowserReporter()
+  private _page: Page | undefined
 
-  protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
-    const context = await super.getContext(generator)
+  constructor(browser: PlaywrightBrowser, private options: BehaviorBrowserOptions) {
+    super(browser, options)
+  }
+
+  protected async getContext(): Promise<BrowserContext> {
+    const context = await super.getContext()
 
     context.exposeBinding("__bb_pageBinding", ({ page }, ...args) => {
       const pageFunction = eval(args[0])
@@ -72,6 +81,29 @@ export class BehaviorBrowser extends PreparedBrowser {
     await this.reporter.decorateContext(context)
 
     return context
+  }
+
+  async getPage(): Promise<Page> {
+    if (this._page !== undefined) {
+      return this._page
+    }
+
+    const context = await this.getContext()
+    this._page = await context.newPage()
+
+    if (this.options.homePage !== undefined) {
+      await this._page.goto(this.options.homePage)
+    }
+
+    this.startCoverage(this._page)
+
+    return this._page
+  }
+
+  async afterSuite(): Promise<void> {
+    if (this._page !== undefined) {
+      await this.stopCoverage(this._page)
+    }
   }
 }
 
@@ -118,7 +150,7 @@ class BrowserReporter {
     this.currentOrigin = `${locationUrl.origin}/`
   }
 
-  setReporter(reporter: Reporter) {
+  setDelegate(reporter: Reporter) {
     this.reporter = reporter
   }
 }

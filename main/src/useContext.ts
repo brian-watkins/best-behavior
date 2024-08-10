@@ -8,7 +8,7 @@ declare let globalThis: CustomGlobalThis
 
 export class BehaviorContext {
   constructor (
-    readonly browserTestInstrument: PlaywrightTestInstrument
+    readonly playwrightTestInstrument: PlaywrightTestInstrument
   ) { }
 }
 
