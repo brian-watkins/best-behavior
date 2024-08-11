@@ -17,16 +17,24 @@ export interface RunOptions {
   logger: Logger
 }
 
+export enum RunResult {
+  OK = "OK",
+  NO_BEHAVIORS_FOUND = "NO BEHAVIORS FOUND",
+  ERROR = "ERROR",
+  NOT_OK = "NOT OK"
+}
+
 export class Runner {
   constructor(private behaviorFactory: BehaviorFactory, private coverageManager: CoverageManager) { }
 
-  async run(options: RunOptions): Promise<void> {
+  async run(options: RunOptions): Promise<RunResult> {
+    let result = RunResult.OK
+
     try {
       const behaviors = await this.getBehaviors(options)
 
       if (behaviors.length == 0) {
-        process.exitCode = 1
-        return
+        return RunResult.NO_BEHAVIORS_FOUND
       }
 
       await this.coverageManager.prepare()
@@ -36,12 +44,14 @@ export class Runner {
       await this.coverageManager.finish()
 
       if (summary.invalid > 0 || summary.skipped > 0) {
-        process.exitCode = 1
+        result = RunResult.NOT_OK
       }
     } catch (err: any) {
       options.reporter.terminate(err)
-      process.exitCode = 1
+      result = RunResult.ERROR
     }
+
+    return result
   }
 
   private async getBehaviors(options: RunOptions): Promise<Array<BehaviorMetadata>> {

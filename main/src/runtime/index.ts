@@ -4,7 +4,7 @@ import { ViteLocalServer, ViteTranspiler } from "../adapters/viteServer.js"
 import { PlaywrightBrowser, browserLogger } from "../adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
-import { Runner } from "./runner.js"
+import { Runner, RunResult } from "./runner.js"
 import { Logger, bold, consoleLogger, red } from "../logger.js"
 import { createContext } from "../useContext.js"
 import { PlaywrightTestInstrument } from "../useBrowser.js"
@@ -12,6 +12,7 @@ import { BestBehaviorConfig, BrowserBehaviorOptions, getConfig } from "../config
 import { CoverageReporter } from "./coverageReporter.js"
 import { NullCoverageReporter } from "../adapters/NullCoverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
+export { RunResult } from "./runner.js"
 
 export interface RunArguments {
   config?: string
@@ -31,7 +32,7 @@ export interface RunArguments {
 // Note that Reporter and Logger both have logging capabilities
 // Is there a way we could consolidate that?
 
-export async function run(args: RunArguments): Promise<void> {
+export async function run(args: RunArguments): Promise<RunResult> {
   const baseConfig = await getBaseConfig(args.config)
 
   const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
@@ -41,7 +42,7 @@ export async function run(args: RunArguments): Promise<void> {
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
     logger.error("Provide a glob via the --behaviors CLI option or the behaviorGlobs property of the config file.")
-    return
+    return RunResult.NO_BEHAVIORS_FOUND
   }
 
   const viteServer = new ViteLocalServer({
@@ -78,7 +79,7 @@ export async function run(args: RunArguments): Promise<void> {
   const coverageManager = new CoverageManager(coverageReporter, behaviorBrowser)
   const runner = new Runner(behaviorFactory, coverageManager)
 
-  await runner.run({
+  const runResult = await runner.run({
     behaviorPathPatterns: behaviors,
     behaviorFilter: args.behaviorFilter,
     browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
@@ -93,6 +94,8 @@ export async function run(args: RunArguments): Promise<void> {
     await playwrightBrowser.stop()
     await viteServer.stop()
   }
+
+  return runResult
 }
 
 async function getBaseConfig(path: string | undefined): Promise<BestBehaviorConfig | undefined> {

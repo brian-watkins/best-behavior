@@ -1,6 +1,6 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
 import { Logger } from "../../dist/main/index.js"
-import { run } from "../../dist/main/runtime/index.js"
+import { run, RunResult } from "../../dist/main/runtime/index.js"
 import { CoverageReporter } from "../../main/src/runtime/coverageReporter.js";
 
 export interface TestRunnerOptions {
@@ -23,6 +23,7 @@ export class TestRunner {
   private behaviorFilter: string | undefined
   private configFile: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
+  public runResult: RunResult | undefined
 
   constructor(private options: TestRunnerOptions) {
     this.setShouldCollectCoverage(false)
@@ -49,7 +50,7 @@ export class TestRunner {
   }
 
   async runBehaviors(pattern?: string): Promise<void> {
-    await run({
+    this.runResult = await run({
       config: this.configFile,
       behaviorGlobs: pattern ? [`./test/fixtures/behaviors/${pattern}`] : undefined,
       behaviorFilter: this.behaviorFilter,

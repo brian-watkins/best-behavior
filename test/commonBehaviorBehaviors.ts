@@ -2,6 +2,7 @@ import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
+import { RunResult } from "../dist/main/runtime/index.js"
 
 
 export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
@@ -19,6 +20,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           expect(context.logs.errorLines, is(arrayContaining(
             stringContaining("No behaviors specified!")
           )))
+        }),
+        effect("it returns a no behaviors found run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NO_BEHAVIORS_FOUND))))
         })
       ]
     }),
@@ -36,6 +40,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           expect(context.logs.infoLines, is(arrayWith([
             stringContaining("No behaviors found")
           ])))
+        }),
+        effect("it returns a no behaviors found run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NO_BEHAVIORS_FOUND))))
         })
       ]
     }),
@@ -60,6 +67,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             stringContaining("common/error/noDefaultExport.behavior.ts")
           ]))))
         }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
       ]
     }),
 
@@ -83,6 +93,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             stringContaining("common/error/badDefaultExport.behavior.ts")
           ]))))
         }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
       ]
     }),
 
@@ -106,6 +119,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             stringContaining("common/error/badDefaultFunctionExport.behavior.ts")
           ]))))
         }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
       ]
     }),
 
@@ -129,6 +145,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             stringContaining("common/error/defaultFunctionExportThrows.behavior.ts")
           ]))))
         }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
       ]
     }),
 
@@ -166,6 +185,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 2
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -201,6 +223,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 2,
             skipped: 0
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -235,6 +260,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 1,
             skipped: 4
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -268,6 +296,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 2
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -301,6 +332,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 0
           }))))
+        }),
+        effect("it returns ok run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
         })
       ]
     }),
@@ -334,6 +368,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 3
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -370,6 +407,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 1,
             skipped: 5
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -404,6 +444,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 4
           }))))
+        }),
+        effect("it returns skipped or invalid run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
         })
       ]
     }),
@@ -438,6 +481,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             invalid: 0,
             skipped: 0
           }))))
+        }),
+        effect("it returns ok run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
         })
       ]
     }),
@@ -462,6 +508,9 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             "Unable to compile behavior filter regular expression!"
           ))))
         }),
+        effect("it returns error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
       ]
     })
 

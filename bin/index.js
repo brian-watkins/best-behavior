@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --enable-source-maps
 
 import yargs from "yargs"
-import { run } from "../dist/main/runtime/index.js"
+import { run, RunResult } from "../dist/main/runtime/index.js"
 import { randomOrder } from "esbehavior"
 
 const args = yargs(process.argv.slice(2))
@@ -51,7 +51,7 @@ const args = yargs(process.argv.slice(2))
   .wrap(yargs.terminalWidth)
   .parseSync()
 
-await run({
+const result = await run({
   config: args.config,
   behaviorGlobs: toArray(args.behaviors),
   behaviorFilter: args.behaviorFilter,
@@ -64,6 +64,10 @@ await run({
   showBrowser: args.showBrowser,
   orderProvider: args.seed ? randomOrder(args.seed) : undefined
 })
+
+if (result !== RunResult.OK) {
+  process.exitCode = 1
+}
 
 function toArray(value) {
   return typeof value === "string" ? [ value ] : value
