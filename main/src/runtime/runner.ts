@@ -4,6 +4,7 @@ import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavio
 import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { Logger } from "../logger.js"
+import { CoverageManager } from "./coverageManager.js"
 
 export interface RunOptions {
   behaviorPathPatterns: Array<string>
@@ -17,7 +18,7 @@ export interface RunOptions {
 }
 
 export class Runner {
-  constructor(private behaviorFactory: BehaviorFactory) { }
+  constructor(private behaviorFactory: BehaviorFactory, private coverageManager: CoverageManager) { }
 
   async run(options: RunOptions): Promise<void> {
     try {
@@ -28,7 +29,12 @@ export class Runner {
         return
       }
 
+      await this.coverageManager.prepare()
+
       const summary = await this.validateBehaviors(behaviors, options)
+
+      await this.coverageManager.finish()
+
       if (summary.invalid > 0 || summary.skipped > 0) {
         process.exitCode = 1
       }

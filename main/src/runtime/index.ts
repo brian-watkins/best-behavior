@@ -11,6 +11,7 @@ import { PlaywrightTestInstrument } from "../useBrowser.js"
 import { BestBehaviorConfig, BrowserBehaviorOptions, getConfig } from "../config.js"
 import { CoverageReporter } from "./coverageReporter.js"
 import { NullCoverageReporter } from "../adapters/NullCoverageReporter.js"
+import { CoverageManager } from "./coverageManager.js"
 
 export interface RunArguments {
   config?: string
@@ -58,14 +59,12 @@ export async function run(args: RunArguments): Promise<void> {
 
   const coverageReporter = args.coverageReporter ?? new NullCoverageReporter()
 
-  const browserTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
+  const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
     coverageReporter: coverageReporter.isEnabled() ? coverageReporter : undefined,
     logger: browserLogger(viteServer.host, logger)
   })
 
-  createContext({
-    browserTestInstrument: browserTestInstrument
-  })
+  createContext({ playwrightTestInstrument })
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
@@ -76,11 +75,8 @@ export async function run(args: RunArguments): Promise<void> {
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
-  const runner = new Runner(behaviorFactory)
-
-  if (coverageReporter.isEnabled()) {
-    await coverageReporter.start()
-  }
+  const coverageManager = new CoverageManager(coverageReporter, behaviorBrowser)
+  const runner = new Runner(behaviorFactory, coverageManager)
 
   await runner.run({
     behaviorPathPatterns: behaviors,
@@ -92,13 +88,6 @@ export async function run(args: RunArguments): Promise<void> {
     runPickedOnly: args.runPickedOnly ?? false,
     logger
   })
-
-  // REVISIT: Feels weird and coverage handling should be inside the Runner probably
-  await behaviorBrowser.afterSuite()
-
-  if (coverageReporter.isEnabled()) {
-    await coverageReporter.end()
-  }
 
   if (!args.showBrowser || !playwrightBrowser.isOpen) {
     await playwrightBrowser.stop()

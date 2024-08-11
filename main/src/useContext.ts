@@ -13,11 +13,11 @@ export class BehaviorContext {
 }
 
 export interface ContextElements {
-  browserTestInstrument: PlaywrightTestInstrument,
+  playwrightTestInstrument: PlaywrightTestInstrument,
 }
 
 export function createContext(elements: ContextElements) {
-  globalThis.__best_behavior_context = new BehaviorContext(elements.browserTestInstrument)
+  globalThis.__best_behavior_context = new BehaviorContext(elements.playwrightTestInstrument)
 }
 
 export function useContext(): BehaviorContext {

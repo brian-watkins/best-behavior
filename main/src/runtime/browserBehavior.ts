@@ -100,7 +100,7 @@ export class BehaviorBrowser extends PreparedBrowser {
     return this._page
   }
 
-  async afterSuite(): Promise<void> {
+  async stopCoverageIfNecessary(): Promise<void> {
     if (this._page !== undefined) {
       await this.stopCoverage(this._page)
     }
