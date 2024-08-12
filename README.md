@@ -279,16 +279,30 @@ available in the scope where the function is executed.
 
 Instead of using the `best` CLI, you can run behaviors via a script that invokes
 the `run` function programmatically. This can be useful if you need to provide
-a custom `Reporter` or `OrderProvider` or `Logger`.
+a custom `Reporter`, `OrderProvider`, or `Logger` -- or if you need to do
+something before or after behaviors are run.
 
 ### best-behavior/runtime
 
 #### run
 
 ```
-run(args: RunArguments): Promise<void>
+run(args: RunArguments): Promise<RunResult>
 ```
 
+#### RunResult
+
+```
+enum RunResult {
+  OK,
+  NO_BEHAVIORS_FOUND,
+  ERROR,
+  NOT_OK
+}
+```
+
+A run is `OK` if after successfully running the behaviors, all behaviors were
+found to be valid. A run is `NOT_OK` if some behaviors were skipped or invalid.
 
 #### RunArguments
 
