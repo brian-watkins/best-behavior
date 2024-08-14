@@ -25,7 +25,7 @@ export enum RunResult {
 }
 
 export class Runner {
-  constructor(private behaviorFactory: BehaviorFactory, private coverageManager: CoverageManager) { }
+  constructor(private behaviorFactory: BehaviorFactory, private coverageManager: CoverageManager | undefined) { }
 
   async run(options: RunOptions): Promise<RunResult> {
     let result = RunResult.OK
@@ -37,11 +37,11 @@ export class Runner {
         return RunResult.NO_BEHAVIORS_FOUND
       }
 
-      await this.coverageManager.prepare()
+      await this.coverageManager?.prepare()
 
       const summary = await this.validateBehaviors(behaviors, options)
 
-      await this.coverageManager.finish()
+      await this.coverageManager?.finish()
 
       if (summary.invalid > 0 || summary.skipped > 0) {
         result = RunResult.NOT_OK

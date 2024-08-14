@@ -1,7 +1,8 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Logger } from "../../dist/main/index.js"
+import { Logger, V8CoverageReporter } from "../../dist/main/index.js"
 import { run, RunResult } from "../../dist/main/runtime/index.js"
-import { CoverageReporter } from "../../main/src/runtime/coverageReporter.js";
+import { CoverageReporter, V8CoverageData } from "../../main/src/runtime/coverageReporter.js";
+import MCR from "monocart-coverage-reports";
 
 export interface TestRunnerOptions {
   browserGlob?: string
@@ -23,6 +24,7 @@ export class TestRunner {
   private behaviorFilter: string | undefined
   private configFile: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
+  private shouldCollectCoverage: boolean = false
   public runResult: RunResult | undefined
 
   constructor(private options: TestRunnerOptions) {
@@ -34,7 +36,8 @@ export class TestRunner {
   }
 
   setShouldCollectCoverage(shouldCollectCoverage: boolean) {
-    this.coverageReporter.shouldCollectCoverage = shouldCollectCoverage
+    // this.coverageReporter.shouldCollectCoverage = shouldCollectCoverage
+    this.shouldCollectCoverage = shouldCollectCoverage
   }
 
   setShouldFailFast(shouldFailFast: boolean) {
@@ -63,7 +66,8 @@ export class TestRunner {
       showBrowser: false,
       viteConfig: undefined,
       reporter: this.testReporter,
-      coverageReporter: this.testCoverageReporter,
+      collectCoverage: this.shouldCollectCoverage,
+      coverageReporter: new V8CoverageReporter(this.testCoverageReporter),
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,
     })
@@ -153,37 +157,30 @@ class TestReporter implements Reporter {
 }
 
 class TestCoverageReporter implements CoverageReporter {
-  private reports: Array<any>[] = []
-  private didStart = false
-  private hasFinished = false
-  public shouldCollectCoverage = false
+  private mcr!: MCR.CoverageReport;
+  coverageResults: MCR.CoverageResults | undefined
 
   async start(): Promise<void> {
-    this.didStart = true
+    this.mcr = new MCR.CoverageReport({
+      reports: "none",
+      clean: true,
+      entryFilter: (entry) => entry.url.includes("test/fixtures/src")
+    })
   }
 
-  isEnabled(): boolean {
-    return this.shouldCollectCoverage
-  }
+  async recordData(coverageData: Array<V8CoverageData>): Promise<void> {
+    // console.log("Recording data", coverageData[1])
+    // for (const d of coverageData) {
+      // if (d.url.includes("addStuff.ts")) {
+        // console.log("funcation", JSON.stringify(d))
+      // }
+    // }
 
-  async recordData(coverageData: any): Promise<void> {
-    this.reports.push(coverageData)
+    await this.mcr.add(coverageData)
   }
 
   async end(): Promise<void> {
-    this.hasFinished = true
-  }
-
-  get totalReports(): number {
-    return this.reports.length
-  }
-
-  get isInitialized(): boolean {
-    return this.didStart
-  }
-
-  get isGenerated(): boolean {
-    return this.hasFinished
+    this.coverageResults = await this.mcr.generate()
   }
 }
 

@@ -1,6 +1,6 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
+import { arrayContaining, arrayWith, arrayWithItemAt, assignedWith, defined, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior } from "./helpers/matchers.js"
 import { RunResult } from "../dist/main/runtime/index.js"
 
@@ -510,6 +510,43 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         }),
         effect("it returns error run result", (context) => {
           expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
+      ]
+    }),
+
+  (m) => m.pick() && example(testRunnerContext(options))
+    .description("when coverage is collected")
+    .script({
+      suppose: [
+        fact("coverage data should be collected", (context) => {
+          context.setShouldCollectCoverage(true)
+        })
+      ],
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/common/valid/valid.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 2,
+            valid: 2,
+            invalid: 0,
+            skipped: 0
+          }))))
+        }),
+        effect("it returns an ok run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
+        }),
+        effect("coverage data is generated", (context) => {
+          const sourceFile = context.coverageReporter.coverageResults?.files[0]
+          expect(sourceFile, is(defined()))
+          // expect(sourceFile?.url, is(assignedWith(equalTo("./test/fixtures/src/addStuff.ts"))))
+          expect(sourceFile?.data?.lines, is(assignedWith(equalTo<{[key: string]: string | number}>({
+            '4': 0, '5': 0, '6': 0, '8': 1, '9': 1, '10': 1
+          }))))
         })
       ]
     })

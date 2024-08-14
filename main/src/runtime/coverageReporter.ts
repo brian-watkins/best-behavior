@@ -19,7 +19,12 @@ export interface CoverageRange {
 
 export interface CoverageReporter {
   start(): Promise<void>
-  isEnabled(): boolean
   recordData(coverageData: Array<V8CoverageData>): Promise<void>
   end(): Promise<void>
+}
+
+export class NullCoverageReporter implements CoverageReporter {
+  async start(): Promise<void> { }
+  async recordData(coverageData: any): Promise<void> { }
+  async end(): Promise<void> { }
 }

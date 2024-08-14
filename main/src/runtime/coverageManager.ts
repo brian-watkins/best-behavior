@@ -1,20 +1,91 @@
+import { Transpiler } from "../transpiler.js";
 import { BehaviorBrowser } from "./browserBehavior.js";
 import { CoverageReporter } from "./coverageReporter.js";
+import { Session, Profiler } from "inspector"
 
 export class CoverageManager {
-  constructor(private reporter: CoverageReporter, private behaviorBrowser: BehaviorBrowser) { }
+  private nodeCoverageController = new NodeCoverageController()
+
+  constructor(private transpiler: Transpiler, private reporter: CoverageReporter, private behaviorBrowser: BehaviorBrowser) { }
 
   async prepare(): Promise<void> {
-    if (this.reporter.isEnabled()) {
-      await this.reporter.start()
-    }  
+    await this.nodeCoverageController.startCoverage()
+    await this.reporter.start()
   }
 
   async finish(): Promise<void> {
-    await this.behaviorBrowser.stopCoverageIfNecessary()
+    const results = await this.nodeCoverageController.stopCoverage()
 
-    if (this.reporter.isEnabled()) {
-      await this.reporter.end()
+    const coverageWithSources = []
+    for (const file of results) {
+      const source = await this.transpiler.getSource(file.url)
+
+      coverageWithSources.push({
+        ...file,
+        url: file.url,
+        source,
+        functions: file.functions
+          .filter(fun => fun.functionName.length > 0)
+      })
     }
+
+    if (coverageWithSources.length > 0) {
+      this.reporter.recordData(coverageWithSources)
+    }
+
+    await this.behaviorBrowser.stopCoverageIfNecessary()
+    await this.reporter.end()
+  }
+}
+
+class NodeCoverageController {
+  private _session: Session | undefined
+
+  async startCoverage(): Promise<void> {
+    await this.sendMessage('Profiler.enable');
+    await this.sendMessage('Profiler.startPreciseCoverage', {
+      callCount: true,
+      detailed: true
+    });
+  }
+
+  async stopCoverage(): Promise<Array<Profiler.ScriptCoverage>> {
+    const { result } = await this.sendMessage('Profiler.takePreciseCoverage');
+
+    const userFiles = result.filter((file: any) => {
+      return file.url.length > 0 && !file.url.startsWith("file://") && !file.url.startsWith("node:")
+    })
+
+    await this.sendMessage('Profiler.stopPreciseCoverage');
+    await this.sendMessage('Profiler.disable');
+    this.destroySession()
+
+    return userFiles
+  }
+
+  private startSession() {
+    this._session = new Session()
+    this._session.connect()
+  }
+
+  private destroySession() {
+    this._session?.disconnect()
+    this._session = undefined
+  }
+
+  private sendMessage(message: string, params?: any): Promise<any> {
+    if (this._session === undefined) {
+      this.startSession()
+    }
+
+    return new Promise((resolve, reject) => {
+      this._session?.post(message, params, (err, resultParams) => {
+        if (err === null) {
+          resolve(resultParams)
+        } else {
+          reject(err)
+        }
+      })
+    })
   }
 }

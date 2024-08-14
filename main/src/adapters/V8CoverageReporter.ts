@@ -2,37 +2,19 @@ import { CoverageReporter, V8CoverageData } from "../runtime/coverageReporter.js
 import fs from "fs"
 import path from "path"
 
-export interface CoverageWriter {
-  writeFile(filename: string, content: string): void
-}
-
-export class FileWriter implements CoverageWriter {
-  constructor(private baseDir: string = process.cwd()) { }
-
-  writeFile(filename: string, content: string): void {
-    fs.writeFileSync(path.join(this.baseDir, filename), content)
-  }
-}
-
 export class V8CoverageReporter implements CoverageReporter {
-  private reports: Array<Array<V8CoverageData>> = []
+  constructor(private reporter: CoverageReporter) { }
 
-  constructor(private writer: CoverageWriter = new FileWriter()) { }
-
-  isEnabled(): boolean {
-    return true
+  async start(): Promise<void> {
+    await this.reporter.start()
   }
-
-  async start(): Promise<void> { }
 
   async recordData(coverageData: Array<V8CoverageData>): Promise<void> {
-    this.reports.push(coverageData.map(fixCoverageData))
+    await this.reporter.recordData(coverageData.map(fixCoverageData))
   }
 
   async end(): Promise<void> {
-    for (let i = 0; i < this.reports.length; i++) {
-      this.writer.writeFile(`coverage_${i}.json`, JSON.stringify(this.reports[i]))
-    }
+    await this.reporter.end()
   }
 }
 

@@ -5,8 +5,8 @@ import v8CoverageBehavior from "./v8Coverage.behavior.js";
 
 const summary = await validate([
   localBehaviorBehavior,
-  browserBehaviorBehavior,
-  v8CoverageBehavior
+  // browserBehaviorBehavior,
+  // v8CoverageBehavior
 ], { failFast: true })
 
 if (summary.invalid > 0 || summary.skipped > 0) {

@@ -9,8 +9,7 @@ import { Logger, bold, consoleLogger, red } from "../logger.js"
 import { createContext } from "../useContext.js"
 import { PlaywrightTestInstrument } from "../useBrowser.js"
 import { BestBehaviorConfig, BrowserBehaviorOptions, getConfig } from "../config.js"
-import { CoverageReporter } from "./coverageReporter.js"
-import { NullCoverageReporter } from "../adapters/NullCoverageReporter.js"
+import { CoverageReporter, NullCoverageReporter } from "./coverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
 export { RunResult } from "./runner.js"
 
@@ -24,6 +23,7 @@ export interface RunArguments {
   viteConfig?: string
   showBrowser?: boolean
   reporter?: Reporter
+  collectCoverage?: boolean
   coverageReporter?: CoverageReporter
   orderProvider?: OrderProvider
   logger?: Logger
@@ -61,7 +61,7 @@ export async function run(args: RunArguments): Promise<RunResult> {
   const coverageReporter = args.coverageReporter ?? new NullCoverageReporter()
 
   const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
-    coverageReporter: coverageReporter.isEnabled() ? coverageReporter : undefined,
+    coverageReporter: args.collectCoverage ? coverageReporter : undefined,
     logger: browserLogger(viteServer.host, logger)
   })
 
@@ -70,13 +70,13 @@ export async function run(args: RunArguments): Promise<RunResult> {
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
     homePage: args.browserBehaviors?.html,
-    coverageReporter: coverageReporter.isEnabled() ? coverageReporter : undefined,
+    coverageReporter: args.collectCoverage ? coverageReporter : undefined,
     logger
   })
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
-  const coverageManager = new CoverageManager(coverageReporter, behaviorBrowser)
+  const coverageManager = args.collectCoverage ? new CoverageManager(viteServer, coverageReporter, behaviorBrowser) : undefined
   const runner = new Runner(behaviorFactory, coverageManager)
 
   const runResult = await runner.run({

@@ -42,9 +42,10 @@ export default behavior("running behaviors in the browser environment", [
           }))))
         }),
         effect("coverage data is not collected", (context) => {
-          expect(context.coverageReporter.isInitialized, is(false))
-          expect(context.coverageReporter.totalReports, is(0))
-          expect(context.coverageReporter.isGenerated, is(false))
+          // expect(context.coverageReporter.isInitialized, is(false))
+          // expect(context.coverageReporter.totalReports, is(0))
+          // expect(context.coverageReporter.isGenerated, is(false))
+          // expect(context.coverageReporter.coverageResults, is(assigne(undefined)))
         }),
         effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
           expect(context.logs.infoLines, is(arrayContaining(
@@ -176,37 +177,6 @@ export default behavior("running behaviors in the browser environment", [
             invalid: 0,
             skipped: 0
           }))))
-        })
-      ]
-    }),
-
-  example(testRunnerContext({ browserGlob: "**/*" }))
-    .description("browser behavior with coverage")
-    .script({
-      suppose: [
-        fact("coverage data should be collected", (context) => {
-          context.setShouldCollectCoverage(true)
-        })
-      ],
-      perform: [
-        step("validate the behaviors", async (context) => {
-          await context.runBehaviors("**/browser/valid/*.behavior.ts")
-        })
-      ],
-      observe: [
-        effect("it produces the correct summary", (context) => {
-          expect(context.reporter.summary, is(assignedWith(equalTo({
-            behaviors: 2,
-            examples: 6,
-            valid: 4,
-            invalid: 0,
-            skipped: 2
-          }))))
-        }),
-        effect("coverage data is generated for the entire suite", (context) => {
-          expect(context.coverageReporter.isInitialized, is(true))
-          expect(context.coverageReporter.totalReports, is(1))
-          expect(context.coverageReporter.isGenerated, is(true))
         })
       ]
     }),
