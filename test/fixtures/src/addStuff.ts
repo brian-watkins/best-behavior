@@ -1,3 +1,5 @@
+import { funConstant } from "./constants.js"
+
 // here are some comments
 // and other stuff
 
@@ -6,5 +8,5 @@ function someUncoveredHelperFunction() {
 }
 
 export function addStuff(first: number, second: number): number {
-  return first + second
+  return first + second + funConstant
 }

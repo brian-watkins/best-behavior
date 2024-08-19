@@ -2,6 +2,7 @@ import { behavior, effect, example, fact, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
+import { fileWithCoveredLines } from "./helpers/matchers.js";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -64,10 +65,19 @@ export default behavior("running behaviors in the local JS environment", [
             skipped: 3
           }))))
         }),
-        effect("it produces coverage data for each example that isn't skipped", (context) => {
-          // expect(context.coverageReporter.isInitialized, is(true))
-          // expect(context.coverageReporter.totalReports, is(8))
-          // expect(context.coverageReporter.isGenerated, is(true))
+        effect("coverage data is generated for sources loaded in the browser", (context) => {
+          const sourceFiles = context.coverageReporter.coverageResults?.files
+          expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
+
+          expect(context.coverageReporter.coveredFile("./test/fixtures/src/addStuff.ts"),
+            is(assignedWith(fileWithCoveredLines({
+              '1': 1, '6': 0, '7': 0, '8': 0, '10': 3, '11': 3, '12': 3
+            }))))
+
+          expect(context.coverageReporter.coveredFile("./test/fixtures/src/constants.ts"),
+            is(assignedWith(fileWithCoveredLines({
+              '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
+            }))))
         }),
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([

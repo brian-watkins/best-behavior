@@ -1,5 +1,4 @@
 import { CoverageReporter, V8CoverageData } from "../runtime/coverageReporter.js";
-import fs from "fs"
 import path from "path"
 
 export class V8CoverageReporter implements CoverageReporter {

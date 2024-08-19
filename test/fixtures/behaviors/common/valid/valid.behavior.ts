@@ -4,7 +4,7 @@ import { addStuff } from "../../../src/addStuff.js";
 
 // here are some comments
 
-function unused() {
+function unused(someArg: string) {
   return "blah"
 }
 
@@ -15,8 +15,7 @@ export default behavior("Behavior 1", [
     .script({
       observe: [
         effect("this exercises some code", () => {
-          // expect(7, is(equalTo(7)))
-          expect(addStuff(7, 5), is(12))
+          expect(addStuff(7, 5), is(29))
         })
       ]
     }),

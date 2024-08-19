@@ -1,5 +1,5 @@
 import { Context, behavior, effect, example, fact, step } from "esbehavior";
-import { BrowserTestInstrument, useBrowser } from "../../../../main/src/browser.js"
+import { BrowserTestInstrument, useBrowser } from "../../../../dist/main/browser.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
 const browserContext: Context<BrowserTestInstrument> = useBrowser({

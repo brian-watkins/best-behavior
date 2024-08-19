@@ -1,6 +1,6 @@
 import { Transpiler } from "../transpiler.js";
 import { BehaviorBrowser } from "./browserBehavior.js";
-import { CoverageReporter } from "./coverageReporter.js";
+import { CoverageReporter, V8CoverageData } from "./coverageReporter.js";
 import { Session, Profiler } from "inspector"
 
 export class CoverageManager {
@@ -16,21 +16,18 @@ export class CoverageManager {
   async finish(): Promise<void> {
     const results = await this.nodeCoverageController.stopCoverage()
 
-    const coverageWithSources = []
+    const coverageWithSources: Array<V8CoverageData> = []
     for (const file of results) {
       const source = await this.transpiler.getSource(file.url)
 
       coverageWithSources.push({
         ...file,
-        url: file.url,
         source,
-        functions: file.functions
-          .filter(fun => fun.functionName.length > 0)
       })
     }
 
     if (coverageWithSources.length > 0) {
-      this.reporter.recordData(coverageWithSources)
+      await this.reporter.recordData(coverageWithSources)
     }
 
     await this.behaviorBrowser.stopCoverageIfNecessary()

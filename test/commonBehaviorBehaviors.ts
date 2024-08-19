@@ -1,7 +1,7 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayContaining, arrayWith, arrayWithItemAt, assignedWith, defined, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations"
-import { expectedBehavior } from "./helpers/matchers.js"
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
+import { expectedBehavior, fileWithCoveredLines } from "./helpers/matchers.js"
 import { RunResult } from "../dist/main/runtime/index.js"
 
 
@@ -514,7 +514,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       ]
     }),
 
-  (m) => m.pick() && example(testRunnerContext(options))
+  example(testRunnerContext(options))
     .description("when coverage is collected")
     .script({
       suppose: [
@@ -541,12 +541,18 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
         }),
         effect("coverage data is generated", (context) => {
-          const sourceFile = context.coverageReporter.coverageResults?.files[0]
-          expect(sourceFile, is(defined()))
-          // expect(sourceFile?.url, is(assignedWith(equalTo("./test/fixtures/src/addStuff.ts"))))
-          expect(sourceFile?.data?.lines, is(assignedWith(equalTo<{[key: string]: string | number}>({
-            '4': 0, '5': 0, '6': 0, '8': 1, '9': 1, '10': 1
-          }))))
+          const sourceFiles = context.coverageReporter.coverageResults?.files
+          expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
+
+          expect(context.coverageReporter.coveredFile("./test/fixtures/src/addStuff.ts"),
+            is(assignedWith(fileWithCoveredLines({
+              '1': 1, '6': 0, '7': 0, '8': 0, '10': 1, '11': 1, '12': 1
+            }))))
+
+          expect(context.coverageReporter.coveredFile("./test/fixtures/src/constants.ts"),
+            is(assignedWith(fileWithCoveredLines({
+              '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
+            }))))
         })
       ]
     })

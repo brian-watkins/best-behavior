@@ -39,13 +39,10 @@
     "@changesets/cli": "^2.26.2",
     "@types/yargs": "^17.0.29",
     "great-expectations": "^1.5.1",
-    "magic-string": "^0.30.11",
     "monocart-coverage-reports": "^2.10.2",
     "playwright": "^1.43.1",
     "ts-node": "^10.9.2",
-    "tsx": "^4.17.0",
-    "typescript": "^5.2.2",
-    "vlq": "^2.0.4"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "glob": "^10.3.10",

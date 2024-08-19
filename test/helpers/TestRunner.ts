@@ -1,7 +1,7 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Logger, V8CoverageReporter } from "../../dist/main/index.js"
+import { Logger } from "../../dist/main/index.js"
 import { run, RunResult } from "../../dist/main/runtime/index.js"
-import { CoverageReporter, V8CoverageData } from "../../main/src/runtime/coverageReporter.js";
+import { CoverageReporter, V8CoverageData } from "../../dist/main/runtime/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
 
 export interface TestRunnerOptions {
@@ -67,7 +67,7 @@ export class TestRunner {
       viteConfig: undefined,
       reporter: this.testReporter,
       collectCoverage: this.shouldCollectCoverage,
-      coverageReporter: new V8CoverageReporter(this.testCoverageReporter),
+      coverageReporter: this.testCoverageReporter,
       orderProvider: this.testOrderProvider,
       logger: this.testLogger,
     })
@@ -169,18 +169,15 @@ class TestCoverageReporter implements CoverageReporter {
   }
 
   async recordData(coverageData: Array<V8CoverageData>): Promise<void> {
-    // console.log("Recording data", coverageData[1])
-    // for (const d of coverageData) {
-      // if (d.url.includes("addStuff.ts")) {
-        // console.log("funcation", JSON.stringify(d))
-      // }
-    // }
-
     await this.mcr.add(coverageData)
   }
 
   async end(): Promise<void> {
     this.coverageResults = await this.mcr.generate()
+  }
+
+  coveredFile(path: string): MCR.CoverageFile | undefined {
+    return this.coverageResults?.files.find(file => file.url === path)
   }
 }
 
@@ -204,7 +201,7 @@ class TestOrderProvider implements OrderProvider {
   description: string = "Test-Order-Provider-Reverse"
 
   order<T>(items: T[]): T[] {
-    return items.reverse()
+    return items.slice().reverse()
   }
 }
 

@@ -56,7 +56,7 @@ class TestableV8CoverageReporter {
   async loadFakeCoverage(filename: string): Promise<void> {
     const fixturePath = path.join(__dirname, `../fixtures/coverageData/${filename}`)
     const coverageData = fs.readFileSync(fixturePath).toString("utf-8")
-    this.reporter.recordData(JSON.parse(coverageData))
+    await this.reporter.recordData(JSON.parse(coverageData))
   }
 }
 

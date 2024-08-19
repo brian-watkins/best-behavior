@@ -2,7 +2,6 @@ import { useContext } from "./useContext.js";
 import { BrowserContext, Page } from "playwright";
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator, PreparedBrowser, PreparedBrowserOptions } from "./adapters/playwrightBrowser.js";
 import { Context } from "esbehavior";
-import { CoverageReporter } from "./runtime/coverageReporter.js";
 
 export interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
@@ -50,17 +49,11 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
 
     await context.addInitScript({
       content: `
-      window["__vite_ssr_dynamic_import__"] = (path) => {
-        const url = new URL(path, "${this.browser.baseURL}");
-        return import(url.href);
-      };
-      window["__vite_ssr_import_0__"] = {
-        default: (map, key) => {
-          if (map[key] === undefined) {
-            throw new Error("Failed to fetch dynamically imported module: " + key)
-          }
-          return map[key]()
+      window["__variableDynamicImportRuntimeHelper"] = (map, key) => {
+        if (map[key] === undefined) {
+          throw new Error("Failed to fetch dynamically imported module: " + key)
         }
+        return map[key]()
       };
     ` })
 
@@ -73,6 +66,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
     }
     this._context = await this.getContext(generator)
     this._page = await this._context.newPage()
+    await this._page.setContent(`<html><head><base href="http://localhost:5173/" /></head><body></body></html>`)
 
     await this.startCoverage(this._page)
   }
@@ -116,6 +110,6 @@ function errorWithCorrectedStack(error: Error, baseURL: string): Error {
   return {
     name: error.name,
     message: error.message,
-    stack: error.stack?.replaceAll(baseURL, "")
+    stack: error.stack?.replaceAll(baseURL, "BASE")
   }
 }

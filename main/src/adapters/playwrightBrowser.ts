@@ -109,7 +109,9 @@ export class PreparedBrowser {
   async stopCoverage(page: Page): Promise<void> {
     if (this.browserOptions.coverageReporter !== undefined) {
       const coverageData = await page.coverage.stopJSCoverage()
-      await this.browserOptions.coverageReporter.recordData(coverageData)  
+      if (coverageData.length > 0) {
+        await this.browserOptions.coverageReporter.recordData(coverageData)
+      }
     }
   }
 }
