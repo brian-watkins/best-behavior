@@ -1,37 +1,12 @@
 import { ViteDevServer, createServer } from "vite";
 import { LocalServer } from "../localServer.js";
-import { Transpiler } from "../transpiler.js";
 
 export interface ViteLocalServerOptions {
   viteConfig?: string
   behaviorGlobs?: Array<string>
 }
 
-export class ViteTranspiler implements Transpiler {
-  private server: ViteDevServer | undefined;
-
-  async start(): Promise<void> {
-    this.server = await createServer({
-      server: {
-        host: false
-      }
-    })
-  }
-
-  async loadModule(path: string): Promise<any> {
-    try {
-      return this.server?.ssrLoadModule(`${path}`)
-    } catch (err) {
-      console.log("Got an error loading module", path, err)
-    }
-  }
-
-  async stop(): Promise<void> {
-    await this.server?.close()
-  }
-}
-
-export class ViteLocalServer implements LocalServer, Transpiler {
+export class ViteLocalServer implements LocalServer {
   private server: ViteDevServer | undefined;
 
   constructor(private options: ViteLocalServerOptions = {}) { }
@@ -59,16 +34,7 @@ export class ViteLocalServer implements LocalServer, Transpiler {
     return this.server?.resolvedUrls?.local[0] ?? ""
   }
 
-  async loadModule(path: string): Promise<any> {
-    try {
-      return this.server?.ssrLoadModule(`${path}`)
-    } catch (err) {
-      console.log("Got an error loading module", path, err)
-    }
-  }
-
   async stop(): Promise<void> {
     await this.server?.close()
   }
-
 }

@@ -1,3 +1,5 @@
+import { addStuff } from "../../../src/addStuff.js"
+
 export interface MyArgs {
   title: string
 }
@@ -10,6 +12,10 @@ export function render(args: MyArgs) {
   const title = document.createElement("h1")
   title.appendChild(document.createTextNode(args.title))
   root.appendChild(title)
+
+  const instructions = document.createElement("div")
+  instructions.append(document.createTextNode(`Try to click ${addStuff(7, 5)} times!`))
+  root.appendChild(instructions)
 
   const clickCount = document.createElement("div")
   clickCount.dataset["counter"] = "true"

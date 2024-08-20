@@ -1,5 +1,12 @@
 import { behavior, effect, example } from "esbehavior";
 import { equalTo, expect, is } from "great-expectations"
+import { addStuff } from "../../../src/addStuff.js";
+
+// here are some comments
+
+function unused(someArg: string) {
+  return "blah"
+}
 
 export default behavior("Behavior 1", [
 
@@ -7,8 +14,8 @@ export default behavior("Behavior 1", [
     .description("first")
     .script({
       observe: [
-        effect("this is fun", () => {
-          expect(7, is(equalTo(7)))
+        effect("this exercises some code", () => {
+          expect(addStuff(7, 5), is(29))
         })
       ]
     }),

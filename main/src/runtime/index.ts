@@ -1,6 +1,6 @@
 import url from "url"
 import { OrderProvider, Reporter, StandardReporter, randomOrder } from "esbehavior"
-import { ViteLocalServer, ViteTranspiler } from "../adapters/viteServer.js"
+import { ViteLocalServer } from "../adapters/viteServer.js"
 import { PlaywrightBrowser, browserLogger } from "../adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
@@ -8,10 +8,11 @@ import { Runner, RunResult } from "./runner.js"
 import { Logger, bold, consoleLogger, red } from "../logger.js"
 import { createContext } from "../useContext.js"
 import { PlaywrightTestInstrument } from "../useBrowser.js"
-import { BestBehaviorConfig, BrowserBehaviorOptions, getConfig } from "../config.js"
-import { CoverageReporter } from "./coverageReporter.js"
-import { NullCoverageReporter } from "../adapters/NullCoverageReporter.js"
+import { BrowserBehaviorOptions, getConfig } from "../config.js"
+import { CoverageReporter, NullCoverageReporter } from "./coverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
+import { viteTranspiler } from "../adapters/viteTranspiler.js"
+import { NodeCoverageProducer } from "../adapters/nodeCoverageProducer.js"
 export { RunResult } from "./runner.js"
 
 export interface RunArguments {
@@ -24,6 +25,7 @@ export interface RunArguments {
   viteConfig?: string
   showBrowser?: boolean
   reporter?: Reporter
+  collectCoverage?: boolean
   coverageReporter?: CoverageReporter
   orderProvider?: OrderProvider
   logger?: Logger
@@ -33,7 +35,7 @@ export interface RunArguments {
 // Is there a way we could consolidate that?
 
 export async function run(args: RunArguments): Promise<RunResult> {
-  const baseConfig = await getBaseConfig(args.config)
+  const baseConfig = await getConfig(viteTranspiler, args.config)
 
   const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
 
@@ -44,6 +46,11 @@ export async function run(args: RunArguments): Promise<RunResult> {
     logger.error("Provide a glob via the --behaviors CLI option or the behaviorGlobs property of the config file.")
     return RunResult.NO_BEHAVIORS_FOUND
   }
+
+  await viteTranspiler.setConfig({
+    viteConfig: args.viteConfig ?? baseConfig?.viteConfig,
+    behaviorGlobs: behaviors
+  })
 
   const viteServer = new ViteLocalServer({
     viteConfig: args.viteConfig ?? baseConfig?.viteConfig,
@@ -61,7 +68,6 @@ export async function run(args: RunArguments): Promise<RunResult> {
   const coverageReporter = args.coverageReporter ?? new NullCoverageReporter()
 
   const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
-    coverageReporter: coverageReporter.isEnabled() ? coverageReporter : undefined,
     logger: browserLogger(viteServer.host, logger)
   })
 
@@ -70,13 +76,14 @@ export async function run(args: RunArguments): Promise<RunResult> {
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
     homePage: args.browserBehaviors?.html,
-    coverageReporter: coverageReporter.isEnabled() ? coverageReporter : undefined,
     logger
   })
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
-  const behaviorFactory = new BehaviorFactory(viteServer, browserBehaviorContext)
-  const coverageManager = new CoverageManager(coverageReporter, behaviorBrowser)
+  const behaviorFactory = new BehaviorFactory(viteTranspiler, browserBehaviorContext)
+  const coverageManager = args.collectCoverage
+    ? new CoverageManager(coverageReporter, new NodeCoverageProducer(viteTranspiler), behaviorBrowser, playwrightTestInstrument)
+    : undefined
   const runner = new Runner(behaviorFactory, coverageManager)
 
   const runResult = await runner.run({
@@ -96,17 +103,6 @@ export async function run(args: RunArguments): Promise<RunResult> {
   }
 
   return runResult
-}
-
-async function getBaseConfig(path: string | undefined): Promise<BestBehaviorConfig | undefined> {
-  const configTranspiler = new ViteTranspiler()
-  await configTranspiler.start()
-
-  const config = await getConfig(configTranspiler, path)
-
-  await configTranspiler.stop()
-
-  return config
 }
 
 function pathToFile(relativePath: string): string {

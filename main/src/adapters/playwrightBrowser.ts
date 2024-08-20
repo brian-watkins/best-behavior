@@ -1,7 +1,10 @@
+import url from "node:url"
+import path from "node:path"
 import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { Logger } from "../logger.js";
-import url from "url"
-import { CoverageReporter } from "../runtime/coverageReporter.js";
+import { V8CoverageData } from "../runtime/coverageReporter.js";
+import { CoverageProducer } from "../runtime/coverageProducer.js";
+import { extractSourceMap, updateSourceMap } from "./sourceMap.js";
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
@@ -72,12 +75,13 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
-  coverageReporter?: CoverageReporter
   logger: Logger
 }
 
-export class PreparedBrowser {
-  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) { }
+export class PreparedBrowser extends CoverageProducer {
+  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) {
+    super()
+  }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await this.browser.newBrowserContext(generator)
@@ -99,7 +103,7 @@ export class PreparedBrowser {
   }
 
   async startCoverage(page: Page): Promise<void> {
-    if (this.browserOptions.coverageReporter !== undefined) {
+    if (this.shouldProduceCoverage) {
       await page.coverage.startJSCoverage({
         resetOnNavigation: false
       })
@@ -107,9 +111,11 @@ export class PreparedBrowser {
   }
 
   async stopCoverage(page: Page): Promise<void> {
-    if (this.browserOptions.coverageReporter !== undefined) {
+    if (this.shouldProduceCoverage) {
       const coverageData = await page.coverage.stopJSCoverage()
-      await this.browserOptions.coverageReporter.recordData(coverageData)  
+      if (coverageData.length > 0) {
+        await this.publishCoverageData(coverageData.map(fixCoverageData))
+      }
     }
   }
 }
@@ -117,3 +123,33 @@ export class PreparedBrowser {
 function pathToFile(relativePath: string): string {
   return url.fileURLToPath(new URL(relativePath, import.meta.url))
 }
+
+// Coverage Data Stuff
+
+function fixCoverageData(data: V8CoverageData): V8CoverageData {
+  if (!data.url.startsWith("http://") || data.source === undefined) {
+    return data
+  }
+
+  const coverageFilePath = `.${new URL(data.url).pathname}`
+
+  return {
+    ...data,
+    url: coverageFilePath,
+    source: setSourceMapSourceRoot(data.source, coverageFilePath)
+  }
+}
+
+function setSourceMapSourceRoot(source: string, filePath: string): string {
+  const sourceMap = extractSourceMap(source)
+
+  if (sourceMap === undefined) {
+    return source
+  }
+
+  return updateSourceMap(source, {
+    ...sourceMap,
+    sourceRoot: path.dirname(filePath)
+  })
+}
+
