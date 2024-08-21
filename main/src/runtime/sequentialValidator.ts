@@ -1,29 +1,25 @@
-import { DocumentationRunner, OrderProvider, Reporter, Summary } from "esbehavior";
+import { DocumentationRunner, Summary } from "esbehavior";
 import { BehaviorMetadata } from "./behaviorMetadata.js";
 import { BehaviorFactory } from "./behaviorFactory.js";
+import { ValidationOptions, Validator } from "./validator.js";
 
-export interface DocumentationValidationOptions {
-  reporter: Reporter
-  orderProvider: OrderProvider
-  failFast: boolean
-  runPickedOnly: boolean
-}
+export class SequentialValidator implements Validator {
 
-export class SequentialValidator {
+  constructor(private behaviorFactory: BehaviorFactory) { }
 
-  constructor(private behaviorFactory: BehaviorFactory, private runner: DocumentationRunner) { }
+  async validate(behaviors: Array<BehaviorMetadata>, options: ValidationOptions): Promise<Summary> {
+    const runner = new DocumentationRunner(options)
 
-  async validate(behaviors: Array<BehaviorMetadata>, options: DocumentationValidationOptions): Promise<Summary> {
-    this.runner.start()
+    runner.start()
 
     for (const metadata of options.orderProvider.order(behaviors)) {
       const configurableBehavior = await this.behaviorFactory.getBehavior(metadata)
 
-      await this.runner.run(configurableBehavior, options)
+      await runner.run(configurableBehavior, options)
     }
 
-    this.runner.end()
+    runner.end()
 
-    return this.runner.getSummary()
+    return runner.getSummary()
   }
 }

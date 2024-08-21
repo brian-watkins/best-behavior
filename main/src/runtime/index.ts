@@ -4,7 +4,7 @@ import { ViteLocalServer } from "../adapters/viteServer.js"
 import { PlaywrightBrowser, browserLogger } from "../adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
-import { Runner, RunResult } from "./runner.js"
+import { runBehaviors, RunResult } from "./runBehaviors.js"
 import { Logger, bold, consoleLogger, red } from "../logger.js"
 import { createContext } from "../useContext.js"
 import { PlaywrightTestInstrument } from "../useBrowser.js"
@@ -13,7 +13,8 @@ import { CoverageReporter, NullCoverageReporter } from "./coverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
 import { viteTranspiler } from "../adapters/viteTranspiler.js"
 import { NodeCoverageProvider } from "../adapters/nodeCoverageProvider.js"
-export { RunResult } from "./runner.js"
+import { SequentialValidator } from "./sequentialValidator.js"
+export { RunResult } from "./runBehaviors.js"
 
 export interface RunArguments {
   config?: string
@@ -88,12 +89,14 @@ export async function run(args: RunArguments): Promise<RunResult> {
       playwrightTestInstrument
     ])
     : undefined
-  const runner = new Runner(behaviorFactory, coverageManager)
 
-  const runResult = await runner.run({
+  const validator = new SequentialValidator(behaviorFactory)
+
+  const result = await runBehaviors(validator, {
     behaviorPathPatterns: behaviors,
     behaviorFilter: args.behaviorFilter,
     browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
+    coverageManager,
     reporter: args.reporter ?? baseConfig?.reporter ?? new StandardReporter(),
     orderProvider: args.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
     failFast: args.failFast ?? baseConfig?.failFast ?? false,
@@ -107,7 +110,7 @@ export async function run(args: RunArguments): Promise<RunResult> {
     await viteTranspiler.stop()
   }
 
-  return runResult
+  return result
 }
 
 function pathToFile(relativePath: string): string {
