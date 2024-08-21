@@ -1,10 +1,9 @@
 import url from "node:url"
-import path from "node:path"
 import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { Logger } from "../logger.js";
 import { V8CoverageData } from "../runtime/coverageReporter.js";
 import { CoverageProvider } from "../runtime/coverageProvider.js";
-import { extractSourceMap, updateSourceMap } from "./sourceMap.js";
+import { adaptCoverageData } from "./browserCoverageAdapter.js";
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
@@ -114,7 +113,7 @@ export class PreparedBrowser implements CoverageProvider {
     if (this.onCoverageData !== undefined) {
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData.map(fixCoverageData))
+        await this.onCoverageData(coverageData.map(adaptCoverageData))
       }
     }
   }
@@ -123,33 +122,3 @@ export class PreparedBrowser implements CoverageProvider {
 function pathToFile(relativePath: string): string {
   return url.fileURLToPath(new URL(relativePath, import.meta.url))
 }
-
-// Coverage Data Stuff
-
-function fixCoverageData(data: V8CoverageData): V8CoverageData {
-  if (!data.url.startsWith("http://") || data.source === undefined) {
-    return data
-  }
-
-  const coverageFilePath = `.${new URL(data.url).pathname}`
-
-  return {
-    ...data,
-    url: coverageFilePath,
-    source: setSourceMapSourceRoot(data.source, coverageFilePath)
-  }
-}
-
-function setSourceMapSourceRoot(source: string, filePath: string): string {
-  const sourceMap = extractSourceMap(source)
-
-  if (sourceMap === undefined) {
-    return source
-  }
-
-  return updateSourceMap(source, {
-    ...sourceMap,
-    sourceRoot: path.dirname(filePath)
-  })
-}
-

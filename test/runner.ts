@@ -1,13 +1,13 @@
 import { validate } from "esbehavior";
 import localBehaviorBehavior from "./localBehavior.behavior.js";
 import browserBehaviorBehavior from "./browserBehavior.behavior.js";
-import v8CoverageBehavior from "./v8Coverage.behavior.js";
 import loaderBehavior from "./loader.behavior.js";
+import browserCoverageBehavior from "./browserCoverage.behavior.js";
 
 const summary = await validate([
   localBehaviorBehavior,
   browserBehaviorBehavior,
-  v8CoverageBehavior,
+  browserCoverageBehavior,
   loaderBehavior
 ], { failFast: true })
 

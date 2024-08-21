@@ -1,37 +1,24 @@
 import { Context } from "esbehavior"
-import { CoverageReporter, V8CoverageData } from "../../dist/main/index.js"
 import MCR from "monocart-coverage-reports"
 import fs from "fs"
 import URL from "url"
 import path from "path"
-import { V8CoverageReporter } from "../../dist/main/adapters/V8CoverageReporter.js"
+import { V8CoverageData } from "../../dist/main/index.js"
+import { adaptCoverageData } from "../../dist/main/adapters/browserCoverageAdapter.js"
 
 const __filename = URL.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const v8CoverageReporterContext: Context<TestableV8CoverageReporter> = {
-  init: () => new TestableV8CoverageReporter()
+export const browserCoverageContext: Context<TestableBrowserCoverage> = {
+  init: () => new TestableBrowserCoverage()
 }
 
-class TestableV8CoverageReporter {
-  private reporter: CoverageReporter
-  private testCoverageCollector = new TestCoverageCollector()
-
-  constructor() {
-    this.reporter = new V8CoverageReporter(this.testCoverageCollector)
-  }
-
-  async startCoverage(): Promise<void> {
-    await this.reporter.start()
-  }
-
-  async stopCoverage(): Promise<void> {
-    await this.reporter.end()
-  }
+class TestableBrowserCoverage {
+  reports: Array<Array<V8CoverageData>> = []
 
   getCoveredFileReports<T extends { url: string }>(): Array<T> {
     let coveredFiles: Array<any> = []
-    for (const coverageData of this.testCoverageCollector.reports) {
+    for (const coverageData of this.reports) {
       coveredFiles = coveredFiles.concat(coverageData)
     }
     return coveredFiles
@@ -43,28 +30,21 @@ class TestableV8CoverageReporter {
       entryFilter
     })
 
-    for (const report of this.testCoverageCollector.reports) {
+    for (const report of this.reports) {
       await mcr.add(report)
     }
 
     return mcr.generate()
   }
 
+  private recordData(data: Array<V8CoverageData>) {
+    // NOTE: adaptCoverageData is the subject under test
+    this.reports.push(data.map(adaptCoverageData))
+  }
+
   async loadFakeCoverage(filename: string): Promise<void> {
     const fixturePath = path.join(__dirname, `../fixtures/coverageData/${filename}`)
     const coverageData = fs.readFileSync(fixturePath).toString("utf-8")
-    await this.reporter.recordData(JSON.parse(coverageData))
+    this.recordData(JSON.parse(coverageData))
   }
-}
-
-class TestCoverageCollector implements CoverageReporter {
-  reports: Array<Array<V8CoverageData>> = []
-
-  async start(): Promise<void> { }
-  
-  async recordData(coverageData: Array<V8CoverageData>): Promise<void> {
-    this.reports.push(coverageData)
-  }
-
-  async end(): Promise<void> { }
 }

@@ -1,17 +1,12 @@
-import { behavior, effect, example, fact, step } from "esbehavior";
+import { behavior, effect, example, step } from "esbehavior";
 import { defined, equalTo, expect, is } from "great-expectations";
-import { v8CoverageReporterContext } from "./helpers/CoverageTestContext.js";
+import { browserCoverageContext } from "./helpers/CoverageTestContext.js";
 
-export default behavior("V8 coverage reporter", [
+export default behavior("V8 browser coverage", [
 
-  example(v8CoverageReporterContext)
+  example(browserCoverageContext)
     .description("handling browser coverage data")
     .script({
-      suppose: [
-        fact("coverage is enabled and started", async (context) => {
-          await context.startCoverage()
-        })
-      ],
       perform: [
         step("coverage data is recorded", async (context) => {
           await context.loadFakeCoverage("fakeData_1.json")
@@ -19,9 +14,6 @@ export default behavior("V8 coverage reporter", [
         step("more coverage data is recorded", async (context) => {
           await context.loadFakeCoverage("fakeData_2.json")
         }),
-        step("coverage is ended", async (context) => {
-          await context.stopCoverage()
-        })
       ],
       observe: [
         effect("http coverage urls are transformed to paths relative to the project root", (context) => {
