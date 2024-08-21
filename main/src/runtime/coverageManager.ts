@@ -1,5 +1,5 @@
 import { CoverageProvider } from "./coverageProvider.js";
-import { CoverageReporter } from "./coverageReporter.js";
+import { CoverageReporter } from "../coverageReporter.js";
 
 export class CoverageManager {
   constructor (private reporter: CoverageReporter, private providers: Array<CoverageProvider>) {}

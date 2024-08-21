@@ -1,4 +1,4 @@
-import { V8CoverageData } from "../runtime/coverageReporter.js"
+import { V8CoverageData } from "../coverageReporter.js"
 import { extractSourceMap, updateSourceMap } from "./sourceMap.js"
 import path from "node:path"
 

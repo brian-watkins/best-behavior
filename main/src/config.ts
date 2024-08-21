@@ -3,6 +3,7 @@ import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from ".
 import { Transpiler } from "./transpiler.js";
 import { OrderProvider, Reporter } from "esbehavior";
 import { Logger } from "./logger.js";
+import { CoverageReporter } from "./coverageReporter.js";
 
 export interface BrowserBehaviorOptions {
   globs?: Array<string>
@@ -16,6 +17,8 @@ export interface BestBehaviorConfig {
   browserBehaviors?: BrowserBehaviorOptions
   failFast?: boolean
   viteConfig?: string
+  collectCoverage?: boolean
+  coverageReporter?: CoverageReporter
   reporter?: Reporter
   orderProvider?: OrderProvider
   logger?: Logger

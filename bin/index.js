@@ -3,6 +3,7 @@
 import yargs from "yargs"
 import { run, RunResult } from "../dist/main/runtime/index.js"
 import { randomOrder } from "esbehavior"
+import { describe } from "yargs"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")
@@ -45,6 +46,10 @@ const args = yargs(process.argv.slice(2))
         "viteConfig": {
           describe: "path to vite config file",
           type: "string"
+        },
+        "coverage": {
+          describe: "record coverage data",
+          type: "boolean"
         }
       })
   })
@@ -62,6 +67,7 @@ const result = await run({
   runPickedOnly: args.picked,
   viteConfig: args.viteConfig,
   showBrowser: args.showBrowser,
+  collectCoverage: args.coverage,
   orderProvider: args.seed ? randomOrder(args.seed) : undefined
 })
 

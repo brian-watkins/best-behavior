@@ -1,7 +1,7 @@
 import url from "node:url"
 import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { Logger } from "../logger.js";
-import { V8CoverageData } from "../runtime/coverageReporter.js";
+import { V8CoverageData } from "../coverageReporter.js";
 import { CoverageProvider } from "../runtime/coverageProvider.js";
 import { adaptCoverageData } from "./browserCoverageAdapter.js";
 
