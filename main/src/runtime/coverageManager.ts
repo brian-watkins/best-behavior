@@ -1,31 +1,21 @@
-import { NodeCoverageProducer } from "../adapters/nodeCoverageProducer.js";
-import { PlaywrightTestInstrument } from "../useBrowser.js";
-import { BehaviorBrowser } from "./browserBehavior.js";
+import { CoverageProvider } from "./coverageProvider.js";
 import { CoverageReporter } from "./coverageReporter.js";
 
 export class CoverageManager {
-  constructor(
-    private reporter: CoverageReporter,
-    private nodeCoverageProducer: NodeCoverageProducer,
-    private behaviorBrowser: BehaviorBrowser,
-    private playwrightTestInstrument: PlaywrightTestInstrument
-  ) {
-    this.behaviorBrowser
-      .onCoverageData((coverageData) => this.reporter.recordData(coverageData))
-    this.playwrightTestInstrument
-      .onCoverageData((coverageData) => this.reporter.recordData(coverageData))
-    this.nodeCoverageProducer
-      .onCoverageData((coverageData) => this.reporter.recordData(coverageData))
-  }
+  constructor (private reporter: CoverageReporter, private providers: Array<CoverageProvider>) {}
 
-  async prepare(): Promise<void> {
-    await this.nodeCoverageProducer.startCoverage()
+  async prepareForCoverageCollection(): Promise<void> {
+    for (const provider of this.providers) {
+      provider.onCoverageData = (data) => this.reporter.recordData(data)
+      await provider.prepareForCoverageCollection?.()
+    }
     await this.reporter.start()
   }
 
-  async finish(): Promise<void> {
-    await this.nodeCoverageProducer.stopCoverage()
-    await this.behaviorBrowser.stopCoverageIfNecessary()
+  async finishCoverageCollection(): Promise<void> {
+    for (const provider of this.providers) {
+      await provider.finishCoverageCollection?.()
+    }
     await this.reporter.end()
   }
 }

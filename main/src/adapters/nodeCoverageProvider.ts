@@ -1,16 +1,15 @@
 import { Session } from "inspector"
 import { Transpiler } from "../transpiler.js";
 import { V8CoverageData } from "../runtime/coverageReporter.js";
-import { CoverageProducer } from "../runtime/coverageProducer.js";
+import { CoverageProvider } from "../runtime/coverageProvider.js";
 
-export class NodeCoverageProducer extends CoverageProducer {
+export class NodeCoverageProvider implements CoverageProvider {
   private _session: Session | undefined
+  onCoverageData?: ((data: Array<V8CoverageData>) => Promise<void>) | undefined;
 
-  constructor(private transpiler: Transpiler) {
-    super()
-  }
+  constructor(private transpiler: Transpiler) { }
 
-  async startCoverage(): Promise<void> {
+  async prepareForCoverageCollection(): Promise<void> {
     await this.sendMessage('Profiler.enable');
     await this.sendMessage('Profiler.startPreciseCoverage', {
       callCount: true,
@@ -28,7 +27,7 @@ export class NodeCoverageProducer extends CoverageProducer {
     return result
   }
 
-  async stopCoverage(): Promise<void> {
+  async finishCoverageCollection(): Promise<void> {
     const coverageFiles = await this.endCoverageSession()
 
     const userFiles = coverageFiles.filter((file: any) => {
@@ -46,7 +45,7 @@ export class NodeCoverageProducer extends CoverageProducer {
     }
 
     if (coverageWithSources.length > 0) {
-      await this.publishCoverageData(coverageWithSources)
+      await this.onCoverageData?.(coverageWithSources)
     }
   }
 

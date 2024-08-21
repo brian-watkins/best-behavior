@@ -3,7 +3,7 @@ import path from "node:path"
 import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { Logger } from "../logger.js";
 import { V8CoverageData } from "../runtime/coverageReporter.js";
-import { CoverageProducer } from "../runtime/coverageProducer.js";
+import { CoverageProvider } from "../runtime/coverageProvider.js";
 import { extractSourceMap, updateSourceMap } from "./sourceMap.js";
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
@@ -78,10 +78,10 @@ export interface PreparedBrowserOptions {
   logger: Logger
 }
 
-export class PreparedBrowser extends CoverageProducer {
-  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) {
-    super()
-  }
+export class PreparedBrowser implements CoverageProvider {
+  onCoverageData?: ((data: Array<V8CoverageData>) => Promise<void>) | undefined;
+
+  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) { }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await this.browser.newBrowserContext(generator)
@@ -103,7 +103,7 @@ export class PreparedBrowser extends CoverageProducer {
   }
 
   async startCoverage(page: Page): Promise<void> {
-    if (this.shouldProduceCoverage) {
+    if (this.onCoverageData !== undefined) {
       await page.coverage.startJSCoverage({
         resetOnNavigation: false
       })
@@ -111,10 +111,10 @@ export class PreparedBrowser extends CoverageProducer {
   }
 
   async stopCoverage(page: Page): Promise<void> {
-    if (this.shouldProduceCoverage) {
+    if (this.onCoverageData !== undefined) {
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.publishCoverageData(coverageData.map(fixCoverageData))
+        await this.onCoverageData(coverageData.map(fixCoverageData))
       }
     }
   }

@@ -12,7 +12,7 @@ import { BrowserBehaviorOptions, getConfig } from "../config.js"
 import { CoverageReporter, NullCoverageReporter } from "./coverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
 import { viteTranspiler } from "../adapters/viteTranspiler.js"
-import { NodeCoverageProducer } from "../adapters/nodeCoverageProducer.js"
+import { NodeCoverageProvider } from "../adapters/nodeCoverageProvider.js"
 export { RunResult } from "./runner.js"
 
 export interface RunArguments {
@@ -82,7 +82,11 @@ export async function run(args: RunArguments): Promise<RunResult> {
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteTranspiler, browserBehaviorContext)
   const coverageManager = args.collectCoverage
-    ? new CoverageManager(coverageReporter, new NodeCoverageProducer(viteTranspiler), behaviorBrowser, playwrightTestInstrument)
+    ? new CoverageManager(coverageReporter, [
+      new NodeCoverageProvider(viteTranspiler),
+      behaviorBrowser,
+      playwrightTestInstrument
+    ])
     : undefined
   const runner = new Runner(behaviorFactory, coverageManager)
 

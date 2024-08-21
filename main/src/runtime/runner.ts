@@ -37,11 +37,11 @@ export class Runner {
         return RunResult.NO_BEHAVIORS_FOUND
       }
 
-      await this.coverageManager?.prepare()
+      await this.coverageManager?.prepareForCoverageCollection()
 
       const summary = await this.validateBehaviors(behaviors, options)
 
-      await this.coverageManager?.finish()
+      await this.coverageManager?.finishCoverageCollection()
 
       if (summary.invalid > 0 || summary.skipped > 0) {
         result = RunResult.NOT_OK
