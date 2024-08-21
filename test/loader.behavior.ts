@@ -1,23 +1,29 @@
-import { behavior, Context, effect, example, fact, step } from "esbehavior";
+import { behavior, Context, effect, example, fact } from "esbehavior";
 import { defined, expect, is } from "great-expectations";
 import { viteTranspiler } from "../dist/main/adapters/viteTranspiler.js";
-import { Transpiler } from "../dist/main/transpiler.js";
 
 const testLoaderContext: Context<TestLoader> = {
   init: async () => {
-    return new TestLoader(viteTranspiler)
+    return new TestLoader()
+  },
+  teardown: async (context) => {
+    await context.shutdown()
   }
 }
 
 class TestLoader {
-  constructor(private transpiler: Transpiler) { }
+  constructor() { }
 
   async useConfig(configPath: string): Promise<void> {
-    await this.transpiler.setConfig({ viteConfig: configPath })
+    await viteTranspiler.setConfig({ viteConfig: configPath })
   }
 
   async loadModule(modulePath: string): Promise<any> {
-    return this.transpiler.loadModule(modulePath)
+    return viteTranspiler.loadModule(modulePath)
+  }
+
+  async shutdown(): Promise<void> {
+    return viteTranspiler.stop()
   }
 }
 

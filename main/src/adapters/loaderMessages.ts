@@ -1,3 +1,7 @@
+export interface ShutdownMessage {
+  type: "shutdown"
+}
+
 export interface GetSourceMessage {
   type: "get-source"
   path: string
@@ -9,7 +13,7 @@ export interface SetConfigMessage {
   behaviorGlobs: Array<string> | undefined
 }
 
-export type LoaderMessage = GetSourceMessage | SetConfigMessage
+export type LoaderMessage = ShutdownMessage | GetSourceMessage | SetConfigMessage
 
 export interface SourceMessage {
   type: "source"
@@ -21,4 +25,8 @@ export interface ViteConfiguredMessage {
   type: "vite-configured"
 }
 
-export type ServerMessage = SourceMessage | ViteConfiguredMessage
+export interface ShutdownOkMessage {
+  type: "shutdown-ok"
+}
+
+export type ServerMessage = SourceMessage | ViteConfiguredMessage | ShutdownOkMessage

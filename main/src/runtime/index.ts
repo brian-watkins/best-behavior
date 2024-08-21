@@ -104,6 +104,7 @@ export async function run(args: RunArguments): Promise<RunResult> {
   if (!args.showBrowser || !playwrightBrowser.isOpen) {
     await playwrightBrowser.stop()
     await viteServer.stop()
+    await viteTranspiler.stop()
   }
 
   return runResult

@@ -33,6 +33,10 @@ export async function initialize(data: ViteLoaderData) {
         await initializeServer(message)
         server.postMessage({ type: "vite-configured" })
         break
+      case "shutdown":
+        await viteDevServer.close()
+        server.postMessage({ type: "shutdown-ok" })
+        break
     }
   })
 

@@ -1,5 +1,5 @@
 import { register } from "node:module"
-import { ServerMessage } from "./loaderMessages.js"
+import { LoaderMessage, ServerMessage, SourceMessage } from "./loaderMessages.js"
 import { MessageChannel, MessagePort } from "node:worker_threads"
 import { Transpiler, TranspilerOptions } from "../transpiler.js"
 
@@ -21,20 +21,11 @@ class ViteTranspiler implements Transpiler {
   }
 
   async setConfig(options: TranspilerOptions): Promise<void> {
-    return new Promise((resolve) => {
-      function listener(message: ServerMessage) {
-        if (message.type === "vite-configured") {
-          resolve()
-        }
-      }
-
-      this.loader.once("message", listener)
-      this.loader.postMessage({
-        type: "set-config",
-        viteConfig: options.viteConfig,
-        behaviorGlobs: options.behaviorGlobs
-      })
-    })
+    await this.sendLoaderRequest({
+      type: "set-config",
+      viteConfig: options.viteConfig,
+      behaviorGlobs: options.behaviorGlobs
+    }, "vite-configured")
   }
 
   async loadModule(modulePath: string): Promise<any> {
@@ -47,20 +38,25 @@ class ViteTranspiler implements Transpiler {
   }
 
   async getSource(path: string): Promise<string | undefined> {
+    const response = await this.sendLoaderRequest<SourceMessage>({ type: "get-source", path }, "source")
+    return response.source
+  }
+
+  async stop(): Promise<void> {
+    await this.sendLoaderRequest({ type: "shutdown" }, "shutdown-ok")
+  }
+
+  private sendLoaderRequest<T extends ServerMessage>(message: LoaderMessage, responseMessageType: T["type"]): Promise<T> {
     return new Promise((resolve) => {
-      const listener = (message: ServerMessage) => {
-        if (message.type === "source" && message.path === path) {
-          resolve(message.source)
+      const listener = (message: T) => {
+        if (message.type === responseMessageType) {
+          resolve(message)
         }
       }
 
       this.loader.once("message", listener)
-      this.loader.postMessage({ type: "get-source", path })
+      this.loader.postMessage(message)
     })
-  }
-
-  shutdown() {
-    this.loader.close()
   }
 }
 
