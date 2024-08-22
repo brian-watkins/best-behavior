@@ -28,8 +28,16 @@ export function extractSourceMap(source: string): SourceMap | undefined {
 }
 
 export function updateSourceMap(source: string, sourceMap: SourceMap): string {
-  const encodedSourceMap = Buffer.from(JSON.stringify(sourceMap)).toString("base64")
+  const encodedSourceMap = getSourceMappingURLComment(sourceMap)
   const contentEndIndex = source.indexOf("//# sourceMappingURL=")
-  return source.substring(0, contentEndIndex) +
-    `//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`
+  return source.substring(0, contentEndIndex) + encodedSourceMap
+}
+
+export function getSourceMappingURLComment(sourceMap: SourceMap): string {
+  const encodedSourceMap = Buffer.from(JSON.stringify(sourceMap)).toString("base64")
+  return `//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`
+}
+
+export function getSourceURLComment(url: string): string {
+  return `//# sourceURL=${url}`
 }

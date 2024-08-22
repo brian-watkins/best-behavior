@@ -4,6 +4,7 @@ import type { ResolveHookContext, ModuleSource } from "node:module"
 import { createServer, ViteDevServer } from "vite"
 import { MessagePort } from "node:worker_threads"
 import { LoaderMessage } from "./loaderMessages.js"
+import { getSourceMappingURLComment, getSourceURLComment, SourceMap } from "./sourceMap.js"
 
 interface ViteLoaderData {
   viteConfig?: string
@@ -187,11 +188,12 @@ async function loadFileWithVite(url: string): Promise<LoaderFunctionReturnType> 
     ...transformResult!.map,
     sourceRoot: `./${path.relative(viteDevServer.config.root, path.dirname(modulePath))}`,
     file: modulePath
-  }
-  const encodedSourceMap = Buffer.from(JSON.stringify(sourceMap)).toString("base64")
+  } as SourceMap
+
+  const sourceURL = `./${path.relative(viteDevServer.config.root, modulePath)}`
   const source = `${transformResult?.code}
-//# sourceURL=./${path.relative(viteDevServer.config.root, modulePath)}
-//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`
+${getSourceURLComment(sourceURL)}
+${getSourceMappingURLComment(sourceMap)}`
 
   sources.set(`./${path.relative(viteDevServer.config.root, modulePath)}`, source)
 
