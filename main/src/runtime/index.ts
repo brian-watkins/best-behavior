@@ -9,11 +9,12 @@ import { Logger, bold, consoleLogger, red } from "../logger.js"
 import { createContext } from "../useContext.js"
 import { PlaywrightTestInstrument } from "../useBrowser.js"
 import { BrowserBehaviorOptions, getConfig } from "../config.js"
-import { CoverageReporter, NullCoverageReporter } from "../coverageReporter.js"
+import { CoverageReporter } from "../coverageReporter.js"
 import { CoverageManager } from "./coverageManager.js"
 import { viteTranspiler } from "../adapters/viteTranspiler.js"
 import { NodeCoverageProvider } from "../adapters/nodeCoverageProvider.js"
 import { SequentialValidator } from "./sequentialValidator.js"
+import { MonocartCoverageReporter } from "../adapters/monocartCoverageReporter.js"
 export { RunResult } from "./runBehaviors.js"
 
 export interface RunArguments {
@@ -66,12 +67,6 @@ export async function run(args: RunArguments): Promise<RunResult> {
     browserContextGenerator: baseConfig?.context
   })
 
-  const collectCoverage = args.collectCoverage ?? baseConfig?.collectCoverage ?? false
-
-  const coverageReporter = args.coverageReporter ??
-    baseConfig?.coverageReporter ??
-    new NullCoverageReporter()
-
   const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
     logger: browserLogger(viteServer.host, logger)
   })
@@ -86,13 +81,21 @@ export async function run(args: RunArguments): Promise<RunResult> {
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteTranspiler, browserBehaviorContext)
-  const coverageManager = collectCoverage
-    ? new CoverageManager(coverageReporter, [
+
+  const collectCoverage = args.collectCoverage ?? baseConfig?.collectCoverage ?? false
+
+  let coverageManager: CoverageManager | undefined = undefined
+  if (collectCoverage) {
+    const coverageReporter = args.coverageReporter ??
+      baseConfig?.coverageReporter ??
+      new MonocartCoverageReporter()
+
+    coverageManager = new CoverageManager(coverageReporter, [
       new NodeCoverageProvider(viteTranspiler),
       behaviorBrowser,
       playwrightTestInstrument
     ])
-    : undefined
+  }
 
   const validator = new SequentialValidator(behaviorFactory)
 
