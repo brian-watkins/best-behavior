@@ -1,5 +1,12 @@
 # best-behavior
 
+## 0.7.0
+
+### Minor Changes
+
+- bb17f0d: Support for code coverage with monocart-coverage-reports
+- de48076: useBrowser creates an esbehavior Context with a Browser Test Instrument
+
 ## 0.6.4
 
 ### Patch Changes
