@@ -3,55 +3,52 @@
 import yargs from "yargs"
 import { run, RunResult } from "../dist/main/runtime/index.js"
 import { randomOrder } from "esbehavior"
-import { describe } from "yargs"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")
-  .usage("$0 --behaviors 'some/path/**/*.behavior.ts' [behaviorFilter]")
-  .command("$0 [behaviorFilter]", false, (yargs) => {
-    yargs
-      .positional("behaviorFilter", {
-        describe: "regex that filters behaviors",
-        type: "string"
-      })
-      .options({
-        "config": {
-          describe: "path to best behavior config file",
-          type: "string"
-        },
-        "behaviors": {
-          describe: "glob that matches behaviors; relative to working dir; may specify multiple",
-          type: "string"
-        },
-        "runInBrowser": {
-          describe: "glob that matches behaviors to run in browser; subset of behaviors; may specify multiple",
-          type: "string"
-        },
-        "failFast": {
-          describe: "stop on first invalid claim",
-          type: "boolean"
-        },
-        "picked": {
-          describe: "run only picked behaviors and examples",
-          type: "boolean"
-        },
-        "seed": {
-          describe: "specify seed for random ordering",
-          type: "string"
-        },
-        "showBrowser": {
-          describe: "make the browser visible and keep it open",
-          type: "boolean",
-        },
-        "viteConfig": {
-          describe: "path to vite config file",
-          type: "string"
-        },
-        "coverage": {
-          describe: "record coverage data",
-          type: "boolean"
-        }
-      })
+  .usage("$0 --behaviors 'some/path/**/*.behavior.ts'")
+  .options({
+    "config": {
+      describe: "path to best behavior config file",
+      type: "string"
+    },
+    "behaviors": {
+      describe: "glob that matches behaviors; relative to working dir; may specify multiple",
+      demandOption: true,
+      type: "string"
+    },
+    "filter": {
+      describe: "regex that filters behaviors",
+      type: "string"
+    },
+    "runInBrowser": {
+      describe: "glob that matches behaviors to run in browser; subset of behaviors; may specify multiple",
+      type: "string"
+    },
+    "failFast": {
+      describe: "stop on first invalid claim",
+      type: "boolean"
+    },
+    "picked": {
+      describe: "run only picked behaviors and examples",
+      type: "boolean"
+    },
+    "seed": {
+      describe: "specify seed for random ordering",
+      type: "string"
+    },
+    "showBrowser": {
+      describe: "make the browser visible and keep it open",
+      type: "boolean",
+    },
+    "viteConfig": {
+      describe: "path to vite config file",
+      type: "string"
+    },
+    "coverage": {
+      describe: "record coverage data",
+      type: "boolean"
+    }
   })
   .wrap(yargs.terminalWidth)
   .parseSync()
@@ -59,7 +56,7 @@ const args = yargs(process.argv.slice(2))
 const result = await run({
   config: args.config,
   behaviorGlobs: toArray(args.behaviors),
-  behaviorFilter: args.behaviorFilter,
+  behaviorFilter: args.filter,
   browserBehaviors: {
     globs: toArray(args.runInBrowser)
   },
@@ -76,5 +73,5 @@ if (result !== RunResult.OK) {
 }
 
 function toArray(value) {
-  return typeof value === "string" ? [ value ] : value
+  return typeof value === "string" ? [value] : value
 }
