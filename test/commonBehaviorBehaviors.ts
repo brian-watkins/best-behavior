@@ -1,7 +1,7 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
-import { expectedBehavior, fileWithCoveredLines } from "./helpers/matchers.js"
+import { expectedBehavior, expectedExampleScripts, fileWithCoveredLines } from "./helpers/matchers.js"
 import { RunResult } from "../dist/main/runtime/index.js"
 
 
@@ -212,6 +212,20 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
               "sixth",
               "fifth",
               "fourth"
+            ])
+          ])))
+        }),
+        effect("the examples have the correct script location", (context) => {
+          expect(context.reporter.output, is(arrayWith([
+            expectedExampleScripts([
+              ["third", "test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
+              ["second", "test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
+              ["first", "test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
+            ]),
+            expectedExampleScripts([
+              ["sixth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
+              ["fifth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
+              ["fourth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
             ])
           ])))
         }),

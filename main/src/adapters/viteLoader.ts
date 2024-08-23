@@ -181,21 +181,20 @@ export async function load(url: string, context: LoaderHookContext, nextLoad: Ne
 
 async function loadFileWithVite(url: string): Promise<LoaderFunctionReturnType> {
   const modulePath = URL.fileURLToPath(url)
+  const relativePathToModule = `./${path.relative(viteDevServer.config.root, modulePath)}`
 
   const transformResult = await viteDevServer.transformRequest(modulePath, { ssr: true })
 
   const sourceMap = {
     ...transformResult!.map,
-    sourceRoot: `./${path.relative(viteDevServer.config.root, path.dirname(modulePath))}`,
-    file: modulePath
+    sources: [relativePathToModule]
   } as SourceMap
 
-  const sourceURL = `./${path.relative(viteDevServer.config.root, modulePath)}`
   const source = `${transformResult?.code}
-${getSourceURLComment(sourceURL)}
+${getSourceURLComment(relativePathToModule)}
 ${getSourceMappingURLComment(sourceMap)}`
 
-  sources.set(`./${path.relative(viteDevServer.config.root, modulePath)}`, source)
+  sources.set(relativePathToModule, source)
 
   return {
     format: "module",

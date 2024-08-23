@@ -1,7 +1,7 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
 import { BehaviorOutput, ClaimOutput, testRunnerContext } from "./helpers/TestRunner.js";
 import { Matcher, arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
-import { expectedBehavior } from "./helpers/matchers.js";
+import { expectedBehavior, expectedExampleScripts } from "./helpers/matchers.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 
 export default behavior("running behaviors in the browser environment", [
@@ -178,18 +178,6 @@ export default behavior("running behaviors in the browser environment", [
   ...behaviorBehaviors({ browserGlob: "**/*" })
 
 ])
-
-function expectedExampleScripts(examples: Array<Array<string>>): Matcher<BehaviorOutput> {
-  return objectWithProperty("examples", arrayWith(examples.map(e => {
-    return objectWith({
-      description: assignedWith(equalTo(e[0])),
-      scriptLocation: satisfying([
-        stringContaining("http://localhost:", { times: 0 }),
-        stringContaining(e[1])
-      ])
-    })
-  })))
-}
 
 function expectedClaim(description: string, location: string): Matcher<ClaimOutput> {
   return objectWith({
