@@ -30,7 +30,7 @@
     "build:adapter": "node ./scripts/build.js",
     "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build:all && node --import ./test/ts-node-register.mjs ./test/runner.ts",
+    "test": "npm run build:all && node --enable-source-maps --import ./test/ts-node-register.mjs ./test/runner.ts",
     "create:change": "changeset add",
     "create:version": "changeset version",
     "create:release": "npm run build && changeset publish && git push --follow-tags"
