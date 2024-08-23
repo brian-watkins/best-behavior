@@ -14,7 +14,6 @@ const args = yargs(process.argv.slice(2))
     },
     "behaviors": {
       describe: "glob that matches behaviors; relative to working dir; may specify multiple",
-      demandOption: true,
       type: "string"
     },
     "filter": {
