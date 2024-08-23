@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.7.1
+
+### Patch Changes
+
+- 4035a12: Fixed paths in node-based behavior stack traces
+
 ## 0.7.0
 
 ### Minor Changes
