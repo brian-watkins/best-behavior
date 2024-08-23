@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.7.3
+
+### Patch Changes
+
+- 0825e66: Do not demand behaviors option in best cli yargs config
+
 ## 0.7.2
 
 ### Patch Changes
