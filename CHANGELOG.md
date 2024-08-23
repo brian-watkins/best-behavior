@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.7.2
+
+### Patch Changes
+
+- 01cc469: All stack traces and script locations show absolute paths
+
 ## 0.7.1
 
 ### Patch Changes
