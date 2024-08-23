@@ -75,6 +75,7 @@ export async function run(args: RunArguments): Promise<RunResult> {
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
     adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
+    root: viteServer.root,
     homePage: args.browserBehaviors?.html,
     logger
   })

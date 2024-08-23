@@ -59,15 +59,17 @@ class BrowserExample implements Example {
 }
 
 export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
+  root: string
   homePage?: string
 }
 
 export class BehaviorBrowser extends PreparedBrowser {
-  readonly reporter = new BrowserReporter()
+  readonly reporter: BrowserReporter
   private _page: Page | undefined
 
   constructor(browser: PlaywrightBrowser, private options: BehaviorBrowserOptions) {
     super(browser, options)
+    this.reporter = new BrowserReporter(options.root)
   }
 
   protected async getContext(): Promise<BrowserContext> {
@@ -111,7 +113,7 @@ class BrowserReporter {
   private reporter: Reporter | undefined
   private currentOrigin: string = ""
 
-  constructor() { }
+  constructor(private fileSystemRoot: string) { }
 
   async decorateContext(context: BrowserContext): Promise<void> {
     await context.exposeFunction("__bb_startExample", (description: string | undefined) => {
@@ -122,7 +124,7 @@ class BrowserReporter {
     })
     await context.exposeFunction("__bb_startScript", (location: string) => {
       this.setCurrentOrigin(location)
-      this.reporter?.startScript(location.replace(this.currentOrigin, ""))
+      this.reporter?.startScript(this.fixFilePaths(location))
     })
     await context.exposeFunction("__bb_endScript", () => {
       this.reporter?.endScript()
@@ -139,15 +141,19 @@ class BrowserReporter {
   }
 
   private fixStackIfNecessary(result: ClaimResult): ClaimResult {
-    if (result.type === "invalid-claim") {
-      result.error.stack = result.error.stack?.replaceAll(this.currentOrigin, "")
+    if (result.type === "invalid-claim" && result.error.stack) {
+      result.error.stack = this.fixFilePaths(result.error.stack)
     }
     return result
   }
 
+  private fixFilePaths(valueWithPaths: string): string {
+    return valueWithPaths.replaceAll(this.currentOrigin, this.fileSystemRoot)
+  }
+
   private setCurrentOrigin(location: string) {
-    const locationUrl = new URL(location.substring(0, location.lastIndexOf(":")))
-    this.currentOrigin = `${locationUrl.origin}/`
+    const locationUrl = new URL(location)
+    this.currentOrigin = locationUrl.origin
   }
 
   setDelegate(reporter: Reporter) {

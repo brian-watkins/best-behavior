@@ -34,6 +34,10 @@ export class ViteLocalServer implements LocalServer {
     return this.server?.resolvedUrls?.local[0] ?? ""
   }
 
+  get root(): string {
+    return this.server?.config.root ?? ""
+  }
+
   async stop(): Promise<void> {
     await this.server?.close()
   }

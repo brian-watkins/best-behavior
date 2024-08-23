@@ -176,7 +176,7 @@ class TestCoverageReporter implements CoverageReporter {
   }
 
   coveredFile(path: string): MCR.CoverageFile | undefined {
-    return this.coverageResults?.files.find(file => file.url === path)
+    return this.coverageResults?.files.find(file => file.url?.includes(path))
   }
 }
 

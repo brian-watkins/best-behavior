@@ -187,14 +187,14 @@ async function loadFileWithVite(url: string): Promise<LoaderFunctionReturnType> 
 
   const sourceMap = {
     ...transformResult!.map,
-    sources: [relativePathToModule]
+    sources: [modulePath]
   } as SourceMap
 
   const source = `${transformResult?.code}
-${getSourceURLComment(relativePathToModule)}
+${getSourceURLComment(modulePath)}
 ${getSourceMappingURLComment(sourceMap)}`
 
-  sources.set(relativePathToModule, source)
+  sources.set(modulePath, source)
 
   return {
     format: "module",

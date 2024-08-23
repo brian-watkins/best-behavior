@@ -218,14 +218,14 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         effect("the examples have the correct script location", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedExampleScripts([
-              ["third", "test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
-              ["second", "test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
-              ["first", "test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
+              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
+              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
+              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
             ]),
             expectedExampleScripts([
-              ["sixth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
-              ["fifth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
-              ["fourth", "test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
+              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
+              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
+              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
             ])
           ])))
         }),
@@ -558,12 +558,12 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           const sourceFiles = context.coverageReporter.coverageResults?.files
           expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
 
-          expect(context.coverageReporter.coveredFile("./test/fixtures/src/addStuff.ts"),
+          expect(context.coverageReporter.coveredFile("/test/fixtures/src/addStuff.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '6': 0, '7': 0, '8': 0, '10': 1, '11': 1, '12': 1
             }))))
 
-          expect(context.coverageReporter.coveredFile("./test/fixtures/src/constants.ts"),
+          expect(context.coverageReporter.coveredFile("/test/fixtures/src/constants.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
             }))))

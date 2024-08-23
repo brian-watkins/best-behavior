@@ -1,7 +1,7 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
-import { BehaviorOutput, ClaimOutput, testRunnerContext } from "./helpers/TestRunner.js";
-import { Matcher, arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
-import { expectedBehavior, expectedExampleScripts } from "./helpers/matchers.js";
+import { testRunnerContext } from "./helpers/TestRunner.js";
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
+import { expectedBehavior, expectedClaim, expectedExampleScripts } from "./helpers/matchers.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 
 export default behavior("running behaviors in the browser environment", [
@@ -61,21 +61,21 @@ export default behavior("running behaviors in the browser environment", [
         effect("it prints the reports the expected example script locations", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedExampleScripts([
-              ["third", "common/failing/failed.behavior.ts:28"],
-              ["second", "common/failing/failed.behavior.ts:18"],
-              ["first", "common/failing/failed.behavior.ts:8"]
+              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
+              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
+              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
             ]),
             expectedExampleScripts([
-              ["sixth", "common/failing/moreFailed.behavior.ts:32"],
-              ["fifth", "common/failing/moreFailed.behavior.ts:22"],
-              ["fourth", "common/failing/moreFailed.behavior.ts:12"]
+              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
+              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
+              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
             ])
           ])))
         }),
         effect("it prints the expected stack trace for the failures", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
-            expectedClaim("it fails", "common/failing/failed.behavior.ts:21"),
-            expectedClaim("it also fails", "common/failing/moreFailed.behavior.ts:15")
+            expectedClaim("it fails", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:21:11"),
+            expectedClaim("it also fails", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:15:11")
           ])))
         })
       ]
@@ -92,8 +92,8 @@ export default behavior("running behaviors in the browser environment", [
       observe: [
         effect("it prints the expected stack trace for the failures", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
-            expectedClaim("this is a bad step", "browser/invalid/badStuff.behavior.ts:21"),
-            expectedClaim("this is a bad fact", "browser/invalid/badStuff.behavior.ts:11")
+            expectedClaim("this is a bad step", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:21"),
+            expectedClaim("this is a bad fact", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:11")
           ])))
         })
       ]
@@ -179,12 +179,3 @@ export default behavior("running behaviors in the browser environment", [
 
 ])
 
-function expectedClaim(description: string, location: string): Matcher<ClaimOutput> {
-  return objectWith({
-    description: assignedWith(equalTo(description)),
-    stack: assignedWith(satisfying([
-      stringContaining("http://localhost:", { times: 0 }),
-      stringContaining(location)
-    ]))
-  })
-}
