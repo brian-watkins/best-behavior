@@ -186,6 +186,13 @@ just needed to add an attribute to each object with the generated source and
 sourcemap information, which we cache when we transpile the file in our
 custom esm loader.
 
+We had to use absolute paths in the sourcemaps because otherwise Node would get
+confused when generating stack traces. It apparently uses the sourceRoot and
+sources fields from the source map and just concats them together (without
+using `path.join` or the like) to get the file path for stack traces. If we
+use absolute paths for the sources attribute in the source map then it works
+fine.
+
 
 ### Caveats
 
