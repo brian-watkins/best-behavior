@@ -38,6 +38,10 @@ export class ViteLocalServer implements LocalServer {
     return this.server?.config.root ?? ""
   }
 
+  convertURLsToLocalPaths(content: string): string {
+    return content.replaceAll(this.host, `${this.root}/`)
+  }
+
   async stop(): Promise<void> {
     await this.server?.close()
   }

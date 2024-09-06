@@ -28,13 +28,21 @@ export default behavior("running behaviors in the local JS environment", [
         }),
         effect("it writes logs from the browser to the logger and ignores [vite] messages", (context) => {
           expect(context.logs.infoLines, is(arrayContaining(
-            equalTo("Hello from the browser!")
+            equalTo("Hello from the browser!"),
+          )))
+        }),
+        effect("it writes logs with corrected stack traces", (context) => {
+          expect(context.logs.infoLines, is(arrayContaining(
+            satisfying([
+              stringContaining("Error: Something bad"),
+              stringContaining(`${process.cwd()}/test/fixtures/src/index.ts:5`)
+            ])
           )))
         }),
         effect("it prints the proper line number in a stack trace from the browser", (context) => {
           expect(context.logs.errorLines, is(arrayWith([
             satisfying([
-              stringContaining("index.ts:6"),
+              stringContaining(`${process.cwd()}/test/fixtures/src/index.ts:8`),
               stringContaining("http://localhost", { times: 0 })
             ])
           ])))
@@ -88,9 +96,13 @@ export default behavior("running behaviors in the local JS environment", [
               stringContaining("Failed to fetch dynamically imported module")
             ]))),
             objectWith({
-              "message": assignedWith(stringContaining("div.doFunStuff is not a function")),
+              "message": assignedWith(satisfying([
+                stringContaining("div.doFunStuff is not a function"),
+                stringContaining(`${process.cwd()}/test/fixtures/behaviors/hybrid/displays/badDisplay.ts:9`),
+                stringContaining("http://localhost", { times: 0 })
+              ])),
               "stack": assignedWith(satisfying([
-                stringContaining("badDisplay.ts:9"),
+                stringContaining(`${process.cwd()}/test/fixtures/behaviors/hybrid/displays/badDisplay.ts:9`),
                 stringContaining("http://localhost", { times: 0 })
               ]))
             })

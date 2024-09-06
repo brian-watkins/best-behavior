@@ -1,7 +1,8 @@
 import { BehaviorOptions, ConfigurableExample, Example, ExampleOptions, Summary, ValidationMode, defaultOrder } from "esbehavior"
 import { AdapterReporter } from "./adapterReporter.js"
-import { BehaviorDataErrorCode, type BehaviorBrowserWindow, type BehaviorData } from "../../main/src/behaviorBrowserWindow.js"
+import type { BehaviorBrowserWindow } from "../../main/src/behaviorBrowserWindow.js"
 import { isConfigurableBehaviorLike } from "../../main/src/runtime/behaviorMetadata.js"
+import { type BehaviorData, BehaviorErrorCode } from "../../main/src/runtime/behaviorData.js"
 
 declare let window: BehaviorBrowserWindow
 
@@ -11,7 +12,7 @@ window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<B
   if (!Object.hasOwn(behaviorModule, "default")) {
     return {
       type: "error",
-      reason: BehaviorDataErrorCode.NO_DEFAULT_EXPORT
+      reason: BehaviorErrorCode.NO_DEFAULT_EXPORT
     }
   }
 
@@ -20,7 +21,7 @@ window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<B
   if (!isConfigurableBehaviorLike(configurableBehavior)) {
     return {
       type: "error",
-      reason: BehaviorDataErrorCode.NOT_A_BEHAVIOR
+      reason: BehaviorErrorCode.NOT_A_BEHAVIOR
     }
   }
 

@@ -1,7 +1,9 @@
 import { useContext } from "./useContext.js";
 import { BrowserContext, Page } from "playwright";
-import { PlaywrightBrowser, PlaywrightBrowserContextGenerator, PreparedBrowser, PreparedBrowserOptions } from "./adapters/playwrightBrowser.js";
+import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./adapters/playwrightBrowser.js";
 import { Context } from "esbehavior";
+import { LocalServer } from "./localServer.js";
+import { PreparedBrowser, PreparedBrowserOptions } from "./preparedBrowser.js";
 
 export interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
@@ -21,7 +23,7 @@ export function useBrowser<T>(context: ContextWithBrowser<T>, options: UseBrowse
       await playwrightTestInstrument.reset(options.browserContextGenerator)
 
       return await context.init({
-        page: playwrightTestInstrument.getPage()
+        page: playwrightTestInstrument.page
       })
     },
     teardown: async (contextValue) => {
@@ -40,8 +42,8 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
   private _context: BrowserContext | undefined
   private _page: Page | undefined
 
-  constructor(browser: PlaywrightBrowser, options: PreparedBrowserOptions) {
-    super(browser, options)
+  constructor(browser: PlaywrightBrowser, localServer: LocalServer, options: PreparedBrowserOptions) {
+    super(browser, localServer, options)
   }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
@@ -65,51 +67,20 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
       await this._context.close()
     }
     this._context = await this.getContext(generator)
-    this._page = await this._context.newPage()
-    await this._page.setContent(`<html><head><base href="http://localhost:5173/" /></head><body></body></html>`)
+    const page = await this._context.newPage()
 
-    await this.startCoverage(this._page)
+    await page.setContent(`<html><head><base href="${this.localServer.host}" /></head><body></body></html>`)
+
+    await this.startCoverage(page)
+
+    this._page = this.decoratePageWithBetterExceptionHandling(page)
   }
 
-  getPage(): Page {
-    return pageWithBetterExceptionHandling(this._page!, this.browser.baseURL)
+  get page(): Page {
+    return this._page!
   }
 
   async afterExample(): Promise<void> {
     await this.stopCoverage(this._page!)
-  }
-}
-
-function pageWithBetterExceptionHandling(page: Page, baseURL: string): Page {
-  return new Proxy(page, {
-    get(target, prop) {
-      //@ts-ignore
-      const val = target[prop]
-      if (typeof val === "function") {
-        return (...args: Array<any>) => {
-          try {
-            const result = val.apply(target, args)
-            if (result instanceof Promise) {
-              return result.catch((err: any) => {
-                throw errorWithCorrectedStack(err, baseURL)
-              })
-            }
-            return result
-          } catch (err: any) {
-            throw errorWithCorrectedStack(err, baseURL)
-          }
-        }
-      } else {
-        return val
-      }
-    }
-  })
-}
-
-function errorWithCorrectedStack(error: Error, baseURL: string): Error {
-  return {
-    name: error.name,
-    message: error.message,
-    stack: error.stack?.replaceAll(baseURL, "")
   }
 }

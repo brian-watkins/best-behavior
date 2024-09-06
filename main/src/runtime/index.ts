@@ -1,7 +1,7 @@
 import url from "url"
 import { OrderProvider, Reporter, StandardReporter, randomOrder } from "esbehavior"
 import { ViteLocalServer } from "../adapters/viteServer.js"
-import { PlaywrightBrowser, browserLogger } from "../adapters/playwrightBrowser.js"
+import { PlaywrightBrowser } from "../adapters/playwrightBrowser.js"
 import { BehaviorBrowser, BrowserBehaviorContext } from "./browserBehavior.js"
 import { BehaviorFactory } from "./behaviorFactory.js"
 import { runBehaviors, RunResult } from "./runBehaviors.js"
@@ -67,15 +67,14 @@ export async function run(args: RunArguments): Promise<RunResult> {
     browserContextGenerator: baseConfig?.context
   })
 
-  const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, {
-    logger: browserLogger(viteServer.host, logger)
+  const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, viteServer, {
+    logger
   })
 
   createContext({ playwrightTestInstrument })
 
-  const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, {
+  const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, viteServer, {
     adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
-    root: viteServer.root,
     homePage: args.browserBehaviors?.html,
     logger
   })

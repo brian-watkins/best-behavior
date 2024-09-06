@@ -171,6 +171,22 @@ export default behavior("running behaviors in the browser environment", [
             invalid: 0,
             skipped: 0
           }))))
+        }),
+        effect("it prints corrected stack traced on console logs", (context) => {
+          expect(context.logs.infoLines, is(arrayWith([
+            satisfying([
+              stringContaining("Something bad"),
+              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:14`)
+            ])
+          ])))
+        }),
+        effect("it prints corrected stack trace on JS runtime errors", (context) => {
+          expect(context.logs.errorLines, is(arrayWith([
+            satisfying([
+              stringContaining("window.funStuff is not a function"),
+              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:15`)
+            ])
+          ])))
         })
       ]
     }),

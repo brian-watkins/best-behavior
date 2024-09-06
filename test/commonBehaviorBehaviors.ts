@@ -48,6 +48,65 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
     }),
 
   example(testRunnerContext(options))
+    .description("behavior file has an import error")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file with a bad import", async (context) => {
+          await context.runBehaviors("**/common/error/badImport.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          // console.log("error", context.reporter.terminatedWithError)
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file could not be loaded"),
+            stringContaining("common/error/badImport.behavior.ts"),
+            stringContaining("does not provide an export named 'blahblah'")
+          ]))))
+        }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
+      ]
+    }),
+
+  example(testRunnerContext(options))
+    .description("behavior file has a syntax error")
+    .script({
+      suppose: [
+        fact("expect the behavior run to terminate", (context) => {
+          context.reporter.expectTermination()
+        })
+      ],
+      perform: [
+        step("attempt to validate a behavior file with bad syntax", async (context) => {
+          await context.runBehaviors("**/common/error/badSyntax.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it terminates the test run with an error", (context) => {
+          expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
+            stringContaining("Behavior file could not be loaded"),
+            stringContaining("common/error/badSyntax.behavior.ts"),
+            stringContaining("blahblah is not defined")
+          ]))))
+          expect(context.reporter.terminatedWithError?.stack, is(assignedWith(satisfying([
+            stringContaining(`${process.cwd()}/test/fixtures/behaviors/common/error/badSyntax.behavior.ts:3:16`),
+            stringContaining("http://localhost", { times: 0 })
+          ]))))
+        }),
+        effect("it returns an error run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+        })
+      ]
+    }),
+
+  example(testRunnerContext(options))
     .description("behavior file does not have a default export")
     .script({
       suppose: [

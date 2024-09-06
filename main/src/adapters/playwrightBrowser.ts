@@ -1,9 +1,4 @@
-import url from "node:url"
-import { Browser, BrowserContext, chromium, Page } from "playwright";
-import { Logger } from "../logger.js";
-import { V8CoverageData } from "../coverageReporter.js";
-import { CoverageProvider } from "../runtime/coverageProvider.js";
-import { adaptCoverageData } from "./browserCoverageAdapter.js";
+import { Browser, BrowserContext, chromium } from "playwright";
 
 export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Browser>
 
@@ -20,18 +15,6 @@ export interface PlaywrightBrowserOptions {
   baseURL: string
   browserGenerator: PlaywrightBrowserGenerator | undefined
   browserContextGenerator: PlaywrightBrowserContextGenerator | undefined
-}
-
-export function browserLogger(host: string, logger: Logger): Logger {
-  return {
-    info: (line, source) => {
-      if (line.startsWith("[vite]")) return
-      logger.info(line.replaceAll(host, ""), source)
-    },
-    error: (err, source) => {
-      logger.error(err.replaceAll(host, ""), source)
-    }
-  }
 }
 
 export class PlaywrightBrowser {
@@ -70,55 +53,4 @@ const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
   return chromium.launch({
     headless: !showBrowser
   })
-}
-
-export interface PreparedBrowserOptions {
-  adapterPath?: string
-  logger: Logger
-}
-
-export class PreparedBrowser implements CoverageProvider {
-  onCoverageData?: ((data: Array<V8CoverageData>) => Promise<void>) | undefined;
-
-  constructor(protected browser: PlaywrightBrowser, private browserOptions: PreparedBrowserOptions) { }
-
-  protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
-    const context = await this.browser.newBrowserContext(generator)
-
-    if (this.browserOptions.adapterPath) {
-      await context.addInitScript({ path: this.browserOptions.adapterPath })
-    }
-
-    await context.addInitScript({ path: pathToFile("../../adapter/sourceMapSupport.cjs") })
-
-    context.on("console", (message) => {
-      this.browserOptions.logger.info(message.text(), "Browser")
-    })
-    context.on("weberror", (webError) => {
-      this.browserOptions.logger.error(`${webError.error().stack}`, "Browser Error")
-    })
-
-    return context
-  }
-
-  async startCoverage(page: Page): Promise<void> {
-    if (this.onCoverageData !== undefined) {
-      await page.coverage.startJSCoverage({
-        resetOnNavigation: false
-      })
-    }
-  }
-
-  async stopCoverage(page: Page): Promise<void> {
-    if (this.onCoverageData !== undefined) {
-      const coverageData = await page.coverage.stopJSCoverage()
-      if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData.map(adaptCoverageData))
-      }
-    }
-  }
-}
-
-function pathToFile(relativePath: string): string {
-  return url.fileURLToPath(new URL(relativePath, import.meta.url))
 }

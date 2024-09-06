@@ -21,15 +21,3 @@ export function isConfigurableBehaviorLike(potentialBehavior: any): boolean {
     return false
   }
 }
-
-export class NoDefaultExportError extends Error {
-  constructor(path: string) {
-    super(`Behavior file has no default export: ${path}`)
-  }
-}
-
-export class NotABehaviorError extends Error {
-  constructor(path: string) {
-    super(`Behavior file default export is not an esbehavior ConfigurableBehavior: ${path}`)
-  }
-}

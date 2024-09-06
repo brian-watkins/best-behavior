@@ -1,24 +1,5 @@
-import { ClaimResult, Example, Summary, ValidationMode } from "esbehavior"
-
-
-export enum BehaviorDataErrorCode {
-  NO_DEFAULT_EXPORT,
-  NOT_A_BEHAVIOR
-}
-
-export interface BehaviorDataError {
-  type: "error",
-  reason: BehaviorDataErrorCode
-}
-
-export interface BehaviorDataOk {
-  type: "ok"
-  description: string
-  examples: Array<ValidationMode>
-  validationMode: ValidationMode
-}
-
-export type BehaviorData = BehaviorDataError | BehaviorDataOk
+import type { ClaimResult, Example, Summary } from "esbehavior"
+import type { BehaviorData } from "./runtime/behaviorData.js"
 
 export interface BehaviorBrowserWindow extends Window {
   __bb_currentExamples: Array<Example>

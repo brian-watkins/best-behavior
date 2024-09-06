@@ -1,9 +1,12 @@
-import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
+import { BehaviorOptions, ClaimResult, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary, ValidationMode } from "esbehavior"
 import { BrowserContext, Page } from "playwright"
-import { PlaywrightBrowser, PreparedBrowser, PreparedBrowserOptions } from "../adapters/playwrightBrowser.js"
-import { BehaviorMetadata, NoDefaultExportError, NotABehaviorError } from "./behaviorMetadata.js"
+import { PlaywrightBrowser } from "../adapters/playwrightBrowser.js"
+import { BehaviorMetadata } from "./behaviorMetadata.js"
 import { LocalServer } from "../localServer.js"
-import { BehaviorBrowserWindow, BehaviorData, BehaviorDataErrorCode } from "../behaviorBrowserWindow.js"
+import { BehaviorBrowserWindow } from "../behaviorBrowserWindow.js"
+import { PreparedBrowser, PreparedBrowserOptions } from "../preparedBrowser.js"
+import { BehaviorData, BehaviorErrorCode } from "./behaviorData.js"
+import { BehaviorSyntaxError, NoDefaultExportError, NotABehaviorError } from "./behaviorError.js"
 
 declare let window: BehaviorBrowserWindow
 
@@ -13,28 +16,33 @@ export class BrowserBehaviorContext {
   async getBrowserBehavior(metadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
     const page = await this.behaviorBrowser.getPage()
 
-    const data: BehaviorData = await page.evaluate((path) => window.__bb_loadBehavior(path), this.localServer.urlForPath(metadata.path))
+    const data: BehaviorData = await page
+      .evaluate((path) => window.__bb_loadBehavior(path), this.localServer.urlForPath(metadata.path))
+      .catch((err) => ({ type: "syntax-error", cause: err }))
 
-    if (data.type === "error") {
-      switch (data.reason) {
-        case BehaviorDataErrorCode.NO_DEFAULT_EXPORT:
-          throw new NoDefaultExportError(metadata.path)
-        case BehaviorDataErrorCode.NOT_A_BEHAVIOR:
-          throw new NotABehaviorError(metadata.path)
-      }
-    }
-
-    return (b: BehaviorOptions) => {
-      b.validationMode = data.validationMode
-      return {
-        description: data.description,
-        examples: data.examples.map((mode, index) => {
-          return (m) => {
-            m.validationMode = mode
-            return new BrowserExample(index, page, this.behaviorBrowser.reporter)
+    switch (data.type) {
+      case "syntax-error":
+        throw new BehaviorSyntaxError(metadata.path, data.cause)
+      case "error":
+        switch (data.reason) {
+          case BehaviorErrorCode.NO_DEFAULT_EXPORT:
+            throw new NoDefaultExportError(metadata.path)
+          case BehaviorErrorCode.NOT_A_BEHAVIOR:
+            throw new NotABehaviorError(metadata.path)
+        }
+      case "ok":
+        return (b: BehaviorOptions) => {
+          b.validationMode = data.validationMode
+          return {
+            description: data.description,
+            examples: data.examples.map((mode, index) => {
+              return (m) => {
+                m.validationMode = mode
+                return new BrowserExample(index, page, this.behaviorBrowser.reporter)
+              }
+            })
           }
-        })
-      }
+        }
     }
   }
 }
@@ -59,7 +67,6 @@ class BrowserExample implements Example {
 }
 
 export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
-  root: string
   homePage?: string
 }
 
@@ -67,9 +74,9 @@ export class BehaviorBrowser extends PreparedBrowser {
   readonly reporter: BrowserReporter
   private _page: Page | undefined
 
-  constructor(browser: PlaywrightBrowser, private options: BehaviorBrowserOptions) {
-    super(browser, options)
-    this.reporter = new BrowserReporter(options.root)
+  constructor(browser: PlaywrightBrowser, localServer: LocalServer, private options: BehaviorBrowserOptions) {
+    super(browser, localServer, options)
+    this.reporter = new BrowserReporter(localServer)
   }
 
   protected async getContext(): Promise<BrowserContext> {
@@ -91,7 +98,8 @@ export class BehaviorBrowser extends PreparedBrowser {
     }
 
     const context = await this.getContext()
-    this._page = await context.newPage()
+    const page = await context.newPage()
+    this._page = this.decoratePageWithBetterExceptionHandling(page)
 
     if (this.options.homePage !== undefined) {
       await this._page.goto(this.options.homePage)
@@ -111,9 +119,8 @@ export class BehaviorBrowser extends PreparedBrowser {
 
 class BrowserReporter {
   private reporter: Reporter | undefined
-  private currentOrigin: string = ""
 
-  constructor(private fileSystemRoot: string) { }
+  constructor(private localServer: LocalServer) { }
 
   async decorateContext(context: BrowserContext): Promise<void> {
     await context.exposeFunction("__bb_startExample", (description: string | undefined) => {
@@ -123,7 +130,6 @@ class BrowserReporter {
       this.reporter?.endExample()
     })
     await context.exposeFunction("__bb_startScript", (location: string) => {
-      this.setCurrentOrigin(location)
       this.reporter?.startScript(this.fixFilePaths(location))
     })
     await context.exposeFunction("__bb_endScript", () => {
@@ -148,12 +154,7 @@ class BrowserReporter {
   }
 
   private fixFilePaths(valueWithPaths: string): string {
-    return valueWithPaths.replaceAll(this.currentOrigin, this.fileSystemRoot)
-  }
-
-  private setCurrentOrigin(location: string) {
-    const locationUrl = new URL(location)
-    this.currentOrigin = locationUrl.origin
+    return this.localServer.convertURLsToLocalPaths(valueWithPaths)
   }
 
   setDelegate(reporter: Reporter) {
