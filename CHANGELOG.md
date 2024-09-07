@@ -1,5 +1,15 @@
 # best-behavior
 
+## 0.8.0
+
+### Minor Changes
+
+- 2607338: Top-level exports for config and coverage. Moved run function to the root export.
+
+### Patch Changes
+
+- 46e9709: Improved stack traces to reference absolute path of relevant file on disk.
+
 ## 0.7.3
 
 ### Patch Changes
