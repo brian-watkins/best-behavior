@@ -62,7 +62,6 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       ],
       observe: [
         effect("it terminates the test run with an error", (context) => {
-          // console.log("error", context.reporter.terminatedWithError)
           expect(context.reporter.terminatedWithError?.message, is(assignedWith(satisfying([
             stringContaining("Behavior file could not be loaded"),
             stringContaining("common/error/badImport.behavior.ts"),

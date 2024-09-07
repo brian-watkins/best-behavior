@@ -33,8 +33,11 @@ export class PreparedBrowser implements CoverageProvider {
       this.browserOptions.logger.info(logLine, "Browser")
     })
     context.on("weberror", (webError) => {
-      const stack = webError.error().stack ?? ""
-      const logLine = this.localServer.convertURLsToLocalPaths(stack)
+      const error = webError.error()
+      const content = (error.stack === undefined || error.stack === "")
+        ? error.message
+        : error.stack
+      const logLine = this.localServer.convertURLsToLocalPaths(content)
       this.browserOptions.logger.error(logLine, "Browser Error")
     })
 

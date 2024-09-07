@@ -176,17 +176,22 @@ export default behavior("running behaviors in the browser environment", [
           expect(context.logs.infoLines, is(arrayWith([
             satisfying([
               stringContaining("Something bad"),
-              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:14`)
+              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:15`)
             ])
           ])))
         }),
         effect("it prints corrected stack trace on JS runtime errors", (context) => {
-          expect(context.logs.errorLines, is(arrayWith([
+          expect(context.logs.errorLines, is(arrayContaining(
             satisfying([
               stringContaining("window.funStuff is not a function"),
-              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:15`)
+              stringContaining(`${process.cwd()}/test/fixtures/behaviors/browser/html/index.html:16`)
             ])
-          ])))
+          )))
+        }),
+        effect("it prints message for runtime errors without a stack", (context) => {
+          expect(context.logs.errorLines, is(arrayContaining(
+            stringContaining("does not provide an export named 'blahblah'"),
+          )))
         })
       ]
     }),
