@@ -1,5 +1,5 @@
-import { V8CoverageData } from "../coverageReporter.js"
-import { extractSourceMap, updateSourceMap } from "./sourceMap.js"
+import { V8CoverageData } from "../coverage/coverageReporter.js"
+import { extractSourceMap, updateSourceMap } from "../sourceMap.js"
 import path from "node:path"
 
 export function adaptCoverageData (data: V8CoverageData): V8CoverageData {

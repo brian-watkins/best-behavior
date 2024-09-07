@@ -15,7 +15,8 @@
     ".": "./dist/main/index.js",
     "./browser": "./dist/main/browser.js",
     "./page": "./dist/main/page.js",
-    "./runtime": "./dist/main/runtime/index.js"
+    "./config": "./dist/main/config.js",
+    "./coverage": "./dist/main/coverage.js"
   },
   "files": [
     "bin/",

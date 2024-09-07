@@ -1,5 +1,5 @@
 import { OrderProvider, Reporter, Summary } from "esbehavior";
-import { BehaviorMetadata } from "./behaviorMetadata.js";
+import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
 
 export interface ValidationOptions {
   reporter: Reporter

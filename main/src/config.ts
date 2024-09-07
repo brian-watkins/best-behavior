@@ -1,9 +1,11 @@
 import { Options, lilconfig, Loader } from "lilconfig";
-import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "./adapters/playwrightBrowser.js";
-import { Transpiler } from "./transpiler.js";
+import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "./browser/playwrightBrowser.js";
+import { Transpiler } from "./transpiler/index.js";
 import { OrderProvider, Reporter } from "esbehavior";
 import { Logger } from "./logger.js";
-import { CoverageReporter } from "./coverageReporter.js";
+import { CoverageReporter } from "./coverage/coverageReporter.js";
+export type { Logger } from "./logger.js"
+export type { PlaywrightBrowserGenerator, PlaywrightBrowserContextGenerator } from "./browser/playwrightBrowser.js"
 
 export interface BrowserBehaviorOptions {
   globs?: Array<string>

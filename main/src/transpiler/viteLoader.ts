@@ -4,7 +4,7 @@ import type { ResolveHookContext, ModuleSource } from "node:module"
 import { createServer, ViteDevServer } from "vite"
 import { MessagePort } from "node:worker_threads"
 import { LoaderMessage } from "./loaderMessages.js"
-import { getSourceMappingURLComment, getSourceURLComment, SourceMap } from "./sourceMap.js"
+import { getSourceMappingURLComment, getSourceURLComment, SourceMap } from "../sourceMap.js"
 
 interface ViteLoaderData {
   viteConfig?: string

@@ -1,7 +1,7 @@
 import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Logger } from "../../dist/main/index.js"
-import { run, RunResult } from "../../dist/main/runtime/index.js"
-import { CoverageReporter, V8CoverageData } from "../../dist/main/coverageReporter.js";
+import { Logger } from "../../dist/main/config.js"
+import { run, RunResult } from "../../dist/main/index.js"
+import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
 
 export interface TestRunnerOptions {

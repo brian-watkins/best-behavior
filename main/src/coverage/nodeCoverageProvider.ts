@@ -1,7 +1,7 @@
 import { Session } from "inspector"
-import { Transpiler } from "../transpiler.js";
-import { V8CoverageData } from "../coverageReporter.js";
-import { CoverageProvider } from "../runtime/coverageProvider.js";
+import { Transpiler } from "../transpiler/index.js";
+import { V8CoverageData } from "./coverageReporter.js";
+import { CoverageProvider } from "./coverageProvider.js";
 
 export class NodeCoverageProvider implements CoverageProvider {
   private _session: Session | undefined

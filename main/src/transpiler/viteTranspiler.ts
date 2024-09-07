@@ -1,7 +1,7 @@
 import { register } from "node:module"
 import { LoaderMessage, ServerMessage, SourceMessage } from "./loaderMessages.js"
 import { MessageChannel, MessagePort } from "node:worker_threads"
-import { Transpiler, TranspilerOptions } from "../transpiler.js"
+import { Transpiler, TranspilerOptions } from "./index.js"
 
 class ViteTranspiler implements Transpiler {
   private loader: MessagePort
@@ -30,9 +30,8 @@ class ViteTranspiler implements Transpiler {
 
   async loadModule(modulePath: string): Promise<any> {
     try {
-      return import(`vite:${modulePath}`)
+      return import(/* @vite-ignore */ `vite:${modulePath}`)
     } catch (err) {
-      console.log("Got an error loading module", modulePath, err)
       return undefined
     }
   }

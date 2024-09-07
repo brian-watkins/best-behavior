@@ -1,7 +1,7 @@
 import { DocumentationRunner, Summary } from "esbehavior";
-import { BehaviorMetadata } from "./behaviorMetadata.js";
-import { BehaviorFactory } from "./behaviorFactory.js";
-import { ValidationOptions, Validator } from "./validator.js";
+import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
+import { BehaviorFactory } from "../behavior/behaviorFactory.js";
+import { ValidationOptions, Validator } from "./index.js";
 
 export class SequentialValidator implements Validator {
 

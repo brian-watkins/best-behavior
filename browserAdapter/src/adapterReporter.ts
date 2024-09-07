@@ -1,5 +1,5 @@
 import { ClaimResult, Failure, Reporter, Summary } from "esbehavior";
-import type { BehaviorBrowserWindow } from "../../main/src/behaviorBrowserWindow";
+import type { BehaviorBrowserWindow } from "../../main/src/behavior/browser/behaviorBrowserWindow.js";
 
 declare let window: BehaviorBrowserWindow
 

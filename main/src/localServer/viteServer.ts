@@ -1,5 +1,5 @@
 import { ViteDevServer, createServer } from "vite";
-import { LocalServer } from "../localServer.js";
+import { LocalServer } from "./index.js";
 
 export interface ViteLocalServerOptions {
   viteConfig?: string

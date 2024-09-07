@@ -1,4 +1,4 @@
-import { PlaywrightTestInstrument } from "./useBrowser.js"
+import { PlaywrightTestInstrument } from "./behavior/local/playwrightTestInstrument.js"
 
 interface CustomGlobalThis extends Global {
   __best_behavior_context: BehaviorContext | undefined

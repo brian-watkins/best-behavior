@@ -112,7 +112,7 @@ Use the `defineConfig` function to make specifying and exporting the config easy
 
 ```
 import { firefox } from "playwright"
-import { defineConfig } from "best-behavior"
+import { defineConfig } from "best-behavior/config"
 
 export default defineConfig({
   behaviorGlobs: [
@@ -379,10 +379,11 @@ monocart-coverage-reports in two ways:
 for more details on the filename and contents. Best-behavior will pick up this config file
 automatically.
 
-2. In your best-behavior config file, create an instance of `MonocartCoverageReporter` and pass
-the configuration to the constructor:
+2. In your best-behavior config file, create an instance of
+`MonocartCoverageReporter` and pass the configuration to the constructor:
   ```
-  import { defineConfig, MonocartCoverageReporter } from "best-behavior"
+  import { defineConfig } from "best-behavior/config"
+  import { MonocartCoverageReporter } from "best-behavior/coverage"
 
   export default defineConfig({
     behaviorGlobs: [
@@ -395,6 +396,8 @@ the configuration to the constructor:
 
 You can override the default code coverage capability by providing a custom
 `CoverageReporter` via the best-behavior config file `coverageReporter` attribute.
+
+#### best-behavior/coverage
 
 #### CoverageReporter
 
@@ -422,7 +425,7 @@ the `run` function programmatically. This can be useful if you need to provide
 a custom `CoverageReporter`, `Reporter`, `OrderProvider`, or `Logger` -- or if you
 need to do something before or after behaviors are run.
 
-#### best-behavior/runtime
+#### best-behavior
 
 #### run
 

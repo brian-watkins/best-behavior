@@ -1,6 +1,6 @@
 import { behavior, Context, effect, example, fact } from "esbehavior";
 import { defined, expect, is } from "great-expectations";
-import { viteTranspiler } from "../dist/main/adapters/viteTranspiler.js";
+import { viteTranspiler } from "../dist/main/transpiler/viteTranspiler.js"
 
 const testLoaderContext: Context<TestLoader> = {
   init: async () => {

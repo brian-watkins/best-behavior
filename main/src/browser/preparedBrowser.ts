@@ -1,11 +1,11 @@
 import url from "node:url"
 import { BrowserContext, Page } from "playwright";
-import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./adapters/playwrightBrowser.js";
-import { V8CoverageData } from "./coverageReporter.js";
-import { LocalServer } from "./localServer.js";
-import { Logger } from "./logger.js";
-import { CoverageProvider } from "./runtime/coverageProvider.js";
-import { adaptCoverageData } from "./adapters/browserCoverageAdapter.js";
+import { CoverageProvider } from "../coverage/coverageProvider.js";
+import { Logger } from "../logger.js";
+import { V8CoverageData } from "../coverage/coverageReporter.js";
+import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./playwrightBrowser.js";
+import { LocalServer } from "../localServer/index.js";
+import { adaptCoverageData } from "./browserCoverageAdapter.js";
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
@@ -24,7 +24,7 @@ export class PreparedBrowser implements CoverageProvider {
       await context.addInitScript({ path: this.browserOptions.adapterPath })
     }
 
-    await context.addInitScript({ path: pathToFile("../adapter/sourceMapSupport.cjs") })
+    await context.addInitScript({ path: pathToFile("../../adapter/sourceMapSupport.cjs") })
 
     context.on("console", (message) => {
       const content = message.text()

@@ -1,5 +1,5 @@
 import type { ClaimResult, Example, Summary } from "esbehavior"
-import type { BehaviorData } from "./runtime/behaviorData.js"
+import type { BehaviorData } from "./behaviorData.js"
 
 export interface BehaviorBrowserWindow extends Window {
   __bb_currentExamples: Array<Example>

@@ -3,8 +3,8 @@ import MCR from "monocart-coverage-reports"
 import fs from "fs"
 import URL from "url"
 import path from "path"
-import { V8CoverageData } from "../../dist/main/index.js"
-import { adaptCoverageData } from "../../dist/main/adapters/browserCoverageAdapter.js"
+import { V8CoverageData } from "../../dist/main/coverage.js"
+import { adaptCoverageData } from "../../dist/main/browser/browserCoverageAdapter.js"
 
 const __filename = URL.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

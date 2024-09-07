@@ -1,7 +1,7 @@
 import { ConfigurableBehavior } from "esbehavior"
-import { BehaviorMetadata, isConfigurableBehaviorLike } from "./behaviorMetadata.js"
-import { Transpiler } from "../transpiler.js"
-import { BehaviorSyntaxError, NoDefaultExportError, NotABehaviorError } from "./behaviorError.js"
+import { BehaviorMetadata, isConfigurableBehaviorLike } from "../behaviorMetadata.js"
+import { Transpiler } from "../../transpiler/index.js"
+import { BehaviorSyntaxError, NoDefaultExportError, NotABehaviorError } from "../behaviorError.js"
 
 export async function getLocalBehavior(transpiler: Transpiler, behaviorMetadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
   const behaviorModule: any = await transpiler

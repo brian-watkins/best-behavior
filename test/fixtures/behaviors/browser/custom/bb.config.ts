@@ -1,5 +1,5 @@
 import { firefox } from "playwright"
-import { defineConfig } from "../../../../../dist/main/index.js"
+import { defineConfig } from "../../../../../dist/main/config.js"
 
 export default defineConfig({
   browser: (showBrowser) => {
