@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.8.1
+
+### Patch Changes
+
+- d2a23a9: Support browser runtime syntax errors without a stack
+
 ## 0.8.0
 
 ### Minor Changes
