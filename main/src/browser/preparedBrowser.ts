@@ -56,7 +56,7 @@ export class PreparedBrowser implements CoverageProvider {
     if (this.onCoverageData !== undefined) {
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData.map(adaptCoverageData))
+        await this.onCoverageData(coverageData.map(adaptCoverageData(this.localServer.root)))
       }
     }
   }

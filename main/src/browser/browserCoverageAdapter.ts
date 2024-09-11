@@ -1,18 +1,20 @@
 import { V8CoverageData } from "../coverage/coverageReporter.js"
-import { extractSourceMap, updateSourceMap } from "../sourceMap.js"
+import { addSourceURLComment, extractSourceMap, updateSourceMap } from "../sourceMap.js"
 import path from "node:path"
 
-export function adaptCoverageData (data: V8CoverageData): V8CoverageData {
-  if (!data.url.startsWith("http://") || data.source === undefined) {
-    return data
-  }
+export function adaptCoverageData(root: string): (data: V8CoverageData) => V8CoverageData {
+  return (data) => {
+    if (!data.url.startsWith("http://") || data.source === undefined) {
+      return data
+    }
 
-  const coverageFilePath = `.${new URL(data.url).pathname}`
+    const coverageFilePath = path.join(root, new URL(data.url).pathname)
 
-  return {
-    ...data,
-    url: coverageFilePath,
-    source: setSourceMapSourceRoot(data.source, coverageFilePath)
+    return {
+      ...data,
+      url: coverageFilePath,
+      source: setSourceMapSourceRoot(data.source, coverageFilePath)
+    }
   }
 }
 
@@ -23,9 +25,9 @@ function setSourceMapSourceRoot(source: string, filePath: string): string {
     return source
   }
 
-  return updateSourceMap(source, {
+  return updateSourceMap(addSourceURLComment(source, filePath), {
     ...sourceMap,
-    sourceRoot: path.dirname(filePath)
+    sources: [filePath]
   })
 }
 

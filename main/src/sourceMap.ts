@@ -33,6 +33,12 @@ export function updateSourceMap(source: string, sourceMap: SourceMap): string {
   return source.substring(0, contentEndIndex) + encodedSourceMap
 }
 
+export function addSourceURLComment(source: string, url: string): string {
+  const encodedSourceURL = getSourceURLComment(url)
+  const contentEndIndex = source.indexOf("//# sourceMappingURL=")
+  return source.substring(0, contentEndIndex) + `${encodedSourceURL}\n${source.substring(contentEndIndex)}`
+}
+
 export function getSourceMappingURLComment(sourceMap: SourceMap): string {
   const encodedSourceMap = Buffer.from(JSON.stringify(sourceMap)).toString("base64")
   return `//# sourceMappingURL=data:application/json;base64,${encodedSourceMap}`

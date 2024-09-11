@@ -15,6 +15,11 @@ export const browserCoverageContext: Context<TestableBrowserCoverage> = {
 
 class TestableBrowserCoverage {
   reports: Array<Array<V8CoverageData>> = []
+  private root: string = "/test/files/"
+
+  setProjectRoot(root: string) {
+    this.root = root
+  }
 
   getCoveredFileReports<T extends { url: string }>(): Array<T> {
     let coveredFiles: Array<any> = []
@@ -39,7 +44,7 @@ class TestableBrowserCoverage {
 
   private recordData(data: Array<V8CoverageData>) {
     // NOTE: adaptCoverageData is the subject under test
-    this.reports.push(data.map(adaptCoverageData))
+    this.reports.push(data.map(adaptCoverageData(this.root)))
   }
 
   async loadFakeCoverage(filename: string): Promise<void> {

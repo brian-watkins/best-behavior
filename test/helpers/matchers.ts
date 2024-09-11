@@ -40,3 +40,19 @@ export function fileWithCoveredLines(lines: { [key: string]: string | number }):
     assignedWith(objectWithProperty("lines",
       assignedWith(equalTo(lines)))))
 }
+
+export function statementCoverage(start: number, end: number, count: number): Matcher<MCR.CoverageRange> {
+  return objectWith({
+    "start": assignedWith(equalTo(start)),
+    "end": assignedWith(equalTo(end)),
+    "count": assignedWith(equalTo(count))
+  })
+}
+
+export function fileWithCoveredStatements(statements: Array<Matcher<MCR.CoverageRange>>): Matcher<MCR.CoverageFile> {
+  return objectWithProperty("data",
+    assignedWith(objectWithProperty("statements",
+      assignedWith(arrayWith(statements))
+    ))
+  )
+}

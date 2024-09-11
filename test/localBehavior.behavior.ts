@@ -2,7 +2,7 @@ import { behavior, effect, example, fact, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
-import { fileWithCoveredLines } from "./helpers/matchers.js";
+import { fileWithCoveredLines, fileWithCoveredStatements, statementCoverage } from "./helpers/matchers.js";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -77,12 +77,12 @@ export default behavior("running behaviors in the local JS environment", [
           const sourceFiles = context.coverageReporter.coverageResults?.files
           expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
 
-          expect(context.coverageReporter.coveredFile("./test/fixtures/src/addStuff.ts"),
+          expect(context.coverageReporter.coveredFile("/test/fixtures/src/addStuff.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '6': 0, '7': 0, '8': 0, '10': 3, '11': 3, '12': 3
             }))))
 
-          expect(context.coverageReporter.coveredFile("./test/fixtures/src/constants.ts"),
+          expect(context.coverageReporter.coveredFile("/test/fixtures/src/constants.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
             }))))
@@ -107,6 +107,47 @@ export default behavior("running behaviors in the local JS environment", [
               ]))
             })
           ])))
+        })
+      ]
+    }),
+
+  example(testRunnerContext())
+    .description("generating coverage for a module exercised in node and the browser")
+    .script({
+      suppose: [
+        fact("coverage data should be collected", (context) => {
+          context.setShouldCollectCoverage(true)
+        })
+      ],
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/ssr/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 2,
+            valid: 2,
+            invalid: 0,
+            skipped: 0
+          }))))
+        }),
+        effect("coverage data is merged for module exercised in node and browser", (context) => {
+          const sourceFiles = context.coverageReporter.coverageResults?.files
+
+          expect(sourceFiles?.length, is(assignedWith(equalTo(1))))
+
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/coolModule.ts"),
+            is(assignedWith(fileWithCoveredStatements([
+              statementCoverage(7, 78, 1),
+              statementCoverage(64, 76, 1),
+              statementCoverage(87, 157, 1),
+              statementCoverage(131, 155, 1),
+            ]))),
+            "Not all statements in the module are shown as covered"
+          )
         })
       ]
     })
