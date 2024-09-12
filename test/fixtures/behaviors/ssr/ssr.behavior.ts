@@ -1,31 +1,32 @@
 import { behavior, effect, example } from "esbehavior";
-import { addSomeThings } from "../../src/coolModule.js";
-import { expect, is, resolvesTo } from "great-expectations";
+import { expect, is } from "great-expectations";
 import { useBrowser } from "../../../../main/src/browser.js";
+import { useModule } from "../../../../main/src/transpiler.js"
 
 export default behavior("ssr", [
 
   example()
-    .description("execute some code from a module in node")
+    .description("execute some code from a module in node loaded during the test")
     .script({
       observe: [
-        effect("some of the functions run fine when exercised in node", () => {
-          expect(addSomeThings(7, 5), is(12))
+        effect("some of the functions run fine when exercised in node", async () => {
+          const coolModule = await useModule("/test/fixtures/src/coolModule.ts")
+          expect(coolModule.sayHello("Cool dude"), is("Hello, Cool dude!"))
         })
       ]
     }),
 
   example(useBrowser({ init: (browser) => browser }))
-    .description("execute some code from the same module in the browser")
+    .description("execute different code from the same module in the browser")
     .script({
       observe: [
         effect("another function runs fine when exercised in the browser", async (browser) => {
-          const result = browser.page.evaluate(async () => {
+          const result = await browser.page.evaluate(async () => {
             const module = await import("../../src/coolModule.js")
-            return module.sayHello("cool dude")
+            return module.addSomeThings(7, 5)
           })
 
-          await expect(result, resolvesTo("Hello, cool dude!"))
+          expect(result, is(12))
         })
       ]
     })

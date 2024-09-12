@@ -2,7 +2,7 @@ import { behavior, effect, example, fact, step } from "esbehavior";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWith, objectWithProperty, satisfying, stringContaining } from "great-expectations";
-import { fileWithCoveredLines, fileWithCoveredStatements, statementCoverage } from "./helpers/matchers.js";
+import { fileWithCoverageSummary, fileWithCoveredLines } from "./helpers/matchers.js";
 
 export default behavior("running behaviors in the local JS environment", [
 
@@ -139,15 +139,15 @@ export default behavior("running behaviors in the local JS environment", [
 
           expect(sourceFiles?.length, is(assignedWith(equalTo(1))))
 
+          // Note that this will fail if using a version of node < 22.8.0
+          // due to the way that coverage is collected in earlier versions of node
           expect(context.coverageReporter.coveredFile("test/fixtures/src/coolModule.ts"),
-            is(assignedWith(fileWithCoveredStatements([
-              statementCoverage(7, 78, 1),
-              statementCoverage(64, 76, 1),
-              statementCoverage(87, 157, 1),
-              statementCoverage(131, 155, 1),
-            ]))),
-            "Not all statements in the module are shown as covered"
-          )
+            is(assignedWith(fileWithCoverageSummary({
+              functions: 100,
+              branches: "",
+              statements: 100,
+              lines: 100
+            }))), "Not 100% coverage")
         })
       ]
     })

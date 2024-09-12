@@ -41,18 +41,18 @@ export function fileWithCoveredLines(lines: { [key: string]: string | number }):
       assignedWith(equalTo(lines)))))
 }
 
-export function statementCoverage(start: number, end: number, count: number): Matcher<MCR.CoverageRange> {
-  return objectWith({
-    "start": assignedWith(equalTo(start)),
-    "end": assignedWith(equalTo(end)),
-    "count": assignedWith(equalTo(count))
-  })
+interface CoverageSummary {
+  functions: number | ""
+  branches: number | ""
+  statements: number | ""
+  lines: number | ""
 }
 
-export function fileWithCoveredStatements(statements: Array<Matcher<MCR.CoverageRange>>): Matcher<MCR.CoverageFile> {
-  return objectWithProperty("data",
-    assignedWith(objectWithProperty("statements",
-      assignedWith(arrayWith(statements))
-    ))
-  )
+export function fileWithCoverageSummary(summary: CoverageSummary): Matcher<MCR.CoverageFile> {
+  return objectWithProperty("summary", objectWith({
+    functions: objectWithProperty("pct", equalTo(summary.functions)),
+    branches: objectWithProperty("pct", equalTo(summary.branches)),
+    statements: objectWithProperty("pct", equalTo(summary.statements)),
+    lines: objectWithProperty("pct", equalTo(summary.lines)),
+  }))
 }

@@ -1,5 +1,4 @@
 import URL from "node:url"
-import path from "node:path"
 import type { ResolveHookContext, ModuleSource } from "node:module"
 import { createServer, ViteDevServer } from "vite"
 import { MessagePort } from "node:worker_threads"
@@ -181,7 +180,6 @@ export async function load(url: string, context: LoaderHookContext, nextLoad: Ne
 
 async function loadFileWithVite(url: string): Promise<LoaderFunctionReturnType> {
   const modulePath = URL.fileURLToPath(url)
-  const relativePathToModule = `./${path.relative(viteDevServer.config.root, modulePath)}`
 
   const transformResult = await viteDevServer.transformRequest(modulePath, { ssr: true })
 

@@ -59,4 +59,14 @@ class ViteTranspiler implements Transpiler {
   }
 }
 
-export const viteTranspiler = new ViteTranspiler()
+interface CustomGlobalThis extends Global {
+  __best_behavior_transpiler: ViteTranspiler | undefined
+}
+
+declare let globalThis: CustomGlobalThis
+
+if (globalThis.__best_behavior_transpiler === undefined) {
+  globalThis.__best_behavior_transpiler = new ViteTranspiler()
+}
+
+export const viteTranspiler = globalThis.__best_behavior_transpiler

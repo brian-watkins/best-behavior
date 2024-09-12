@@ -16,7 +16,8 @@
     "./browser": "./dist/main/browser.js",
     "./page": "./dist/main/page.js",
     "./config": "./dist/main/config.js",
-    "./coverage": "./dist/main/coverage.js"
+    "./coverage": "./dist/main/coverage.js",
+    "./transpiler": "./dist/main/transpiler.js"
   },
   "files": [
     "bin/",
@@ -31,7 +32,7 @@
     "build:adapter": "node ./scripts/build.js",
     "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build:all && node --enable-source-maps --import ./test/ts-node-register.mjs ./test/runner.ts",
+    "test": "npm run build:all && node --enable-source-maps --import ./test/ts-node-register.mjs --no-deprecation ./test/runner.ts",
     "create:change": "changeset add",
     "create:version": "changeset version",
     "create:release": "npm run build && changeset publish && git push --follow-tags"
@@ -59,6 +60,6 @@
     "vite": "^5.4.0"
   },
   "volta": {
-    "node": "20.10.0"
+    "node": "22.8.0"
   }
 }
