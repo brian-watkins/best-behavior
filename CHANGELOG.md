@@ -1,5 +1,15 @@
 # best-behavior
 
+## 0.9.0
+
+### Minor Changes
+
+- bfea2c1: Expose vite transpiler for test writers via useModule
+
+### Patch Changes
+
+- bfea2c1: Properly merge code coverage reports for modules exercised in node and the browser
+
 ## 0.8.1
 
 ### Patch Changes
