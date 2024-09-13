@@ -28,12 +28,8 @@ class ViteTranspiler implements Transpiler {
     }, "vite-configured")
   }
 
-  async loadModule(modulePath: string): Promise<any> {
-    try {
-      return import(/* @vite-ignore */ `vite:${modulePath}`)
-    } catch (err) {
-      return undefined
-    }
+  loadModule(modulePath: string): Promise<any> {
+    return import(/* @vite-ignore */ `vite:${modulePath}`)
   }
 
   async getSource(path: string): Promise<string | undefined> {

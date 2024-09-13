@@ -90,10 +90,10 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
             objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("Failed to fetch dynamically imported module")
+              stringContaining("Failed to fetch dynamically imported module: ./displays/does-not-exist.js")
             ]))),
             objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("Failed to fetch dynamically imported module")
+              stringContaining(`Failed to fetch dynamically imported module: ${process.cwd()}/displays/not-a-real-thing.js`)
             ]))),
             objectWith({
               "message": assignedWith(satisfying([
@@ -121,7 +121,7 @@ export default behavior("running behaviors in the local JS environment", [
       ],
       perform: [
         step("validate the behaviors", async (context) => {
-          await context.runBehaviors("**/ssr/*.behavior.ts")
+          await context.runBehaviors("**/ssr/ssr.behavior.ts")
         })
       ],
       observe: [
@@ -148,6 +148,36 @@ export default behavior("running behaviors in the local JS environment", [
               statements: 100,
               lines: 100
             }))), "Not 100% coverage")
+        })
+      ]
+    }),
+
+  example(testRunnerContext())
+    .description("behavior that attempts to use a bad module")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/ssr/badSSR.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 0,
+            invalid: 1,
+            skipped: 0
+          }))))
+        }),
+        effect("useModule throws an error which fails the claim", (context) => {
+          expect(context.reporter.invalidClaims, is(arrayWith([
+            satisfying([
+              objectWithProperty("message", assignedWith(
+                stringContaining(`Failed to load url /test/fixtures/src/notSoCoolModule.ts`)
+              )),
+            ])
+          ])))
         })
       ]
     })
