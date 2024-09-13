@@ -140,8 +140,9 @@ Collecting code coverage for browser-based behaviors is relatively straightforwa
 Playwright offers an API to get this data. However, due to the way that
 Vite generates sourcemaps we did need to modify this data to get accurate
 paths to the files. We need to update the (file) url of the coverage data to
-include the relative path to the file. We also needed to add a `sourceRoot`
-attribute to the sourcemap with the same relative path.
+include the absolute path to the file. We also had to add the `sourceURL`
+comment to sources so that it matches the source file format generated for
+node coverage.
 
 Collecting code coverage for node-based behaviors is a little more tricky
 due to the fact that we are using Vite to transpile these behaviors before
@@ -193,6 +194,11 @@ using `path.join` or the like) to get the file path for stack traces. If we
 use absolute paths for the sources attribute in the source map then it works
 fine.
 
+It turns out that in order for code coverage data for the same file to be merged
+when that file is exercised in both the browser and node during a test run, the
+path to the file and the *source* (including the source map) recorded for the
+file must be exactly the same. This is so that monocart-coverage-reports can
+know that these coverage data represent the very same file and so should be merged.
 
 ### Caveats
 
