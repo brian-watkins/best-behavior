@@ -359,6 +359,31 @@ attempt to close over any other values in your pageFunction; these will not be
 available in the scope where the function is executed.
 
 
+# Transpiling code during tests
+
+Sometimes, you might need to load and transpile a module during your tests.
+For example, you might be testing some code that handles server-side rendering
+and so needs to dynamically import modules at runtime based on the incoming
+request. In such cases, best-behavior provides access to the vite transpiler
+via the `useModule` function.
+
+#### best-behavior/transpiler
+
+#### useModule
+
+```
+function useModule(path: string): Promise<any>
+```
+
+Provide the path to the module you'd like to load *relative to the project
+root*.
+
+While there are other ways to load modules dynamically during a test -- either
+by using vite's `ssrLoadModule` function directly or simply a dynamic
+`import` -- prefer using `useModule` as this will ensure the most accurate
+code coverage metrics.
+
+
 # Code Coverage
 
 Best-behavior uses [monocart-coverage-reports](https://www.npmjs.com/package/monocart-coverage-reports)
@@ -393,6 +418,10 @@ automatically.
     coverageReporter: new MonocartCoverageReporter({ ...<monocart config> })
   })
   ```
+
+Note: For best results with code coverage, use a version of Node >= 22.8. This will
+ensure that code coverage for modules exercised both in node and the browser can be
+properly merged.
 
 You can override the default code coverage capability by providing a custom
 `CoverageReporter` via the best-behavior config file `coverageReporter` attribute.
