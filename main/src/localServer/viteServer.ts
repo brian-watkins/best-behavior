@@ -15,7 +15,10 @@ export class ViteLocalServer implements LocalServer {
     this.server = await createServer({
       configFile: this.options.viteConfig,
       optimizeDeps: {
-        entries: this.options.behaviorGlobs
+        entries: this.options.behaviorGlobs,
+        esbuildOptions: {
+          logLevel: "silent"
+        }
       },
       server: {
         hmr: false,
