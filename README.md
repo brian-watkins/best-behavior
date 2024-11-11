@@ -1,10 +1,10 @@
 # best-behavior
 
-Best-Behavior is a command line tool that runs
-[esbehavior](https://www.npmjs.com/package/esbehavior) specs. It brings
-together [Vite](https://vitejs.dev) and [Playwright](https://playwright.dev),
-along with esbehavior, to allow you to write tests that exercise your Javascript
-code in Node or a real web browser.
+Best-Behavior is a command line tool and domain-specific language that
+allows you to write *executable documentation* and validate that your
+software conforms to it. It brings together [Vite](https://vitejs.dev)
+and [Playwright](https://playwright.dev) to allow you to write tests
+that exercise your Javascript code in Node or a real web browser.
 
 With Best-Behavior you can:
 - Test application logic in Node or a real web browser
@@ -25,19 +25,18 @@ makes it easy!
 
 # Getting Started
 
-Best-Behavior depends on esbehavior, Vite, and Playwright, but these are treated
+Best-Behavior depends on Vite and Playwright, but these are treated
 as peer dependencies -- since your tests will generally utilize these packages
-directly, it's good for you to understand and control their versions -- so you'll
-need to install these separately. To utiliize esbehavior you'll need a
-matcher library; so we recommend also installing
-[great-expectations](https://www.npmjs.com/package/great-expectations).
+directly, it's good for you to understand and control their versions.
+To write assertions, you'll also need a matcher library; so we recommend
+installing [great-expectations](https://www.npmjs.com/package/great-expectations).
 
 ```
-$ npm install --save-dev best-behavior esbehavior great-expectations vite playwright
+$ npm install --save-dev best-behavior great-expectations vite playwright
 ```
 
-Structure your test suite as a collection of files, each of which has an
-esbehavior `Behavior` as the default export. Then use the best-behavior cli to
+Structure your test suite as a collection of files, each of which has a
+`Behavior` as the default export. Then use the best-behavior cli to
 run your test suite. For example, if your behaviors are all in a directory called
 `behaviors` and each follows the naming format `*.behavior.ts` then you could run
 them like so:
@@ -65,7 +64,7 @@ Options:
 
 For example, to run some behaviors in the browser and open the browser
 during the test run and only run those behaviors that have explicitly been
-picked (via the esbehavior pick functionality):
+picked:
 
 ```
 $ best --behaviors 'tests/**/*.behavior.ts' \
@@ -124,13 +123,13 @@ export default defineConfig({
 
 Use a config file to do custom configuration of the Playwright `Browser` or the default
 Playwright `BrowserContext`. You can also use a config to supply a `Logger`, a custom
-`CoverageReporter`, or a custom esbehavior `Reporter` or `OrderProvider`.
+`CoverageReporter`, or a custom `Reporter` or `OrderProvider`.
 
 
 # Running Behaviors
 
-Structure your test suite as a collection of files, each of which has an
-esbehavior `Behavior` as the default export. Use the `best` cli to run the suite
+Structure your test suite as a collection of files, each of which has a
+`Behavior` as the default export. Use the `best` cli to run the suite
 by passing a glob that identifies the files you want to include.
 
 By default, best-behavior runs the `Behavior` exported by each file in Node.
@@ -183,8 +182,8 @@ interface UseBrowserOptions {
 useBrowser<T>(context: ContextWithBrowser<T>, options?: UseBrowserOptions): Context<T>
 ```
 
-Esbehavior `Examples` can specify a `Context` that handles initialization and teardown of
-resources uses during that example. `useBrowser` generates an esbehavior `Context`
+`Examples` can specify a `Context` that handles initialization and teardown of
+resources uses during that example. `useBrowser` generates a `Context`
 that initializes and tearsdown a Playwright `Page` automatically and makes it available
 to the example that uses this `Context`.
 
@@ -234,7 +233,7 @@ and processed by Vite.
 For example:
 
 ```
-import { behavior, example, fact, effect } from "esbehavior"
+import { behavior, example, fact, effect } from "best-behavior"
 import { expect, is } from "great-expectations"
 import { useBrowser } from "best-behavior/browser"
 
@@ -490,8 +489,8 @@ interface RunArguments {
   runPickedOnly?: boolean
   viteConfig?: string // relative to working dir
   showBrowser?: boolean
-  reporter?: Reporter // from esbehavior
-  orderProvider?: OrderProvider // from esbehavior
+  reporter?: Reporter
+  orderProvider?: OrderProvider
   logger?: Logger
 }
 ```
