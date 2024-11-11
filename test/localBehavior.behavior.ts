@@ -129,7 +129,7 @@ export default behavior("running behaviors in the local JS environment", [
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 1,
             examples: 2,
-            valid: 2,
+            valid: 3,
             invalid: 0,
             skipped: 0
           }))))

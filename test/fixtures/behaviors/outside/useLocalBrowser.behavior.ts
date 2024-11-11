@@ -4,7 +4,7 @@ import { useBrowser } from "../../../../main/src/browser.js";
 
 export default behavior("useBrowser", [
 
-  example(useBrowser({ init: (browser) => browser }))
+  example(useBrowser())
     .description("uses a browser with the local server")
     .script({
       suppose: [

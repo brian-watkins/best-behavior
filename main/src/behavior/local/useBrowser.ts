@@ -7,19 +7,20 @@ import { BrowserTestInstrument } from "./browserTestInstrument.js";
 export interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
   teardown?(context: T): void | Promise<void>
-}
-
-export interface UseBrowserOptions {
   browserContextGenerator?: PlaywrightBrowserContextGenerator
 }
 
-export function useBrowser<T>(context: ContextWithBrowser<T>, options: UseBrowserOptions = {}): Context<T> {
+const defaultUseBrowserContext: ContextWithBrowser<any> = {
+  init: (browserTestInstrument) => browserTestInstrument
+}
+
+export function useBrowser<T = BrowserTestInstrument>(context: ContextWithBrowser<T> = defaultUseBrowserContext): Context<T> {
   let playwrightTestInstrument: PlaywrightTestInstrument
 
   return {
     init: async () => {
       playwrightTestInstrument = useContext().playwrightTestInstrument
-      await playwrightTestInstrument.reset(options.browserContextGenerator)
+      await playwrightTestInstrument.reset(context.browserContextGenerator)
 
       return await context.init({
         page: playwrightTestInstrument.page
@@ -32,4 +33,3 @@ export function useBrowser<T>(context: ContextWithBrowser<T>, options: UseBrowse
     },
   }
 }
-

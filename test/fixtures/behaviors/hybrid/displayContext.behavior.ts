@@ -2,13 +2,9 @@ import { Context, behavior, effect, example, fact, step } from "esbehavior";
 import { BrowserTestInstrument, useBrowser } from "../../../../dist/main/browser.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
-const browserContext: Context<BrowserTestInstrument> = useBrowser({
-  init: (browser) => browser
-})
-
 export default behavior("component testing", [
 
-  example(browserContext)
+  example(useBrowser())
     .description("use a component")
     .script({
       suppose: [
@@ -38,7 +34,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(browserContext)
+  example(useBrowser())
     .description("use a component again")
     .script({
       suppose: [
@@ -69,7 +65,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(browserContext)
+  example(useBrowser())
     .description("use variables when importing a component")
     .script({
       suppose: [
@@ -88,7 +84,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(browserContext)
+  example(useBrowser())
     .description("literal import fails to resolve")
     .script({
       suppose: [
@@ -107,7 +103,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(browserContext)
+  example(useBrowser())
     .description("variable in dynamic view controller import fails to resolve")
     .script({
       suppose: [
@@ -125,7 +121,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(browserContext)
+  example(useBrowser())
     .description("Use a display context that depends on loaded html")
     .script({
       suppose: [
@@ -144,7 +140,8 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser({ init: (browser) => browser }, {
+  example(useBrowser({
+    init: (browser) => browser,
     browserContextGenerator: (browser) => browser.newContext({
       viewport: {
         width: 500,

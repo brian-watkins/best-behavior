@@ -173,13 +173,10 @@ browser during your example: load content, trigger events, observe the DOM.
 interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
   teardown?(context: T): void | Promise<void>
-}
-
-interface UseBrowserOptions {
   browserContextGenerator?: PlaywrightBrowserContextGenerator
 }
 
-useBrowser<T>(context: ContextWithBrowser<T>, options?: UseBrowserOptions): Context<T>
+useBrowser<T>(context?: ContextWithBrowser<T>): Context<T>
 ```
 
 `Examples` can specify a `Context` that handles initialization and teardown of
@@ -187,14 +184,17 @@ resources uses during that example. `useBrowser` generates a `Context`
 that initializes and tearsdown a Playwright `Page` automatically and makes it available
 to the example that uses this `Context`.
 
-When you call `useBrowser`, supply a `ContextWithBrowser`. This is a special `Context` that
-passes a `BrowserTestInstrument` to its `init` function. Think of the `ContextWithBrowser` as
-your opportunity to provide any example-specific initialization or teardown.
+When you call `useBrowser` without any arguments, the context value will be a
+`BrowserTestInstrument`. Alternatively, you can supply a `ContextWithBrowser`, which
+is a special `Context` that passes a `BrowserTestInstrument` to its `init` function.
+Think of the `ContextWithBrowser` as your opportunity to provide any
+example-specific initialization or teardown.
 
 When the `init` function is called on the generated `Context`, a new `BrowserContext`
 will be created and any existing one will be closed, so there's no need to do any
-special teardown on the `Page` or components mounted within that `Page`. Optionally supply a
-`PlaywrightBrowserContextGenerator` via the `UseBrowserOptions` to configure the `BrowserContext`.
+special teardown on the `Page` or components mounted within that `Page`. Optionally
+supply a `PlaywrightBrowserContextGenerator` via the `ContextWithBrowser` to
+configure the `BrowserContext`.
 
 
 #### PlaywrightBrowserContextGenerator

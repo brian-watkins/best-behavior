@@ -1,6 +1,6 @@
-import { behavior, effect, example } from "esbehavior";
+import { behavior, effect, example, step } from "esbehavior";
 import { expect, is } from "great-expectations";
-import { useBrowser } from "../../../../main/src/browser.js";
+import { BrowserTestInstrument, useBrowser } from "../../../../main/src/browser.js";
 import { useModule } from "../../../../main/src/transpiler.js"
 
 export default behavior("ssr", [
@@ -16,18 +16,33 @@ export default behavior("ssr", [
       ]
     }),
 
-  example(useBrowser({ init: (browser) => browser }))
+  example(useBrowser({
+    init: (browser) => new TestContext(browser),
+  }))
     .description("execute different code from the same module in the browser")
     .script({
-      observe: [
-        effect("another function runs fine when exercised in the browser", async (browser) => {
-          const result = await browser.page.evaluate(async () => {
+      perform: [
+        step("execute some code", async (context) => {
+          await context.evaluate(async () => {
             const module = await import("../../src/coolModule.js")
             return module.addSomeThings(7, 5)
           })
-
-          expect(result, is(12))
+        })
+      ],
+      observe: [
+        effect("another function runs fine when exercised in the browser", (context) => {
+          expect(context.result, is(12))
         })
       ]
     })
 ])
+
+class TestContext<T> {
+  result: any
+
+  constructor (private browser: BrowserTestInstrument) { }
+
+  async evaluate<T>(fun: () => Promise<T>): Promise<void> {
+    this.result = await this.browser.page.evaluate(fun)
+  }
+}

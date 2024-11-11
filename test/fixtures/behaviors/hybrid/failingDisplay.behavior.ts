@@ -4,7 +4,7 @@ import { useBrowser } from "../../../../main/src/browser.js";
 
 export default behavior("failing display", [
 
-  example(useBrowser({ init: (browser) => browser }))
+  example(useBrowser())
     .description("the display fails to mount")
     .script({
       suppose: [
