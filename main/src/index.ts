@@ -3,7 +3,7 @@ export type {
   Example, ConfigurableExample,
   Presupposition, Action, Observation,
   Context,
-  Reporter,
+  Reporter, Failure, ClaimResult, ValidClaim, InvalidClaim, SkippedClaim,
   OrderProvider
 } from "esbehavior"
 
