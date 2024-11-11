@@ -157,6 +157,11 @@ export default behavior("running behaviors in the browser environment", [
   example(testRunnerContext({ browserGlob: "**/*", browserBehaviorHTML: "./test/fixtures/behaviors/browser/html/index.html" }))
     .description("browser behavior that needs custom html loaded")
     .script({
+      suppose: [
+        fact("new deps are optimized", (context) => {
+          context.setViteConfigFile("./test/fixtures/behaviors/browser/html/vite.config.ts")
+        })
+      ],
       perform: [
         step("validate the behaviors", async (context) => {
           await context.runBehaviors("**/browser/html/*.behavior.ts")

@@ -23,6 +23,7 @@ export class TestRunner {
   private shouldRunPickedExamplesOnly: boolean = false
   private behaviorFilter: string | undefined
   private configFile: string | undefined
+  private viteConfig: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
   private shouldCollectCoverage: boolean = false
   public runResult: RunResult | undefined
@@ -33,6 +34,10 @@ export class TestRunner {
 
   setConfigFile(path: string) {
     this.configFile = path
+  }
+
+  setViteConfigFile(path: string) {
+    this.viteConfig = path
   }
 
   setShouldCollectCoverage(shouldCollectCoverage: boolean) {
@@ -63,7 +68,7 @@ export class TestRunner {
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,
-      viteConfig: undefined,
+      viteConfig: this.viteConfig,
       reporter: this.testReporter,
       collectCoverage: this.shouldCollectCoverage,
       coverageReporter: this.testCoverageReporter,
