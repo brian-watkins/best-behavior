@@ -13,6 +13,7 @@
   "types": "./dist/main/index.d.ts",
   "exports": {
     ".": "./dist/main/index.js",
+    "./run": "./dist/main/run.js",
     "./browser": "./dist/main/browser.js",
     "./page": "./dist/main/page.js",
     "./config": "./dist/main/config.js",
@@ -47,6 +48,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "esbehavior": "^4.2.3",
     "glob": "^10.3.10",
     "lilconfig": "^3.0.0",
     "minimatch": "^9.0.3",
@@ -54,7 +56,6 @@
     "yargs": "^17.7.2"
   },
   "peerDependencies": {
-    "esbehavior": "^4.2.3",
     "monocart-coverage-reports": "^2.10.3",
     "playwright": "^1.40.0",
     "vite": "^5.4.0"

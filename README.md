@@ -454,7 +454,7 @@ the `run` function programmatically. This can be useful if you need to provide
 a custom `CoverageReporter`, `Reporter`, `OrderProvider`, or `Logger` -- or if you
 need to do something before or after behaviors are run.
 
-#### best-behavior
+#### best-behavior/run
 
 #### run
 
