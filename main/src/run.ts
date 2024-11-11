@@ -20,7 +20,7 @@ import { BehaviorBrowser } from "./behavior/browser/behaviorBrowser.js"
 export type { Logger } from "./logger.js"
 export { consoleLogger } from "./logger.js"
 
-export interface RunArguments {
+export interface RunConfig {
   config?: string
   behaviorGlobs?: Array<string>
   behaviorFilter?: string
@@ -43,11 +43,11 @@ export enum RunResult {
   NOT_OK = "NOT OK"
 }
 
-export async function run(args: RunArguments): Promise<RunResult> {
-  const baseConfig = await getConfig(viteTranspiler, args.config)
-  const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
+export async function run(runConfig: RunConfig): Promise<RunResult> {
+  const baseConfig = await getConfig(viteTranspiler, runConfig.config)
+  const logger = runConfig.logger ?? baseConfig?.logger ?? consoleLogger()
 
-  const behaviors = args.behaviorGlobs ?? baseConfig?.behaviorGlobs
+  const behaviors = runConfig.behaviorGlobs ?? baseConfig?.behaviorGlobs
 
   if (behaviors === undefined) {
     logger.error(bold(red("No behaviors specified!")))
@@ -56,18 +56,18 @@ export async function run(args: RunArguments): Promise<RunResult> {
   }
 
   await viteTranspiler.setConfig({
-    viteConfig: args.viteConfig ?? baseConfig?.viteConfig,
+    viteConfig: runConfig.viteConfig ?? baseConfig?.viteConfig,
     behaviorGlobs: behaviors
   })
 
   const viteServer = new ViteLocalServer({
-    viteConfig: args.viteConfig ?? baseConfig?.viteConfig,
+    viteConfig: runConfig.viteConfig ?? baseConfig?.viteConfig,
     behaviorGlobs: behaviors
   })
   await viteServer.start()
 
   const playwrightBrowser = new PlaywrightBrowser({
-    showBrowser: args.showBrowser ?? false,
+    showBrowser: runConfig.showBrowser ?? false,
     baseURL: viteServer.host,
     browserGenerator: baseConfig?.browser,
     browserContextGenerator: baseConfig?.context
@@ -81,18 +81,18 @@ export async function run(args: RunArguments): Promise<RunResult> {
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, viteServer, {
     adapterPath: pathToFile("../adapter/behaviorAdapter.cjs"),
-    homePage: args.browserBehaviors?.html,
+    homePage: runConfig.browserBehaviors?.html,
     logger
   })
 
   const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
   const behaviorFactory = new BehaviorFactory(viteTranspiler, browserBehaviorContext)
 
-  const collectCoverage = args.collectCoverage ?? baseConfig?.collectCoverage ?? false
+  const collectCoverage = runConfig.collectCoverage ?? baseConfig?.collectCoverage ?? false
 
   let coverageManager: CoverageManager | undefined = undefined
   if (collectCoverage) {
-    const coverageReporter = args.coverageReporter ??
+    const coverageReporter = runConfig.coverageReporter ??
       baseConfig?.coverageReporter ??
       new MonocartCoverageReporter()
 
@@ -107,17 +107,17 @@ export async function run(args: RunArguments): Promise<RunResult> {
 
   const result = await runBehaviors(validator, {
     behaviorPathPatterns: behaviors,
-    behaviorFilter: args.behaviorFilter,
-    browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
+    behaviorFilter: runConfig.behaviorFilter,
+    browserBehaviorPathPatterns: runConfig.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
     coverageManager,
-    reporter: args.reporter ?? baseConfig?.reporter ?? defaultReporter(logger),
-    orderProvider: args.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
-    failFast: args.failFast ?? baseConfig?.failFast ?? false,
-    runPickedOnly: args.runPickedOnly ?? false,
+    reporter: runConfig.reporter ?? baseConfig?.reporter ?? defaultReporter(logger),
+    orderProvider: runConfig.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
+    failFast: runConfig.failFast ?? baseConfig?.failFast ?? false,
+    runPickedOnly: runConfig.runPickedOnly ?? false,
     logger
   })
 
-  if (!args.showBrowser || !playwrightBrowser.isOpen) {
+  if (!runConfig.showBrowser || !playwrightBrowser.isOpen) {
     await playwrightBrowser.stop()
     await viteServer.stop()
     await viteTranspiler.stop()
