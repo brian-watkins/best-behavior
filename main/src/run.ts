@@ -17,6 +17,8 @@ import { Validator } from "./validator/index.js"
 import { getBehaviorsMatchingPattern } from "./behavior/behaviorCollector.js"
 import { PlaywrightTestInstrument } from "./behavior/local/playwrightTestInstrument.js"
 import { BehaviorBrowser } from "./behavior/browser/behaviorBrowser.js"
+export type { Logger } from "./logger.js"
+export { consoleLogger } from "./logger.js"
 
 export interface RunArguments {
   config?: string
