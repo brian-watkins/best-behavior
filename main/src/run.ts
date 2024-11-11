@@ -43,9 +43,6 @@ export enum RunResult {
   NOT_OK = "NOT OK"
 }
 
-// Note that Reporter and Logger both have logging capabilities
-// Is there a way we could consolidate that?
-
 export async function run(args: RunArguments): Promise<RunResult> {
   const baseConfig = await getConfig(viteTranspiler, args.config)
   const logger = args.logger ?? baseConfig?.logger ?? consoleLogger()
@@ -113,7 +110,7 @@ export async function run(args: RunArguments): Promise<RunResult> {
     behaviorFilter: args.behaviorFilter,
     browserBehaviorPathPatterns: args.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
     coverageManager,
-    reporter: args.reporter ?? baseConfig?.reporter ?? new StandardReporter(),
+    reporter: args.reporter ?? baseConfig?.reporter ?? defaultReporter(logger),
     orderProvider: args.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
     failFast: args.failFast ?? baseConfig?.failFast ?? false,
     runPickedOnly: args.runPickedOnly ?? false,
@@ -171,6 +168,16 @@ async function runBehaviors(validator: Validator, options: RunOptions): Promise<
   }
 
   return result
+}
+
+function defaultReporter(logger: Logger): Reporter {
+  return new StandardReporter({
+    writer: {
+      writeLine(message) {
+        logger.info(message)
+      },
+    }
+  })
 }
 
 function pathToFile(relativePath: string): string {
