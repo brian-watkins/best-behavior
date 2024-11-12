@@ -1,5 +1,18 @@
 # best-behavior
 
+## 0.10.0
+
+### Minor Changes
+
+- 75730ef: Use Logger for StandardReporter writer
+- 07147ae: Rename RunArgs to RunConfig for JS API
+- 911ad85: By default, useBrowser provides a BrowserTestInstrument
+- 5f0249e: Export esbehavior types and functions for ease of use
+
+### Patch Changes
+
+- e024519: Silence esbuild warnings during dep optimization
+
 ## 0.9.0
 
 ### Minor Changes
