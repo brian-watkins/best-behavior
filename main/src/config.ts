@@ -1,7 +1,7 @@
 import { Options, lilconfig, Loader } from "lilconfig";
 import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "./browser/playwrightBrowser.js";
 import { Transpiler } from "./transpiler/index.js";
-import { OrderProvider, Reporter } from "esbehavior";
+import { Reporter } from "esbehavior";
 import { Logger } from "./logger.js";
 import { CoverageReporter } from "./coverage/coverageReporter.js";
 export type { Logger } from "./logger.js"
@@ -11,6 +11,30 @@ export interface BrowserBehaviorOptions {
   globs?: Array<string>
   html?: string
 }
+
+export interface RandomOrder {
+  type: "random"
+  seed?: string
+}
+
+export function randomOrder(seed?: string): RandomOrder {
+  return {
+    type: "random",
+    seed
+  }
+}
+
+export interface DefaultOrder {
+  type: "default"
+}
+
+export function defaultOrder(): DefaultOrder {
+  return {
+    type: "default"
+  }
+}
+
+export type OrderType = RandomOrder | DefaultOrder
 
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
@@ -22,7 +46,7 @@ export interface BestBehaviorConfig {
   collectCoverage?: boolean
   coverageReporter?: CoverageReporter
   reporter?: Reporter
-  orderProvider?: OrderProvider
+  orderType?: OrderType
   logger?: Logger
 }
 

@@ -15,23 +15,6 @@ export default behavior("running behaviors in the browser environment", [
         })
       ],
       observe: [
-        effect("it starts the validation with the correct order provider description", (context) => {
-          expect(context.reporter.orderDescription, is(assignedWith(equalTo("Test-Order-Provider-Reverse"))))
-        }),
-        effect("it uses the order provider to order the behaviors and examples", (context) => {
-          expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior 2", [
-              "six",
-              "five",
-              "should only work in a browser",
-              "three"
-            ]),
-            expectedBehavior("Behavior 1", [
-              "only in browser",
-              "first"
-            ])
-          ])))
-        }),
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
@@ -61,21 +44,23 @@ export default behavior("running behaviors in the browser environment", [
         effect("it prints the reports the expected example script locations", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedExampleScripts([
-              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
-              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
-              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
+              ["zero", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"],
+              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
+              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
+              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:42:6"]
             ]),
             expectedExampleScripts([
-              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
-              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
-              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
-            ])
+              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"],
+              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
+              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"]
+            ]),
           ])))
         }),
         effect("it prints the expected stack trace for the failures", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
+            expectedClaim("it also fails", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:25:11"),
+            expectedClaim("this is fun", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:11:11"),
             expectedClaim("it fails", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:21:11"),
-            expectedClaim("it also fails", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:15:11")
           ])))
         })
       ]
@@ -92,8 +77,8 @@ export default behavior("running behaviors in the browser environment", [
       observe: [
         effect("it prints the expected stack trace for the failures", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
-            expectedClaim("this is a bad step", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:21"),
-            expectedClaim("this is a bad fact", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:11")
+            expectedClaim("this is a bad fact", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:11"),
+            expectedClaim("this is a bad step", "./test/fixtures/behaviors/browser/invalid/badStuff.behavior.ts:21")
           ])))
         })
       ]

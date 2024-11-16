@@ -2,7 +2,7 @@
 
 import yargs from "yargs"
 import { run, RunResult } from "../dist/main/run.js"
-import { randomOrder } from "esbehavior"
+import { randomOrder } from "../dist/main/config.js"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")
@@ -64,7 +64,7 @@ const result = await run({
   viteConfig: args.viteConfig,
   showBrowser: args.showBrowser,
   collectCoverage: args.coverage,
-  orderProvider: args.seed ? randomOrder(args.seed) : undefined
+  orderType: args.seed ? randomOrder(args.seed) : undefined
 })
 
 if (result !== RunResult.OK) {

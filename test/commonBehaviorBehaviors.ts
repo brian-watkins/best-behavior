@@ -219,19 +219,19 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       ],
       observe: [
         effect("it starts the validation with the correct order provider description", (context) => {
-          expect(context.reporter.orderDescription, is(assignedWith(equalTo("Test-Order-Provider-Reverse"))))
+          expect(context.reporter.orderDescription, is(assignedWith(equalTo("Default ordering"))))
         }),
         effect("it uses the order provider to order the behaviors and examples", (context) => {
           expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior 2", [
-              "six",
-              "five",
-              "four",
-              "three"
-            ]),
             expectedBehavior("Behavior 1", [
-              "second",
-              "first"
+              "first",
+              "second"
+            ]),
+            expectedBehavior("Behavior 2", [
+              "three",
+              "four",
+              "five",
+              "six"
             ])
           ])))
         }),
@@ -261,38 +261,40 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       observe: [
         effect("it reports on all examples", (context) => {
           expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior X", [
-              "third",
-              "second",
-              "first"
-            ]),
             expectedBehavior("Behavior Y", [
-              "sixth",
+              "zero",
+              "fourth",
               "fifth",
-              "fourth"
-            ])
+              "sixth"
+            ]),
+            expectedBehavior("Behavior X", [
+              "first",
+              "second",
+              "third",
+            ]),
           ])))
         }),
         effect("the examples have the correct script location", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedExampleScripts([
-              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"],
-              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
-              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"]
+              ["zero", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"],
+              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
+              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
+              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:42:6"],
             ]),
             expectedExampleScripts([
-              ["sixth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:32:6"],
-              ["fifth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:22:6"],
-              ["fourth", "./test/fixtures/behaviors/common/failing/moreFailed.behavior.ts:12:6"]
+              ["first", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:8:6"],
+              ["second", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:18:6"],
+              ["third", "./test/fixtures/behaviors/common/failing/failed.behavior.ts:28:6"]
             ])
           ])))
         }),
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 6,
+            examples: 7,
             valid: 4,
-            invalid: 2,
+            invalid: 3,
             skipped: 0
           }))))
         }),
@@ -318,19 +320,19 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       observe: [
         effect("it only reports on examples up to the failed one", (context) => {
           expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior X", [
-              "third",
-              "second"
+            expectedBehavior("Behavior Y", [
+              "zero",
+              "fourth"
             ])
           ])))
         }),
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 6,
+            examples: 7,
             valid: 1,
             invalid: 1,
-            skipped: 4
+            skipped: 5
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
@@ -350,14 +352,14 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       observe: [
         effect("it reports on both behaviors", (context) => {
           expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior 1", [
-              "second",
-              "first"
-            ]),
             expectedBehavior("Behavior 2", [
-              "fourth",
-              "third"
-            ])
+              "third",
+              "fourth"
+            ]),
+            expectedBehavior("Behavior 1", [
+              "first",
+              "second"
+            ]),
           ])))
         }),
         effect("it produces the correct summary", (context) => {
@@ -386,14 +388,14 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       observe: [
         effect("it reports on all the examples", (context) => {
           expect(context.reporter.output, is(arrayWith([
-            expectedBehavior("Behavior 1", [
-              "second",
-              "first"
-            ]),
             expectedBehavior("Behavior 2", [
-              "fourth",
               "picked!",
-            ])
+              "fourth"
+            ]),
+            expectedBehavior("Behavior 1", [
+              "first",
+              "second"
+            ]),
           ])))
         }),
         effect("it produces the correct summary", (context) => {
@@ -467,17 +469,17 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         effect("it only reports on examples up to the failed one", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedBehavior("Behavior X", [
-              "second"
+              "first"
             ])
           ])))
         }),
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 2,
-            examples: 6,
+            examples: 7,
             valid: 0,
             invalid: 1,
-            skipped: 5
+            skipped: 6
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
@@ -503,8 +505,8 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         effect("it reports on the picked examples only (not any that are skipped)", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedBehavior("Behavior 2", [
-              "six",
               "four",
+              "six"
             ])
           ])))
         }),
@@ -540,8 +542,8 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         effect("it reports on the examples from the filtered behaviors only", (context) => {
           expect(context.reporter.output, is(arrayWith([
             expectedBehavior("Behavior 1", [
-              "second",
               "first",
+              "second"
             ])
           ])))
         }),

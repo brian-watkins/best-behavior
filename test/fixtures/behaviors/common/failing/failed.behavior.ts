@@ -8,7 +8,7 @@ export default behavior("Behavior X", [
     .script({
       observe: [
         effect("this is fun", () => {
-          expect(7, is(equalTo(7)))
+          expect(7, is(equalTo(5)))
         })
       ]
     }),

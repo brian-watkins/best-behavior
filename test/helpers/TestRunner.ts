@@ -1,5 +1,5 @@
-import { ClaimResult, Context, Failure, OrderProvider, Reporter, Summary } from "esbehavior";
-import { Logger } from "../../dist/main/config.js"
+import { ClaimResult, Context, Failure, Reporter, Summary } from "esbehavior";
+import { defaultOrder, Logger } from "../../dist/main/config.js"
 import { run, RunResult } from "../../dist/main/run.js"
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
@@ -17,7 +17,6 @@ export function testRunnerContext(options: TestRunnerOptions = {}): Context<Test
 
 export class TestRunner {
   private testReporter = new TestReporter()
-  private testOrderProvider = new TestOrderProvider()
   private testLogger = new TestLogger()
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
@@ -72,7 +71,7 @@ export class TestRunner {
       reporter: this.testReporter,
       collectCoverage: this.shouldCollectCoverage,
       coverageReporter: this.testCoverageReporter,
-      orderProvider: this.testOrderProvider,
+      orderType: defaultOrder(),
       logger: this.testLogger,
     })
   }
@@ -199,14 +198,6 @@ export interface ClaimOutput {
   description: string
   message: string | undefined
   stack: string | undefined
-}
-
-class TestOrderProvider implements OrderProvider {
-  description: string = "Test-Order-Provider-Reverse"
-
-  order<T>(items: T[]): T[] {
-    return items.slice().reverse()
-  }
 }
 
 class TestLogger implements Logger {

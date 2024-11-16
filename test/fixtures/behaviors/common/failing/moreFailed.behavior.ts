@@ -8,6 +8,16 @@ interface SomethingThatWillNotBeInTheTranspiledModule {
 export default behavior("Behavior Y", [
 
   example()
+    .description("zero")
+    .script({
+      observe: [
+        effect("this is fun", () => {
+          expect(7, is(equalTo(7)))
+        })
+      ]
+    }),
+
+  example()
     .description("fourth")
     .script({
       observe: [

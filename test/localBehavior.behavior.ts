@@ -89,12 +89,6 @@ export default behavior("running behaviors in the local JS environment", [
         }),
         effect("it prints the proper line number in the invalid claim from the browser", (context) => {
           expect(context.reporter.invalidClaims, is(arrayWith([
-            objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining("Failed to fetch dynamically imported module: ./displays/does-not-exist.js")
-            ]))),
-            objectWithProperty("stack", assignedWith(satisfying([
-              stringContaining(`Failed to fetch dynamically imported module: ${process.cwd()}/displays/not-a-real-thing.js`)
-            ]))),
             objectWith({
               "message": assignedWith(satisfying([
                 stringContaining("div.doFunStuff is not a function"),
@@ -105,7 +99,13 @@ export default behavior("running behaviors in the local JS environment", [
                 stringContaining(`${process.cwd()}/test/fixtures/behaviors/hybrid/displays/badDisplay.ts:9`),
                 stringContaining("http://localhost", { times: 0 })
               ]))
-            })
+            }),
+            objectWithProperty("stack", assignedWith(satisfying([
+              stringContaining(`Failed to fetch dynamically imported module: ${process.cwd()}/displays/not-a-real-thing.js`)
+            ]))),
+            objectWithProperty("stack", assignedWith(satisfying([
+              stringContaining("Failed to fetch dynamically imported module: ./displays/does-not-exist.js")
+            ])))
           ])))
         })
       ]

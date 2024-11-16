@@ -1,11 +1,11 @@
 import url from "url"
-import { OrderProvider, Reporter, StandardReporter, randomOrder } from "esbehavior"
+import { defaultOrder, OrderProvider, randomOrder, Reporter, StandardReporter } from "esbehavior"
 import { ViteLocalServer } from "./localServer/viteServer.js"
 import { PlaywrightBrowser } from "./browser/playwrightBrowser.js"
 import { BehaviorFactory } from "./behavior/behaviorFactory.js"
 import { Logger, bold, consoleLogger, red } from "./logger.js"
 import { createContext } from "./useContext.js"
-import { BrowserBehaviorOptions, getConfig } from "./config.js"
+import { BrowserBehaviorOptions, getConfig, OrderType } from "./config.js"
 import { CoverageReporter } from "./coverage/coverageReporter.js"
 import { viteTranspiler } from "./transpiler/viteTranspiler.js"
 import { NodeCoverageProvider } from "./coverage/nodeCoverageProvider.js"
@@ -29,10 +29,10 @@ export interface RunConfig {
   runPickedOnly?: boolean
   viteConfig?: string
   showBrowser?: boolean
+  orderType?: OrderType
   reporter?: Reporter
   collectCoverage?: boolean
   coverageReporter?: CoverageReporter
-  orderProvider?: OrderProvider
   logger?: Logger
 }
 
@@ -105,13 +105,16 @@ export async function run(runConfig: RunConfig): Promise<RunResult> {
 
   const validator = new SequentialValidator(behaviorFactory)
 
+  const orderType = runConfig.orderType ?? baseConfig?.orderType
+  const orderProvider = getOrderProvider(orderType)
+
   const result = await runBehaviors(validator, {
     behaviorPathPatterns: behaviors,
     behaviorFilter: runConfig.behaviorFilter,
     browserBehaviorPathPatterns: runConfig.browserBehaviors?.globs ?? baseConfig?.browserBehaviors?.globs,
     coverageManager,
     reporter: runConfig.reporter ?? baseConfig?.reporter ?? defaultReporter(logger),
-    orderProvider: runConfig.orderProvider ?? baseConfig?.orderProvider ?? randomOrder(),
+    orderProvider,
     failFast: runConfig.failFast ?? baseConfig?.failFast ?? false,
     runPickedOnly: runConfig.runPickedOnly ?? false,
     logger
@@ -182,4 +185,17 @@ function defaultReporter(logger: Logger): Reporter {
 
 function pathToFile(relativePath: string): string {
   return url.fileURLToPath(new URL(relativePath, import.meta.url))
+}
+
+function getOrderProvider(orderType: OrderType | undefined): OrderProvider {
+  if (orderType === undefined) {
+    return randomOrder()
+  }
+
+  switch (orderType.type) {
+    case "default":
+      return defaultOrder()
+    case "random":
+      return randomOrder(orderType.seed)
+  }
 }
