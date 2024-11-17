@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --enable-source-maps
 
 import yargs from "yargs"
-import { validateBehaviors, ValidationRunResult, randomOrder } from "../dist/main/run/index.js"
+import { validateBehaviors, ValidationRunResult, randomOrder } from "../dist/main/run.js"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")

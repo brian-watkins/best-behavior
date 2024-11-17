@@ -1,8 +1,8 @@
 import { ClaimResult, Context, Failure, Reporter, Summary } from "esbehavior";
-import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run/index.js"
+import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run.js"
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
-import { run, ValidationRunResult } from "../../dist/main/run/run.js";
+import { run, ValidationRunResult } from "../../dist/main/run/index.js";
 
 export interface TestRunnerOptions {
   browserGlob?: string

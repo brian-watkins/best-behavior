@@ -13,7 +13,7 @@
   "types": "./dist/main/index.d.ts",
   "exports": {
     ".": "./dist/main/index.js",
-    "./run": "./dist/main/run/index.js",
+    "./run": "./dist/main/run.js",
     "./browser": "./dist/main/browser.js",
     "./page": "./dist/main/page.js",
     "./coverage": "./dist/main/coverage.js",
