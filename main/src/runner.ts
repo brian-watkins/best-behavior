@@ -1,21 +1,21 @@
 import url from "url"
 import { defaultOrder, OrderProvider, randomOrder, Reporter } from "esbehavior"
-import { ViteLocalServer } from "../localServer/viteServer.js"
-import { PlaywrightBrowser } from "../browser/playwrightBrowser.js"
-import { BehaviorFactory } from "../behavior/behaviorFactory.js"
-import { Logger, bold, red } from "../logger.js"
-import { createContext } from "../useContext.js"
-import { Configuration } from "../config/configuration.js"
-import { ViteModuleLoader, viteTranspiler } from "../transpiler/viteTranspiler.js"
-import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js"
-import { SequentialValidator } from "../validator/sequentialValidator.js"
-import { BrowserBehaviorContext } from "../behavior/browser/browserBehavior.js"
-import { CoverageManager } from "../coverage/coverageManager.js"
-import { Validator } from "../validator/index.js"
-import { getBehaviorsMatchingPattern } from "../behavior/behaviorCollector.js"
-import { PlaywrightTestInstrument } from "../behavior/local/playwrightTestInstrument.js"
-import { BehaviorBrowser } from "../behavior/browser/behaviorBrowser.js"
-import { OrderType } from "../config/public.js"
+import { ViteLocalServer } from "./localServer/viteServer.js"
+import { PlaywrightBrowser } from "./browser/playwrightBrowser.js"
+import { BehaviorFactory } from "./behavior/behaviorFactory.js"
+import { Logger, bold, red } from "./logger.js"
+import { createContext } from "./useContext.js"
+import { Configuration } from "./config/configuration.js"
+import { ViteModuleLoader, viteTranspiler } from "./transpiler/viteTranspiler.js"
+import { NodeCoverageProvider } from "./coverage/nodeCoverageProvider.js"
+import { SequentialValidator } from "./validator/sequentialValidator.js"
+import { BrowserBehaviorContext } from "./behavior/browser/browserBehavior.js"
+import { CoverageManager } from "./coverage/coverageManager.js"
+import { Validator } from "./validator/index.js"
+import { getBehaviorsMatchingPattern } from "./behavior/behaviorCollector.js"
+import { PlaywrightTestInstrument } from "./behavior/local/playwrightTestInstrument.js"
+import { BehaviorBrowser } from "./behavior/browser/behaviorBrowser.js"
+import { OrderType } from "./config/public.js"
 
 export enum ValidationRunResult {
   OK = "OK",
@@ -56,7 +56,7 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
   createContext({ playwrightTestInstrument })
 
   const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, viteServer, {
-    adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
+    adapterPath: pathToFile("../adapter/behaviorAdapter.cjs"),
     homePage: config.browserBehaviors?.html,
     logger: config.logger
   })

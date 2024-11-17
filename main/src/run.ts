@@ -1,8 +1,8 @@
 import { getConfiguration } from "./config/configuration.js"
 import { ValidationRunOptions } from "./config/public.js"
-import { run, ValidationRunResult } from "./run/index.js"
+import { run, ValidationRunResult } from "./runner.js"
 
-export { ValidationRunResult } from "./run/index.js"
+export { ValidationRunResult } from "./runner.js"
 export { defaultOrder, randomOrder, defineConfig } from "./config/public.js"
 export type {
     BrowserBehaviorOptions,
