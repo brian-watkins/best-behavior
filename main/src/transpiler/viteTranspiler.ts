@@ -1,7 +1,18 @@
 import { register } from "node:module"
 import { LoaderMessage, ServerMessage, SourceMessage } from "./loaderMessages.js"
 import { MessageChannel, MessagePort } from "node:worker_threads"
-import { Transpiler, TranspilerOptions } from "./index.js"
+import { ModuleLoader, Transpiler } from "./index.js"
+
+export class ViteModuleLoader implements ModuleLoader {
+  load<T>(modulePath: string): Promise<T> {
+    return import(/* @vite-ignore */ `vite:${modulePath}`)
+  }
+}
+
+export interface TranspilerOptions {
+  viteConfig?: string
+  behaviorGlobs?: Array<string>
+}
 
 class ViteTranspiler implements Transpiler {
   private loader: MessagePort
@@ -26,10 +37,6 @@ class ViteTranspiler implements Transpiler {
       viteConfig: options.viteConfig,
       behaviorGlobs: options.behaviorGlobs
     }, "vite-configured")
-  }
-
-  loadModule(modulePath: string): Promise<any> {
-    return import(/* @vite-ignore */ `vite:${modulePath}`)
   }
 
   async getSource(path: string): Promise<string | undefined> {

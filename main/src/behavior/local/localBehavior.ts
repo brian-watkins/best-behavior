@@ -1,11 +1,10 @@
 import { ConfigurableBehavior } from "esbehavior"
 import { BehaviorMetadata, isConfigurableBehaviorLike } from "../behaviorMetadata.js"
-import { Transpiler } from "../../transpiler/index.js"
+import { ModuleLoader } from "../../transpiler/index.js"
 import { BehaviorSyntaxError, NoDefaultExportError, NotABehaviorError } from "../behaviorError.js"
 
-export async function getLocalBehavior(transpiler: Transpiler, behaviorMetadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
-  const behaviorModule: any = await transpiler
-    .loadModule(behaviorMetadata.path)
+export async function getLocalBehavior(moduleLoader: ModuleLoader, behaviorMetadata: BehaviorMetadata): Promise<ConfigurableBehavior> {
+  const behaviorModule: any = await moduleLoader.load(behaviorMetadata.path)
     .catch((err) => { throw new BehaviorSyntaxError(behaviorMetadata.path, err) })
 
   if (!Object.hasOwn(behaviorModule, "default")) {

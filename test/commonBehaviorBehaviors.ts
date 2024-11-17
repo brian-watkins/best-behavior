@@ -2,7 +2,7 @@ import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
 import { expectedBehavior, expectedExampleScripts, fileWithCoveredLines } from "./helpers/matchers.js"
-import { RunResult } from "../dist/main/run.js"
+import { ValidationRunResult } from "../dist/main/run/index.js"
 
 
 export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
@@ -22,7 +22,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           )))
         }),
         effect("it returns a no behaviors found run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NO_BEHAVIORS_FOUND))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NO_BEHAVIORS_FOUND))))
         })
       ]
     }),
@@ -42,7 +42,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ])))
         }),
         effect("it returns a no behaviors found run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NO_BEHAVIORS_FOUND))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NO_BEHAVIORS_FOUND))))
         })
       ]
     }),
@@ -69,7 +69,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -100,7 +100,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -126,7 +126,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -152,7 +152,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -178,7 +178,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -204,7 +204,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ]))))
         }),
         effect("it returns an error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -245,7 +245,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -299,7 +299,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -336,7 +336,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -372,7 +372,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -408,7 +408,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns ok run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.OK))))
         })
       ]
     }),
@@ -444,7 +444,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -483,7 +483,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -520,7 +520,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns skipped or invalid run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.NOT_OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
         })
       ]
     }),
@@ -557,7 +557,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns ok run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.OK))))
         })
       ]
     }),
@@ -583,7 +583,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           ))))
         }),
         effect("it returns error run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.ERROR))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.ERROR))))
         })
       ]
     }),
@@ -612,7 +612,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           }))))
         }),
         effect("it returns an ok run result", (context) => {
-          expect(context.runResult, is(assignedWith(equalTo(RunResult.OK))))
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.OK))))
         }),
         effect("coverage data is generated", (context) => {
           const sourceFiles = context.coverageReporter.coverageResults?.files

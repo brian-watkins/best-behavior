@@ -1,6 +1,6 @@
 import { behavior, Context, effect, example, fact } from "esbehavior";
 import { defined, expect, is } from "great-expectations";
-import { viteTranspiler } from "../dist/main/transpiler/viteTranspiler.js"
+import { ViteModuleLoader, viteTranspiler } from "../dist/main/transpiler/viteTranspiler.js"
 
 const testLoaderContext: Context<TestLoader> = {
   init: async () => {
@@ -12,6 +12,8 @@ const testLoaderContext: Context<TestLoader> = {
 }
 
 class TestLoader {
+  private moduleLoader = new ViteModuleLoader()
+
   constructor() { }
 
   async useConfig(configPath: string): Promise<void> {
@@ -19,7 +21,7 @@ class TestLoader {
   }
 
   async loadModule(modulePath: string): Promise<any> {
-    return viteTranspiler.loadModule(modulePath)
+    return this.moduleLoader.load(modulePath)
   }
 
   async shutdown(): Promise<void> {

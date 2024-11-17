@@ -1,5 +1,7 @@
-import { viteTranspiler } from "./transpiler/viteTranspiler.js";
+import { ViteModuleLoader } from "./transpiler/viteTranspiler.js";
+
+const moduleLoader = new ViteModuleLoader()
 
 export function useModule(path: string): Promise<any> {
-  return viteTranspiler.loadModule(path)
+  return moduleLoader.load(path)
 }

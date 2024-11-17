@@ -1,8 +1,7 @@
 #!/usr/bin/env -S node --enable-source-maps
 
 import yargs from "yargs"
-import { run, RunResult } from "../dist/main/run.js"
-import { randomOrder } from "../dist/main/config.js"
+import { validateBehaviors, ValidationRunResult, randomOrder } from "../dist/main/run/index.js"
 
 const args = yargs(process.argv.slice(2))
   .scriptName("best")
@@ -52,7 +51,7 @@ const args = yargs(process.argv.slice(2))
   .wrap(yargs.terminalWidth)
   .parseSync()
 
-const result = await run({
+const result = await validateBehaviors({
   config: args.config,
   behaviorGlobs: toArray(args.behaviors),
   behaviorFilter: args.filter,
@@ -67,7 +66,7 @@ const result = await run({
   orderType: args.seed ? randomOrder(args.seed) : undefined
 })
 
-if (result !== RunResult.OK) {
+if (result !== ValidationRunResult.OK) {
   process.exitCode = 1
 }
 

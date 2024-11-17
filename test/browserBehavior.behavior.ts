@@ -1,8 +1,9 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
 import { testRunnerContext } from "./helpers/TestRunner.js";
 import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining } from "great-expectations";
-import { expectedBehavior, expectedClaim, expectedExampleScripts } from "./helpers/matchers.js";
+import { expectedClaim, expectedExampleScripts } from "./helpers/matchers.js";
 import behaviorBehaviors from "./commonBehaviorBehaviors.js";
+import { firefox } from "playwright";
 
 export default behavior("running behaviors in the browser environment", [
 
@@ -117,8 +118,23 @@ export default behavior("running behaviors in the browser environment", [
     .description("use a custom browser generator")
     .script({
       suppose: [
-        fact("it uses a config file", (context) => {
-          context.setConfigFile("./test/fixtures/behaviors/browser/custom/bb.config.ts")
+        fact("it uses a custom browser generator", (context) => {
+          context.setBrowserGenerator((showBrowser) => {
+            return firefox.launch({
+              headless: !showBrowser
+            })
+          })
+        }),
+        fact("it uses a custom browser context generator", (context) => {
+          context.setBrowserContextGenerator((browser, localServerURL) => {
+            return browser.newContext({
+              baseURL: localServerURL,
+              viewport: {
+                width: 640,
+                height: 480
+              }
+            })
+          })
         })
       ],
       perform: [

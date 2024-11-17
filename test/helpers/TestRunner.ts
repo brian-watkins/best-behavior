@@ -1,8 +1,8 @@
 import { ClaimResult, Context, Failure, Reporter, Summary } from "esbehavior";
-import { defaultOrder, Logger } from "../../dist/main/config.js"
-import { run, RunResult } from "../../dist/main/run.js"
+import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run/index.js"
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
+import { run, ValidationRunResult } from "../../dist/main/run/run.js";
 
 export interface TestRunnerOptions {
   browserGlob?: string
@@ -21,18 +21,23 @@ export class TestRunner {
   private shouldFailFast: boolean = false
   private shouldRunPickedExamplesOnly: boolean = false
   private behaviorFilter: string | undefined
-  private configFile: string | undefined
+  private browserGenerator: PlaywrightBrowserGenerator | undefined
+  private browserContextGenerator: PlaywrightBrowserContextGenerator | undefined
   private viteConfig: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
   private shouldCollectCoverage: boolean = false
-  public runResult: RunResult | undefined
+  public runResult: ValidationRunResult | undefined
 
   constructor(private options: TestRunnerOptions) {
     this.setShouldCollectCoverage(false)
   }
 
-  setConfigFile(path: string) {
-    this.configFile = path
+  setBrowserGenerator(generator: PlaywrightBrowserGenerator) {
+    this.browserGenerator = generator
+  }
+
+  setBrowserContextGenerator(generator: PlaywrightBrowserContextGenerator) {
+    this.browserContextGenerator = generator
   }
 
   setViteConfigFile(path: string) {
@@ -57,7 +62,8 @@ export class TestRunner {
 
   async runBehaviors(pattern?: string): Promise<void> {
     this.runResult = await run({
-      config: this.configFile,
+      browserGenerator: this.browserGenerator,
+      browserContextGenerator: this.browserContextGenerator,
       behaviorGlobs: pattern ? [`./test/fixtures/behaviors/${pattern}`] : undefined,
       behaviorFilter: this.behaviorFilter,
       browserBehaviors: {
