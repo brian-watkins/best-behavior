@@ -4,8 +4,8 @@ import { CoverageProvider } from "../coverage/coverageProvider.js";
 import { Logger } from "../logger.js";
 import { V8CoverageData } from "../coverage/coverageReporter.js";
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./playwrightBrowser.js";
-import { LocalServer } from "../localServer/index.js";
 import { adaptCoverageData } from "./browserCoverageAdapter.js";
+import { LocalServerContext } from "../localServer/context.js";
 
 export interface PreparedBrowserOptions {
   adapterPath?: string
@@ -15,7 +15,7 @@ export interface PreparedBrowserOptions {
 export class PreparedBrowser implements CoverageProvider {
   onCoverageData?: ((data: Array<V8CoverageData>) => Promise<void>) | undefined;
 
-  constructor(protected browser: PlaywrightBrowser, protected localServer: LocalServer, private browserOptions: PreparedBrowserOptions) { }
+  constructor(protected browser: PlaywrightBrowser, protected localServer: LocalServerContext, private browserOptions: PreparedBrowserOptions) { }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await this.browser.newBrowserContext(generator)
@@ -56,7 +56,7 @@ export class PreparedBrowser implements CoverageProvider {
     if (this.onCoverageData !== undefined) {
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData.map(adaptCoverageData(this.localServer.root)))
+        await this.onCoverageData(coverageData.map(adaptCoverageData(this.localServer)))
       }
     }
   }
@@ -90,7 +90,7 @@ export class PreparedBrowser implements CoverageProvider {
 
 }
 
-function errorWithCorrectedStack(localServer: LocalServer, error: Error): Error {
+function errorWithCorrectedStack(localServer: LocalServerContext, error: Error): Error {
   return {
     name: error.name,
     message: localServer.convertURLsToLocalPaths(error.message),

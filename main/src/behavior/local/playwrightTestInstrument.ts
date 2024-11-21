@@ -1,13 +1,13 @@
 import { BrowserContext, Page } from "playwright"
 import { PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "../../browser/playwrightBrowser.js"
-import { LocalServer } from "../../localServer/index.js"
+import { LocalServerContext } from "../../localServer/context.js"
 
 export class PlaywrightTestInstrument extends PreparedBrowser {
   private _context: BrowserContext | undefined
   private _page: Page | undefined
 
-  constructor(browser: PlaywrightBrowser, localServer: LocalServer, options: PreparedBrowserOptions) {
+  constructor(browser: PlaywrightBrowser, localServer: LocalServerContext, options: PreparedBrowserOptions) {
     super(browser, localServer, options)
   }
 

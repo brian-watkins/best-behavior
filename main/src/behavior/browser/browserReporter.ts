@@ -1,11 +1,11 @@
 import { ClaimResult, Reporter } from "esbehavior"
-import { LocalServer } from "../../localServer/index.js"
 import { BrowserContext } from "playwright"
+import { LocalServerContext } from "../../localServer/context.js"
 
 export class BrowserReporter {
   private reporter: Reporter | undefined
 
-  constructor(private localServer: LocalServer) { }
+  constructor(private localServer: LocalServerContext) { }
 
   async decorateContext(context: BrowserContext): Promise<void> {
     await context.exposeFunction("__bb_startExample", (description: string | undefined) => {

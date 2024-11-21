@@ -1,25 +1,53 @@
 import { glob } from 'glob'
 import { BehaviorEnvironment, BehaviorMetadata } from './behaviorMetadata.js'
 import { Minimatch } from "minimatch"
-import { Logger, bold, red } from '../logger.js'
 
 export interface BehaviorCollectionOptions {
   behaviorGlobs: Array<string>
   behaviorFilter: string | undefined
   browserBehaviorGlobs: Array<string> | undefined,
-  logger: Logger
 }
 
-export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<Array<BehaviorMetadata>> {
+export interface BehaviorCollectionSuccessful {
+  type: "successful"
+  behaviors: Array<BehaviorMetadata>
+}
+
+function behaviorCollectionSuccessful(behaviors: Array<BehaviorMetadata>): BehaviorCollectionSuccessful {
+  return {
+    type: "successful",
+    behaviors
+  }
+}
+
+export interface BehaviorCollectionFailed {
+  type: "failed"
+  err: any
+}
+
+function behaviorCollectionFailed(message: string, err: any): BehaviorCollectionFailed {
+  return {
+    type: "failed",
+    err: new Error(message, { cause: err })
+  }
+}
+
+export type BehaviorCollectionResult = BehaviorCollectionSuccessful | BehaviorCollectionFailed
+
+export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOptions): Promise<BehaviorCollectionResult> {
   const allFiles = await glob(options.behaviorGlobs, { ignore: 'node_modules/**' })
 
-  const fileFilter = new FileFilter(options.behaviorFilter)
-  const files = fileFilter.filter(allFiles)
-
-  if (files.length == 0) {
-    options.logger.info(bold(red(`No behaviors found!`)))
-    return []
+  let filterRegexp: RegExp | undefined = undefined
+  if (options.behaviorFilter) {
+    try {
+      filterRegexp = new RegExp(options.behaviorFilter)
+    } catch (err: any) {
+      return behaviorCollectionFailed(`Unable to compile behavior filter regular expression! ${err.message}`, err)
+    }
   }
+
+  const fileFilter = new FileFilter(filterRegexp)
+  const files = fileFilter.filter(allFiles)
 
   const browserPattern = new PathMatcher(options.browserBehaviorGlobs)
 
@@ -35,23 +63,11 @@ export async function getBehaviorsMatchingPattern(options: BehaviorCollectionOpt
     })
   }
 
-  return behaviors
+  return behaviorCollectionSuccessful(behaviors)
 }
 
 class FileFilter {
-  private filterExpression: RegExp | undefined
-
-  constructor(filterPattern: string | undefined) {
-    if (filterPattern) {
-      try {
-        this.filterExpression = new RegExp(filterPattern)
-      } catch (err: any) {
-        throw new Error(`Unable to compile behavior filter regular expression! ${err.message}`, {
-          cause: err
-        })
-      }
-    }
-  }
+  constructor(private filterExpression: RegExp | undefined) { }
 
   filter(files: Array<string>): Array<string> {
     return files.filter(file => this.filterExpression ? this.filterExpression.test(file) : true)

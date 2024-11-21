@@ -1,8 +1,8 @@
 import { BrowserContext, Page } from "playwright"
 import { PlaywrightBrowser } from "../../browser/playwrightBrowser.js"
-import { LocalServer } from "../../localServer/index.js"
 import { BrowserReporter } from "./browserReporter.js"
 import { PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
+import { LocalServerContext } from "../../localServer/context.js"
 
 export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
   homePage?: string
@@ -11,7 +11,7 @@ export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
 export class BehaviorBrowser extends PreparedBrowser {
   private _page: Page | undefined
 
-  constructor(browser: PlaywrightBrowser, localServer: LocalServer, private options: BehaviorBrowserOptions) {
+  constructor(browser: PlaywrightBrowser, localServer: LocalServerContext, private options: BehaviorBrowserOptions) {
     super(browser, localServer, options)
   }
 

@@ -1,21 +1,12 @@
-import url from "url"
-import { defaultOrder, OrderProvider, randomOrder, Reporter } from "esbehavior"
 import { ViteLocalServer } from "./localServer/viteServer.js"
-import { PlaywrightBrowser } from "./browser/playwrightBrowser.js"
-import { BehaviorFactory } from "./behavior/behaviorFactory.js"
-import { Logger, bold, red } from "./logger.js"
-import { createContext } from "./useContext.js"
+import { bold, red } from "./logger.js"
 import { Configuration } from "./config/configuration.js"
-import { ViteModuleLoader, viteTranspiler } from "./transpiler/viteTranspiler.js"
+import { viteTranspiler } from "./transpiler/viteTranspiler.js"
 import { NodeCoverageProvider } from "./coverage/nodeCoverageProvider.js"
-import { SequentialValidator } from "./validator/sequentialValidator.js"
-import { BrowserBehaviorContext } from "./behavior/browser/browserBehavior.js"
+import { SequentialValidation } from "./validator/sequentialValidation.js"
 import { CoverageManager } from "./coverage/coverageManager.js"
-import { Validator } from "./validator/index.js"
+import { ValidationManager } from "./validator/index.js"
 import { getBehaviorsMatchingPattern } from "./behavior/behaviorCollector.js"
-import { PlaywrightTestInstrument } from "./behavior/local/playwrightTestInstrument.js"
-import { BehaviorBrowser } from "./behavior/browser/behaviorBrowser.js"
-import { OrderType } from "./config/public.js"
 
 export enum ValidationRunResult {
   OK = "OK",
@@ -42,53 +33,11 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
   })
   await viteServer.start()
 
-  const playwrightBrowser = new PlaywrightBrowser({
-    showBrowser: config.showBrowser,
-    baseURL: viteServer.host,
-    browserGenerator: config.browserGenerator,
-    browserContextGenerator: config.browserContextGenerator
-  })
+  const validator = new SequentialValidation(config, viteServer.getContext())
 
-  const playwrightTestInstrument = new PlaywrightTestInstrument(playwrightBrowser, viteServer, {
-    logger: config.logger
-  })
+  const result = await runBehaviors(config, validator)
 
-  createContext({ playwrightTestInstrument })
-
-  const behaviorBrowser = new BehaviorBrowser(playwrightBrowser, viteServer, {
-    adapterPath: pathToFile("../adapter/behaviorAdapter.cjs"),
-    homePage: config.browserBehaviors?.html,
-    logger: config.logger
-  })
-
-  const browserBehaviorContext = new BrowserBehaviorContext(viteServer, behaviorBrowser)
-  const behaviorFactory = new BehaviorFactory(new ViteModuleLoader(), browserBehaviorContext)
-
-  let coverageManager: CoverageManager | undefined = undefined
-  if (config.collectCoverage) {
-    coverageManager = new CoverageManager(config.coverageReporter!, [
-      new NodeCoverageProvider(viteTranspiler),
-      behaviorBrowser,
-      playwrightTestInstrument
-    ])
-  }
-
-  const validator = new SequentialValidator(behaviorFactory)
-
-  const result = await runBehaviors(validator, {
-    behaviorPathPatterns: config.behaviorGlobs,
-    behaviorFilter: config.behaviorFilter,
-    browserBehaviorPathPatterns: config.browserBehaviors?.globs,
-    coverageManager,
-    reporter: config.reporter,
-    orderProvider: getOrderProvider(config.orderType),
-    failFast: config.failFast,
-    runPickedOnly: config.runPickedOnly,
-    logger: config.logger
-  })
-
-  if (!config.showBrowser || !playwrightBrowser.isOpen) {
-    await playwrightBrowser.stop()
+  if (!config.showBrowser) {
     await viteServer.stop()
     await viteTranspiler.stop()
   }
@@ -96,63 +45,50 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
   return result
 }
 
-interface RunOptions {
-  behaviorPathPatterns: Array<string>
-  behaviorFilter?: string
-  browserBehaviorPathPatterns?: Array<string>
-  coverageManager?: CoverageManager,
-  reporter: Reporter
-  orderProvider: OrderProvider
-  failFast: boolean
-  runPickedOnly: boolean
-  logger: Logger
-}
+async function runBehaviors(config: Configuration, validator: ValidationManager): Promise<ValidationRunResult> {
+  const behaviorCollectionResult = await getBehaviorsMatchingPattern({
+    behaviorGlobs: config.behaviorGlobs ?? [],
+    behaviorFilter: config.behaviorFilter,
+    browserBehaviorGlobs: config.browserBehaviors?.globs,
+  })
 
-async function runBehaviors(validator: Validator, options: RunOptions): Promise<ValidationRunResult> {
-  let result = ValidationRunResult.OK
-
-  try {
-    const behaviors = await getBehaviorsMatchingPattern({
-      behaviorGlobs: options.behaviorPathPatterns,
-      behaviorFilter: options.behaviorFilter,
-      browserBehaviorGlobs: options.browserBehaviorPathPatterns,
-      logger: options.logger
-    })
-
-    if (behaviors.length == 0) {
-      return ValidationRunResult.NO_BEHAVIORS_FOUND
-    }
-
-    await options.coverageManager?.prepareForCoverageCollection()
-
-    const summary = await validator.validate(behaviors, options)
-
-    await options.coverageManager?.finishCoverageCollection()
-
-    if (summary.invalid > 0 || summary.skipped > 0) {
-      result = ValidationRunResult.NOT_OK
-    }
-  } catch (err: any) {
-    options.reporter.terminate(err)
-    result = ValidationRunResult.ERROR
+  if (behaviorCollectionResult.type === "failed") {
+    config.reporter.terminate(behaviorCollectionResult.err)
+    return ValidationRunResult.ERROR
   }
 
-  return result
-}
-
-function pathToFile(relativePath: string): string {
-  return url.fileURLToPath(new URL(relativePath, import.meta.url))
-}
-
-function getOrderProvider(orderType: OrderType | undefined): OrderProvider {
-  if (orderType === undefined) {
-    return randomOrder()
+  if (behaviorCollectionResult.behaviors.length === 0) {
+    config.logger.info(bold(red(`No behaviors found!`)))
+    return ValidationRunResult.NO_BEHAVIORS_FOUND
   }
 
-  switch (orderType.type) {
-    case "default":
-      return defaultOrder()
-    case "random":
-      return randomOrder(orderType.seed)
+  let coverageManager: CoverageManager | undefined = undefined
+  if (config.collectCoverage) {
+    coverageManager = new CoverageManager(config.coverageReporter!, [
+      new NodeCoverageProvider(viteTranspiler),
+    ])
   }
+
+  config.reporter.start(config.orderProvider.description)
+
+  await config.coverageReporter?.start()
+  await coverageManager?.prepareForCoverageCollection()
+
+  const result = await validator.validate(behaviorCollectionResult.behaviors)
+
+  if (result.type === "terminated") {
+    config.reporter.terminate(result.err)
+    return ValidationRunResult.ERROR
+  }
+
+  await coverageManager?.finishCoverageCollection()
+  await config.coverageReporter?.end()
+
+  config.reporter.end(result.summary)
+
+  if (result.summary.invalid > 0 || result.summary.skipped > 0) {
+    return ValidationRunResult.NOT_OK
+  }
+
+  return ValidationRunResult.OK
 }

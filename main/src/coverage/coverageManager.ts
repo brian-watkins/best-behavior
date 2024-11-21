@@ -9,13 +9,11 @@ export class CoverageManager {
       provider.onCoverageData = (data) => this.reporter.recordData(data)
       await provider.prepareForCoverageCollection?.()
     }
-    await this.reporter.start()
   }
 
   async finishCoverageCollection(): Promise<void> {
     for (const provider of this.providers) {
       await provider.finishCoverageCollection?.()
     }
-    await this.reporter.end()
   }
 }

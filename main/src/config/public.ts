@@ -33,7 +33,7 @@ export function defaultOrder(): DefaultOrder {
 export type OrderType = RandomOrder | DefaultOrder
 
 export interface ValidationRunOptions {
-  config?: string
+  configFile?: string
   behaviorGlobs?: Array<string>
   behaviorFilter?: string
   browserBehaviors?: BrowserBehaviorOptions

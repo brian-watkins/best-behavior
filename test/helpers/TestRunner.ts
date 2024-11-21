@@ -1,4 +1,4 @@
-import { ClaimResult, Context, Failure, Reporter, Summary } from "esbehavior";
+import { ClaimResult, Context, Failure, Reporter, Summary, defaultOrder as defaultOrderProvider } from "esbehavior";
 import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run.js"
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import MCR from "monocart-coverage-reports";
@@ -76,8 +76,9 @@ export class TestRunner {
       viteConfig: this.viteConfig,
       reporter: this.testReporter,
       collectCoverage: this.shouldCollectCoverage,
-      coverageReporter: this.testCoverageReporter,
+      coverageReporter: this.shouldCollectCoverage ? this.testCoverageReporter : undefined,
       orderType: defaultOrder(),
+      orderProvider: defaultOrderProvider(),
       logger: this.testLogger,
     })
   }
@@ -166,7 +167,7 @@ class TestReporter implements Reporter {
 }
 
 class TestCoverageReporter implements CoverageReporter {
-  private mcr!: MCR.CoverageReport;
+  private mcr!: MCR.CoverageReport
   coverageResults: MCR.CoverageResults | undefined
 
   async start(): Promise<void> {

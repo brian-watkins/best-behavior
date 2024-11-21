@@ -1,12 +1,12 @@
 import { ViteDevServer, createServer } from "vite";
-import { LocalServer } from "./index.js";
+import { LocalServerContext } from "./context.js";
 
 export interface ViteLocalServerOptions {
   viteConfig?: string
   behaviorGlobs?: Array<string>
 }
 
-export class ViteLocalServer implements LocalServer {
+export class ViteLocalServer {
   private server: ViteDevServer | undefined;
 
   constructor(private options: ViteLocalServerOptions = {}) { }
@@ -29,8 +29,8 @@ export class ViteLocalServer implements LocalServer {
     await this.server.listen()
   }
 
-  urlForPath(path: string): string {
-    return new URL(path, this.host).href
+  getContext(): LocalServerContext {
+    return new LocalServerContext(this.host, this.root)
   }
 
   get host(): string {
@@ -39,10 +39,6 @@ export class ViteLocalServer implements LocalServer {
 
   get root(): string {
     return this.server?.config.root ?? ""
-  }
-
-  convertURLsToLocalPaths(content: string): string {
-    return content.replaceAll(this.host, `${this.root}/`)
   }
 
   async stop(): Promise<void> {

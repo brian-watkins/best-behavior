@@ -52,7 +52,7 @@ const args = yargs(process.argv.slice(2))
   .parseSync()
 
 const result = await validateBehaviors({
-  config: args.config,
+  configFile: args.config,
   behaviorGlobs: toArray(args.behaviors),
   behaviorFilter: args.filter,
   browserBehaviors: {

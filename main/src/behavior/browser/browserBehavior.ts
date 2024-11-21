@@ -1,19 +1,19 @@
 import { BehaviorOptions, ConfigurableBehavior, Example, ExampleValidationOptions, Reporter, Summary } from "esbehavior"
 import { Page } from "playwright"
 import { BehaviorMetadata } from "../behaviorMetadata.js"
-import { LocalServer } from "../../localServer/index.js"
 import { BehaviorBrowserWindow } from "./behaviorBrowserWindow.js"
 import { BehaviorData, BehaviorErrorCode } from "./behaviorData.js"
 import { BehaviorSyntaxError, NoDefaultExportError, NotABehaviorError } from "../behaviorError.js"
 import { BrowserReporter } from "./browserReporter.js"
 import { BehaviorBrowser } from "./behaviorBrowser.js"
+import { LocalServerContext } from "../../localServer/context.js"
 
 declare let window: BehaviorBrowserWindow
 
 export class BrowserBehaviorContext {
   private browserReporter: BrowserReporter
 
-  constructor(private localServer: LocalServer, private behaviorBrowser: BehaviorBrowser) {
+  constructor(private localServer: LocalServerContext, private behaviorBrowser: BehaviorBrowser) {
     this.browserReporter = new BrowserReporter(localServer)
   }
 

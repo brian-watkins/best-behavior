@@ -5,6 +5,7 @@ import URL from "url"
 import path from "path"
 import { V8CoverageData } from "../../dist/main/coverage.js"
 import { adaptCoverageData } from "../../dist/main/browser/browserCoverageAdapter.js"
+import { LocalServerContext } from "../../main/src/localServer/context.js"
 
 const __filename = URL.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +45,8 @@ class TestableBrowserCoverage {
 
   private recordData(data: Array<V8CoverageData>) {
     // NOTE: adaptCoverageData is the subject under test
-    this.reports.push(data.map(adaptCoverageData(this.root)))
+    const localServer = new LocalServerContext("http://localhost:9999/", this.root)
+    this.reports.push(data.map(adaptCoverageData(localServer)))
   }
 
   async loadFakeCoverage(filename: string): Promise<void> {
