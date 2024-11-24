@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.11.1
+
+### Patch Changes
+
+- 0d8b090: Browser behaviors defined in config file are respected
+
 ## 0.11.0
 
 ### Minor Changes
