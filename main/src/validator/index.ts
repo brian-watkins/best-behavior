@@ -1,5 +1,6 @@
 import { OrderProvider, Reporter, Summary } from "esbehavior";
 import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
+import { OutputAction } from "./bufferedOutput.js";
 
 export interface ValidationOptions {
   reporter: Reporter
@@ -37,4 +38,9 @@ export type ValidationResult = ValidationCompleted | ValidationTerminated
 
 export interface ValidationManager {
   validate(behaviors: Array<BehaviorMetadata>): Promise<ValidationResult>
+}
+
+export interface BehaviorValidationTaskResult {
+  validationResult: ValidationResult,
+  outputActions: Array<OutputAction>,
 }

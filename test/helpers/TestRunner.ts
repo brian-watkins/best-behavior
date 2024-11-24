@@ -26,6 +26,8 @@ export class TestRunner {
   private viteConfig: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
   private shouldCollectCoverage: boolean = false
+  private bestConfigFile: string | undefined
+  private isParallel: boolean = false
   public runResult: ValidationRunResult | undefined
 
   constructor(private options: TestRunnerOptions) {
@@ -38,6 +40,14 @@ export class TestRunner {
 
   setBrowserContextGenerator(generator: PlaywrightBrowserContextGenerator) {
     this.browserContextGenerator = generator
+  }
+
+  setBestConfigFile(path: string) {
+    this.bestConfigFile = path
+  }
+
+  runParallel(isParallel: boolean) {
+    this.isParallel = isParallel
   }
 
   setViteConfigFile(path: string) {
@@ -62,6 +72,7 @@ export class TestRunner {
 
   async runBehaviors(pattern?: string): Promise<void> {
     this.runResult = await run({
+      configFile: this.bestConfigFile,
       browserGenerator: this.browserGenerator,
       browserContextGenerator: this.browserContextGenerator,
       behaviorGlobs: pattern ? [`./test/fixtures/behaviors/${pattern}`] : undefined,
@@ -70,6 +81,7 @@ export class TestRunner {
         globs: this.options.browserGlob ? [this.options.browserGlob] : undefined,
         html: this.options.browserBehaviorHTML
       },
+      parallel: this.isParallel,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,
       showBrowser: false,
@@ -171,10 +183,11 @@ class TestCoverageReporter implements CoverageReporter {
   coverageResults: MCR.CoverageResults | undefined
 
   async start(): Promise<void> {
-    this.mcr = new MCR.CoverageReport({
+    this.mcr = MCR({
       reports: "none",
       clean: true,
-      entryFilter: (entry) => entry.url.includes("test/fixtures/src")
+      cleanCache: true,
+      entryFilter: (entry) => entry.url.includes("test/fixtures/src"),
     })
   }
 

@@ -37,6 +37,7 @@ export interface ValidationRunOptions {
   behaviorGlobs?: Array<string>
   behaviorFilter?: string
   browserBehaviors?: BrowserBehaviorOptions
+  parallel?: boolean
   failFast?: boolean
   runPickedOnly?: boolean
   viteConfig?: string
@@ -50,6 +51,7 @@ export interface BestBehaviorConfig {
   context?: PlaywrightBrowserContextGenerator
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
+  parallel?: boolean
   failFast?: boolean
   viteConfig?: string
   collectCoverage?: boolean

@@ -23,6 +23,10 @@ const args = yargs(process.argv.slice(2))
       describe: "glob that matches behaviors to run in browser; subset of behaviors; may specify multiple",
       type: "string"
     },
+    "parallel": {
+      describe: "run behaviors in parallel",
+      type: "boolean"
+    },
     "failFast": {
       describe: "stop on first invalid claim",
       type: "boolean"
@@ -58,6 +62,7 @@ const result = await validateBehaviors({
   browserBehaviors: {
     globs: toArray(args.runInBrowser)
   },
+  parallel: args.parallel,
   failFast: args.failFast,
   runPickedOnly: args.picked,
   viteConfig: args.viteConfig,

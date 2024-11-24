@@ -13,6 +13,7 @@ export interface Configuration {
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   behaviorFilter?: string
+  parallel: boolean
   runPickedOnly: boolean
   failFast: boolean
   showBrowser: boolean
@@ -42,6 +43,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     behaviorGlobs: runOptions.behaviorGlobs ?? configFile?.behaviorGlobs,
     browserBehaviors: runOptions.browserBehaviors ?? configFile?.browserBehaviors,
     behaviorFilter: runOptions.behaviorFilter,
+    parallel: runOptions.parallel ?? configFile?.parallel ?? false,
     runPickedOnly: runOptions.runPickedOnly ?? false,
     failFast: runOptions.failFast ?? configFile?.failFast ?? false,
     showBrowser: runOptions.showBrowser ?? false,
@@ -52,6 +54,22 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     orderType,
     orderProvider: getOrderProvider(orderType),
     logger
+  }
+}
+
+export function getRunOptions(config: Configuration): ValidationRunOptions {
+  return {
+    configFile: config.configFile,
+    behaviorGlobs: config.behaviorGlobs,
+    behaviorFilter: config.behaviorFilter,
+    browserBehaviors: config.browserBehaviors,
+    parallel: config.parallel,
+    failFast: config.failFast,
+    runPickedOnly: config.runPickedOnly,
+    viteConfig: config.viteConfig,
+    showBrowser: config.showBrowser,
+    orderType: config.orderType,
+    collectCoverage: config.collectCoverage
   }
 }
 

@@ -1,11 +1,12 @@
 import MCR from "monocart-coverage-reports";
 import { CoverageReporter, V8CoverageData } from "./coverageReporter.js";
+import { isMainThread } from "node:worker_threads"
 
 export class MonocartCoverageReporter implements CoverageReporter {
   private mcr: MCR.CoverageReport
 
   constructor(config?: MCR.CoverageReportOptions) {
-    this.mcr = new MCR.CoverageReport(config)
+    this.mcr = MCR(config)
   }
 
   async start(): Promise<void> {
@@ -17,6 +18,8 @@ export class MonocartCoverageReporter implements CoverageReporter {
   }
 
   async end(): Promise<void> {
-    await this.mcr.generate()
+    if (isMainThread) {
+      await this.mcr.generate()
+    }
   }
 }

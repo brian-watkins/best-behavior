@@ -9,10 +9,11 @@ import { createContext } from "../useContext.js";
 import { BehaviorBrowser } from "../behavior/browser/behaviorBrowser.js";
 import { BrowserBehaviorContext } from "../behavior/browser/browserBehavior.js";
 import { BehaviorFactory } from "../behavior/behaviorFactory.js";
-import { ViteModuleLoader } from "../transpiler/viteTranspiler.js";
+import { ViteModuleLoader, viteTranspiler } from "../transpiler/viteTranspiler.js";
 import { LocalServerContext } from "../localServer/context.js";
 import { CoverageManager } from "../coverage/coverageManager.js";
 import { validationCompleted, ValidationResult, validationTerminated } from "./index.js";
+import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js";
 
 export interface ValidatorConfig extends ValidationRunOptions {
   localServerHost: string
@@ -28,6 +29,11 @@ export class Validator {
   constructor (private config: Configuration, private localServer: LocalServerContext) { }
 
   async init(): Promise<void> {
+    await viteTranspiler.setConfig({
+      viteConfig: this.config.viteConfig,
+      behaviorGlobs: this.config.behaviorGlobs
+    })
+
     this.playwrightBrowser = new PlaywrightBrowser({
       showBrowser: this.config.showBrowser,
       baseURL: this.localServer.host,
@@ -52,20 +58,24 @@ export class Validator {
   
     if (this.config.collectCoverage) {
       this.coverageManager = new CoverageManager(this.config.coverageReporter!, [
+        new NodeCoverageProvider(viteTranspiler),
         behaviorBrowser,
         playwrightTestInstrument
       ])
     }
 
+    await this.config.coverageReporter?.start()
     await this.coverageManager?.prepareForCoverageCollection()
   }
 
   async shutdown(): Promise<void> {
     await this.coverageManager?.finishCoverageCollection()
+    await this.config.coverageReporter?.end()
 
     // not sure why we have the second condition
     if (!this.config.showBrowser || !this.playwrightBrowser.isOpen) {
       await this.playwrightBrowser.stop()
+      await viteTranspiler.stop()
     }
   }
 

@@ -1,12 +1,10 @@
 import { ViteLocalServer } from "./localServer/viteServer.js"
 import { bold, red } from "./logger.js"
 import { Configuration } from "./config/configuration.js"
-import { viteTranspiler } from "./transpiler/viteTranspiler.js"
-import { NodeCoverageProvider } from "./coverage/nodeCoverageProvider.js"
 import { SequentialValidation } from "./validator/sequentialValidation.js"
-import { CoverageManager } from "./coverage/coverageManager.js"
 import { ValidationManager } from "./validator/index.js"
 import { getBehaviorsMatchingPattern } from "./behavior/behaviorCollector.js"
+import { ParallelValidation } from "./validator/parallelValidation.js"
 
 export enum ValidationRunResult {
   OK = "OK",
@@ -22,24 +20,20 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
     return ValidationRunResult.NO_BEHAVIORS_FOUND
   }
 
-  await viteTranspiler.setConfig({
-    viteConfig: config.viteConfig,
-    behaviorGlobs: config.behaviorGlobs
-  })
-
   const viteServer = new ViteLocalServer({
     viteConfig: config.viteConfig,
     behaviorGlobs: config.behaviorGlobs
   })
   await viteServer.start()
 
-  const validator = new SequentialValidation(config, viteServer.getContext())
+  const validator = config.parallel ?
+    new ParallelValidation(config, viteServer.getContext()) :
+    new SequentialValidation(config, viteServer.getContext())
 
   const result = await runBehaviors(config, validator)
 
   if (!config.showBrowser) {
     await viteServer.stop()
-    await viteTranspiler.stop()
   }
 
   return result
@@ -62,17 +56,7 @@ async function runBehaviors(config: Configuration, validator: ValidationManager)
     return ValidationRunResult.NO_BEHAVIORS_FOUND
   }
 
-  let coverageManager: CoverageManager | undefined = undefined
-  if (config.collectCoverage) {
-    coverageManager = new CoverageManager(config.coverageReporter!, [
-      new NodeCoverageProvider(viteTranspiler),
-    ])
-  }
-
   config.reporter.start(config.orderProvider.description)
-
-  await config.coverageReporter?.start()
-  await coverageManager?.prepareForCoverageCollection()
 
   const result = await validator.validate(behaviorCollectionResult.behaviors)
 
@@ -80,9 +64,6 @@ async function runBehaviors(config: Configuration, validator: ValidationManager)
     config.reporter.terminate(result.err)
     return ValidationRunResult.ERROR
   }
-
-  await coverageManager?.finishCoverageCollection()
-  await config.coverageReporter?.end()
 
   config.reporter.end(result.summary)
 

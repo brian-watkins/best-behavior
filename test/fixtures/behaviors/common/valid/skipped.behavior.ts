@@ -1,5 +1,6 @@
 import { ConfigurableBehavior, behavior, effect, example } from "esbehavior";
 import { equalTo, expect, is } from "great-expectations"
+import { addStuff } from "../../../src/addStuff.js";
 
 const myBehavior: ConfigurableBehavior = (m) => m.pick() && behavior("Behavior 2", [
 
@@ -38,7 +39,7 @@ const myBehavior: ConfigurableBehavior = (m) => m.pick() && behavior("Behavior 2
     .script({
       observe: [
         effect("this is fun", () => {
-          expect(7, is(equalTo(7)))
+          expect(addStuff(4, 2), is(equalTo(23)))
         })
       ]
     }),
