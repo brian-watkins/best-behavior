@@ -1,5 +1,13 @@
 # best-behavior
 
+## 0.11.0
+
+### Minor Changes
+
+- 54918fe: Only allow random or default order types
+- 9dd4b70: Reporter and Logger can be configured only from the config file
+- 7eef3ee: Run behaviors in parallel
+
 ## 0.10.0
 
 ### Minor Changes
