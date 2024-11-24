@@ -27,7 +27,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
         ],
         perform: [
           step("attempt to validate a behavior file with bad syntax", async (context) => {
-            await context.runBehaviors("**/common/{error/badSyntax.behavior.ts,valid/*.behavior.ts}")
+            await context.runBehaviors("**/common/{error/badSyntax.behavior.ts,parallel/*.behavior.ts}")
           })
         ],
         observe: [
@@ -64,7 +64,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
         ],
         perform: [
           step("validate the behaviors", async (context) => {
-            await context.runBehaviors("**/common/{valid/*.behavior.ts,failing/failed.behavior.ts}")
+            await context.runBehaviors("**/common/{parallel/*.behavior.ts,failing/failed.behavior.ts}")
           })
         ],
         observe: [

@@ -15,6 +15,8 @@ export default behavior("Behavior 1", [
     .script({
       observe: [
         effect("this exercises some code", () => {
+          console.log("A log message!")
+          console.error("An error message!")
           expect(addStuff(7, 5), is(29))
         })
       ]
