@@ -59,7 +59,7 @@ const result = await validateBehaviors({
   configFile: args.config,
   behaviorGlobs: toArray(args.behaviors),
   behaviorFilter: args.filter,
-  browserBehaviors: {
+  browserBehaviors: args.runInBrowser === undefined ? undefined : {
     globs: toArray(args.runInBrowser)
   },
   parallel: args.parallel,
