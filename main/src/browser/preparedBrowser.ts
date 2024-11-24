@@ -30,7 +30,11 @@ export class PreparedBrowser implements CoverageProvider {
       const content = message.text()
       if (content.startsWith("[vite]")) return
       const logLine = this.localServer.convertURLsToLocalPaths(content)
-      this.browserOptions.logger.info(logLine, "Browser")
+      if (message.type() === "error") {
+        this.browserOptions.logger.error(logLine, "Browser")  
+      } else {
+        this.browserOptions.logger.info(logLine, "Browser")
+      }
     })
     context.on("weberror", (webError) => {
       const error = webError.error()
