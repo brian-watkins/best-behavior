@@ -53,8 +53,8 @@ async function initializeServer(data: { viteConfig?: string, behaviorGlobs?: Arr
     optimizeDeps: {
       entries: data.behaviorGlobs
     },
-    experimental: {
-      skipSsrTransform: true
+    dev: {
+      moduleRunnerTransform: false
     },
     server: {
       hmr: false,
