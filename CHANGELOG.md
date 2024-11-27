@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.12.0
+
+### Minor Changes
+
+- 4a40de9: Expose whether browser test instrument is visible
+
 ## 0.11.1
 
 ### Patch Changes
