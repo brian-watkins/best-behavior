@@ -27,6 +27,10 @@ export class PlaywrightBrowser {
     this.browser = await generator(this.options.showBrowser)
   }
 
+  get isVisible(): boolean {
+    return this.isOpen && this.options.showBrowser
+  }
+
   get isOpen(): boolean {
     return this.browser !== undefined
   }

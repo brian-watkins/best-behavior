@@ -17,6 +17,10 @@ export class PreparedBrowser implements CoverageProvider {
 
   constructor(protected browser: PlaywrightBrowser, protected localServer: LocalServerContext, private browserOptions: PreparedBrowserOptions) { }
 
+  get isVisible(): boolean {
+    return this.browser.isVisible
+  }
+
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
     const context = await this.browser.newBrowserContext(generator)
 

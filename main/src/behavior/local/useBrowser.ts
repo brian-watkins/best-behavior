@@ -23,7 +23,8 @@ export function useBrowser<T = BrowserTestInstrument>(context: ContextWithBrowse
       await playwrightTestInstrument.reset(context.browserContextGenerator)
 
       return await context.init({
-        page: playwrightTestInstrument.page
+        page: playwrightTestInstrument.page,
+        isVisible: playwrightTestInstrument.isVisible
       })
     },
     teardown: async (contextValue) => {

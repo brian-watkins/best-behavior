@@ -72,8 +72,7 @@ export class Validator {
     await this.coverageManager?.finishCoverageCollection()
     await this.config.coverageReporter?.end()
 
-    // not sure why we have the second condition
-    if (!this.config.showBrowser || !this.playwrightBrowser.isOpen) {
+    if (!this.playwrightBrowser.isVisible) {
       await this.playwrightBrowser.stop()
       await viteTranspiler.stop()
     }
