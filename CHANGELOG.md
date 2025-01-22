@@ -1,5 +1,15 @@
 # best-behavior
 
+## 0.13.0
+
+### Minor Changes
+
+- 5fb733b: Change browser context generator config property name
+
+### Patch Changes
+
+- cd30fcf: Upgrade esbehavior to add support for NO_COLOR environment variable
+
 ## 0.12.1
 
 ### Patch Changes

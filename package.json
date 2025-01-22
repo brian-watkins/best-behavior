@@ -2,7 +2,7 @@
   "name": "best-behavior",
   "author": "Brian Watkins",
   "license": "MIT",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "Write executable documentation",
   "repository": {
     "type": "git",
