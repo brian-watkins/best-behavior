@@ -48,7 +48,7 @@ export interface ValidationRunOptions {
 
 export interface BestBehaviorConfig {
   browser?: PlaywrightBrowserGenerator
-  context?: PlaywrightBrowserContextGenerator
+  browserContext?: PlaywrightBrowserContextGenerator
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   parallel?: boolean

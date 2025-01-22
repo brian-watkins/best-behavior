@@ -39,7 +39,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
   return {
     configFile: runOptions.configFile,
     browserGenerator: configFile?.browser,
-    browserContextGenerator: configFile?.context,
+    browserContextGenerator: configFile?.browserContext,
     behaviorGlobs: runOptions.behaviorGlobs ?? configFile?.behaviorGlobs,
     browserBehaviors: runOptions.browserBehaviors ?? configFile?.browserBehaviors,
     behaviorFilter: runOptions.behaviorFilter,
