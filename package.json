@@ -47,7 +47,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "esbehavior": "^5.0.0",
+    "esbehavior": "^5.1.0",
     "glob": "^10.3.10",
     "lilconfig": "^3.0.0",
     "minimatch": "^9.0.3",
