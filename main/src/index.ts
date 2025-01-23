@@ -9,6 +9,7 @@ export type {
 
 export {
   behavior,
+  behaviorUsing,
   example,
   fact,
   step,
