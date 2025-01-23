@@ -1,5 +1,15 @@
 # best-behavior
 
+## 0.14.0
+
+### Minor Changes
+
+- abca197: Add support for Behavior contexts
+
+### Patch Changes
+
+- 9e0703a: Fix so that standard reporter works in browser environments
+
 ## 0.13.0
 
 ### Minor Changes
