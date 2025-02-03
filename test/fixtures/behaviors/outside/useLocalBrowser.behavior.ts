@@ -1,5 +1,5 @@
 import { behavior, effect, example, fact, step } from "esbehavior";
-import { expect, resolvesTo } from "great-expectations";
+import { expect, is, resolvesTo } from "great-expectations";
 import { useBrowser } from "../../../../main/src/browser.js";
 
 export default behavior("useBrowser", [
@@ -22,6 +22,31 @@ export default behavior("useBrowser", [
           await expect(context.page.locator("h1").innerText(), resolvesTo("Welcome to my web page!"))
         })
       ]
+    }),
+
+  example(useBrowser({
+    init(browser) {
+      return browser
+    },
+    browserContextGenerator: (browser) => browser.newContext({
+      viewport: {
+        width: 500,
+        height: 300
+      }
     })
+  }))
+    .description("use custom browser context with useBrowser")
+    .script({
+      observe: [
+        effect("the viewport is set to the given size", async (context) => {
+          const viewportSize = await context.page.evaluate(() => ({ height: window.innerHeight, width: window.innerWidth }))
+          expect(viewportSize, is({
+            height: 300,
+            width: 500
+          }))
+        })
+      ]
+    })
+
 
 ])

@@ -1,10 +1,10 @@
-import { Context, behavior, effect, example, fact, step } from "esbehavior";
-import { BrowserTestInstrument, useBrowser } from "../../../../dist/main/browser.js"
+import { behavior, effect, example, fact, step } from "esbehavior";
+import { browserContext } from "../../../../dist/main/browser.js"
 import { expect, is, resolvesTo } from "great-expectations";
 
 export default behavior("component testing", [
 
-  example(useBrowser())
+  example(browserContext())
     .description("use a component")
     .script({
       suppose: [
@@ -34,7 +34,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser())
+  example(browserContext())
     .description("use a component again")
     .script({
       suppose: [
@@ -65,7 +65,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser())
+  example(browserContext())
     .description("use variables when importing a component")
     .script({
       suppose: [
@@ -84,7 +84,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser())
+  example(browserContext())
     .description("literal import fails to resolve")
     .script({
       suppose: [
@@ -103,7 +103,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser())
+  example(browserContext())
     .description("variable in dynamic view controller import fails to resolve")
     .script({
       suppose: [
@@ -121,7 +121,7 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser())
+  example(browserContext())
     .description("Use a display context that depends on loaded html")
     .script({
       suppose: [
@@ -140,9 +140,8 @@ export default behavior("component testing", [
       ]
     }),
 
-  example(useBrowser({
-    init: (browser) => browser,
-    browserContextGenerator: (browser) => browser.newContext({
+  example(browserContext({
+    contextGenerator: (browser) => browser.newContext({
       viewport: {
         width: 500,
         height: 300

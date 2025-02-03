@@ -9,7 +9,7 @@ export default behavior("running behaviors in the local JS environment", [
   ...behaviorBehaviors({ browserGlob: undefined }),
 
   example(testRunnerContext())
-    .description("running behaviors that use playwright and local server")
+    .description("running behaviors that use playwright and local server via useBrowser")
     .script({
       perform: [
         step("validate the behaviors", async (context) => {
@@ -20,8 +20,8 @@ export default behavior("running behaviors in the local JS environment", [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
             behaviors: 1,
-            examples: 1,
-            valid: 3,
+            examples: 2,
+            valid: 4,
             invalid: 0,
             skipped: 0
           }))))
@@ -51,7 +51,7 @@ export default behavior("running behaviors in the local JS environment", [
     }),
 
   example(testRunnerContext())
-    .description("Local behavior that uses a view controller with coverage")
+    .description("Local behavior that uses browserContext and view controller with coverage")
     .script({
       suppose: [
         fact("coverage data should be collected", (context) => {

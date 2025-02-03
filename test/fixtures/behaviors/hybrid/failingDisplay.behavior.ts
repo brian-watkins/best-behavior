@@ -1,10 +1,10 @@
 import { behavior, example, fact, step } from "esbehavior";
-import { useBrowser } from "../../../../main/src/browser.js";
+import { browserContext } from "../../../../main/src/browser.js";
 
 
 export default behavior("failing display", [
 
-  example(useBrowser())
+  example(browserContext())
     .description("the display fails to mount")
     .script({
       suppose: [
