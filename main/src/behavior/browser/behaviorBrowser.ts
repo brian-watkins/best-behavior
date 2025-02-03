@@ -2,7 +2,10 @@ import { BrowserContext, Page } from "playwright"
 import { PlaywrightBrowser } from "../../browser/playwrightBrowser.js"
 import { BrowserReporter } from "./browserReporter.js"
 import { PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
-import { LocalServerContext } from "../../localServer/context.js"
+import { RuntimeAttributes } from "../../validator/index.js"
+import { BehaviorBrowserWindow } from "./behaviorBrowserWindow.js"
+
+declare let window: BehaviorBrowserWindow
 
 export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
   homePage?: string
@@ -11,8 +14,8 @@ export interface BehaviorBrowserOptions extends PreparedBrowserOptions {
 export class BehaviorBrowser extends PreparedBrowser {
   private _page: Page | undefined
 
-  constructor(browser: PlaywrightBrowser, localServer: LocalServerContext, private options: BehaviorBrowserOptions) {
-    super(browser, localServer, options)
+  constructor(browser: PlaywrightBrowser, private attributes: RuntimeAttributes, private options: BehaviorBrowserOptions) {
+    super(browser, attributes.localServer, options)
   }
 
   protected async getContext(): Promise<BrowserContext> {
@@ -41,6 +44,12 @@ export class BehaviorBrowser extends PreparedBrowser {
     if (this.options.homePage !== undefined) {
       await this._page.goto(this.options.homePage)
     }
+
+    this._page.evaluate((runContextValue) => {
+      window.__best_behavior_run_context = {
+        value: runContextValue
+      }
+    }, this.attributes.runContext)
 
     this.startCoverage(this._page)
 

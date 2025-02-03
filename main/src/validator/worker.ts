@@ -4,7 +4,7 @@ import { Validator } from "./validator.js"
 import { BufferedOutput } from "./bufferedOutput.js"
 import { LocalServerContext } from "../localServer/context.js"
 import { BehaviorMetadata } from "../behavior/behaviorMetadata.js"
-import { BehaviorValidationTaskResult } from "./index.js"
+import { BehaviorValidationTaskResult, RuntimeAttributes } from "./index.js"
 
 interface WorkerMessage {
   action: string
@@ -26,7 +26,12 @@ class Worker {
 
     console = this.bufferedOutput.console()
 
-    this.validator = new Validator(config, new LocalServerContext(workerData.localServer.host, workerData.localServer.root))
+    const attributes: RuntimeAttributes = {
+      localServer: new LocalServerContext(workerData.localServer.host, workerData.localServer.root),
+      runContext: workerData.runContext
+    }
+
+    this.validator = new Validator(config, attributes)
     
     await this.validator.init()
   }

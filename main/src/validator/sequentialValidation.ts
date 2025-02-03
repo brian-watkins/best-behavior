@@ -1,16 +1,15 @@
 import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
-import { ValidationManager, ValidationResult, ValidationTerminated } from "./index.js";
+import { RuntimeAttributes, ValidationManager, ValidationResult, ValidationTerminated } from "./index.js";
 import { Validator } from "./validator.js";
 import { addSummary, emptySummary } from "./summary.js";
 import { Configuration } from "../config/configuration.js";
-import { LocalServerContext } from "../localServer/context.js";
 
 export class SequentialValidation implements ValidationManager {
 
-  constructor(private config: Configuration, private localServer: LocalServerContext) { }
+  constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
   async validate(behaviors: Array<BehaviorMetadata>): Promise<ValidationResult> {
-    const runner = new Validator(this.config, this.localServer)
+    const runner = new Validator(this.config, this.attributes)
 
     let terminationResult: ValidationTerminated | undefined = undefined
 

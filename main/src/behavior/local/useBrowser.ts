@@ -1,8 +1,8 @@
-import { useContext } from "../../useContext.js";
 import { PlaywrightBrowserContextGenerator } from "../../browser/playwrightBrowser.js";
 import { Context } from "esbehavior";
 import { PlaywrightTestInstrument } from "./playwrightTestInstrument.js";
 import { BrowserTestInstrument } from "./browserTestInstrument.js";
+import { useTestInstrument } from "./testInstrumentContext.js";
 
 export interface ContextWithBrowser<T> {
   init(browser: BrowserTestInstrument): T | Promise<T>
@@ -19,7 +19,7 @@ export function useBrowser<T = BrowserTestInstrument>(context: ContextWithBrowse
 
   return {
     init: async () => {
-      playwrightTestInstrument = useContext().playwrightTestInstrument
+      playwrightTestInstrument = useTestInstrument().playwrightTestInstrument
       await playwrightTestInstrument.reset(context.browserContextGenerator)
 
       return await context.init({

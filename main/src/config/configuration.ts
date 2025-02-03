@@ -1,5 +1,5 @@
 import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../browser/playwrightBrowser.js";
-import { defaultOrder, OrderProvider, randomOrder, Reporter, StandardReporter } from "esbehavior";
+import { Context, defaultOrder, OrderProvider, randomOrder, Reporter, StandardReporter } from "esbehavior";
 import { consoleLogger, Logger } from "../logger.js";
 import { CoverageReporter } from "../coverage/coverageReporter.js";
 import { MonocartCoverageReporter } from "../coverage.js";
@@ -13,6 +13,7 @@ export interface Configuration {
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   behaviorFilter?: string
+  runContext?: Context<any>
   parallel: boolean
   runPickedOnly: boolean
   failFast: boolean
@@ -43,6 +44,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     behaviorGlobs: runOptions.behaviorGlobs ?? configFile?.behaviorGlobs,
     browserBehaviors: runOptions.browserBehaviors ?? configFile?.browserBehaviors,
     behaviorFilter: runOptions.behaviorFilter,
+    runContext: configFile?.context,
     parallel: runOptions.parallel ?? configFile?.parallel ?? false,
     runPickedOnly: runOptions.runPickedOnly ?? false,
     failFast: runOptions.failFast ?? configFile?.failFast ?? false,

@@ -1,8 +1,7 @@
 import url from "node:url"
 import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
 import { Configuration, getRunOptions } from "../config/configuration.js";
-import { LocalServerContext } from "../localServer/context.js";
-import { BehaviorValidationTaskResult, validationCompleted, ValidationManager, ValidationResult, ValidationTerminated } from "./index.js";
+import { BehaviorValidationTaskResult, RuntimeAttributes, validationCompleted, ValidationManager, ValidationResult, ValidationTerminated } from "./index.js";
 import { addSummary, emptySummary } from "./summary.js";
 import { WorkerPool } from "./workerPool.js";
 import { applyActions } from "./bufferedOutput.js";
@@ -11,7 +10,7 @@ import { applyActions } from "./bufferedOutput.js";
 export class ParallelValidation implements ValidationManager {
   private pool = new WorkerPool()
 
-  constructor(private config: Configuration, private localServer: LocalServerContext) { }
+  constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
   async validate(behaviors: Array<BehaviorMetadata>): Promise<ValidationResult> {
     await this.config.coverageReporter?.start()
@@ -19,9 +18,10 @@ export class ParallelValidation implements ValidationManager {
     await this.pool.init(pathToFile("./worker.js"), {
       runOptions: getRunOptions(this.config),
       localServer: {
-        host: this.localServer.host,
-        root: this.localServer.root
-      }
+        host: this.attributes.localServer.host,
+        root: this.attributes.localServer.root
+      },
+      runContext: this.attributes.runContext
     })
 
     const tasks: Array<Promise<ValidationResult>> = []

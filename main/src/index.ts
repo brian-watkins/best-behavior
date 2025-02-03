@@ -9,7 +9,8 @@ export type {
 
 export {
   behavior,
-  behaviorUsing,
+  behaviorContext,
+  useWithContext,
   example,
   fact,
   step,
@@ -19,3 +20,5 @@ export {
   outcome,
   randomOrder
 } from "esbehavior"
+
+export { runContext } from "./runContext.js"

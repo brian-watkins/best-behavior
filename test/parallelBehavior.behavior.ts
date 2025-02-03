@@ -17,7 +17,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
   return [
 
     example(testRunnerContext(options))
-      .description("behavior file has a syntax error")
+      .description(withEnvironment(options, "behavior file has a syntax error"))
       .script({
         suppose: [
           runInParallel(),
@@ -49,7 +49,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
       }),
 
     example(testRunnerContext(options))
-      .description("running valid and invalid and skipped behaviors in the specified order")
+      .description(withEnvironment(options, "running valid and invalid and skipped behaviors in the specified order"))
       .script({
         suppose: [
           runInParallel(),
@@ -125,7 +125,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
       }),
 
     example(testRunnerContext(options))
-      .description("failed example in multiple behaviors when failing fast")
+      .description(withEnvironment(options, "failed example in multiple behaviors when failing fast"))
       .script({
         suppose: [
           runInParallel(),
@@ -167,13 +167,83 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
             expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
           })
         ]
+      }),
+
+    example(testRunnerContext<GlobalContextAttributes>(options))
+      .description(withEnvironment(options, "when a run context is used"))
+      .script({
+        suppose: [
+          runInParallel(),
+          fact("a run context is defined", context => {
+            context.attributes = {
+              initCallCount: 0,
+              teardownCallCount: 0,
+              lastTeardownValue: undefined
+            }
+            context.setRunContext({
+              init: () => {
+                context.attributes.initCallCount++
+                return Promise.resolve(271)
+              },
+              teardown: (value) => {
+                return new Promise(resolve => {
+                  context.attributes.lastTeardownValue = value
+                  context.attributes.teardownCallCount++
+                  resolve()
+                })
+              }
+            })
+          })
+        ],
+        perform: [
+          step("validate behaviors that use the context", async (context) => {
+            await context.runBehaviors("**/common/withRunContext/*.behavior.ts")
+          })
+        ],
+        observe: [
+          effect("the init function is called only once", (context) => {
+            expect(context.attributes.initCallCount, is(1))
+          }),
+          effect("the teardown function is called only once", (context) => {
+            expect(context.attributes.teardownCallCount, is(1))
+          }),
+          effect("the teardown function is valled with the initialized context value", (context) => {
+            expect(context.attributes.lastTeardownValue, is(271))
+          }),
+          effect("it produces the correct summary", (context) => {
+            expect(context.reporter.summary, is(assignedWith(equalTo({
+              behaviors: 2,
+              examples: 2,
+              valid: 2,
+              invalid: 0,
+              skipped: 0
+            }))))
+          }),
+          effect("it returns an ok run result", (context) => {
+            expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.OK))))
+          })
+        ]
       })
 
   ]
 }
 
-function runInParallel(): Presupposition<TestRunner> {
+interface GlobalContextAttributes {
+  initCallCount: number
+  teardownCallCount: number
+  lastTeardownValue: any
+}
+
+function runInParallel<T = undefined>(): Presupposition<TestRunner<T>> {
   return fact("run behaviors in parallel", (context) => {
     context.runParallel(true)
   })
+}
+
+function withEnvironment(options: TestRunnerOptions | undefined, description: string): string {
+  if (options?.browserGlob === undefined) {
+    return `${description} (Local)`
+  } else {
+    return `${description} (Browser)`
+  }
 }

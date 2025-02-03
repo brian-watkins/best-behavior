@@ -2,7 +2,7 @@ import { ViteLocalServer } from "./localServer/viteServer.js"
 import { bold, red } from "./logger.js"
 import { Configuration } from "./config/configuration.js"
 import { SequentialValidation } from "./validator/sequentialValidation.js"
-import { ValidationManager } from "./validator/index.js"
+import { RuntimeAttributes, ValidationManager } from "./validator/index.js"
 import { getBehaviorsMatchingPattern } from "./behavior/behaviorCollector.js"
 import { ParallelValidation } from "./validator/parallelValidation.js"
 
@@ -26,11 +26,20 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
   })
   await viteServer.start()
 
+  const runContextValue = await config.runContext?.init()
+
+  const attributes: RuntimeAttributes = {
+    localServer: viteServer.getContext(),
+    runContext: runContextValue
+  }
+
   const validator = config.parallel ?
-    new ParallelValidation(config, viteServer.getContext()) :
-    new SequentialValidation(config, viteServer.getContext())
+    new ParallelValidation(config, attributes) :
+    new SequentialValidation(config, attributes)
 
   const result = await runBehaviors(config, validator)
+
+  await config.runContext?.teardown?.(runContextValue)
 
   if (!config.showBrowser) {
     await viteServer.stop()

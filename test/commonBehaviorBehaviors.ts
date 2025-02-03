@@ -629,6 +629,67 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             }))))
         })
       ]
+    }),
+
+  example(testRunnerContext<RunContextAttributes>(options))
+    .description("when a run context is used")
+    .script({
+      suppose: [
+        fact("a run context is defined", context => {
+          context.attributes = {
+            initCallCount: 0,
+            teardownCallCount: 0,
+            lastTeardownValue: undefined
+          }
+          context.setRunContext({
+            init: () => {
+              context.attributes.initCallCount++
+              return Promise.resolve(271)
+            },
+            teardown: (value) => {
+              return new Promise(resolve => {
+                context.attributes.lastTeardownValue = value
+                context.attributes.teardownCallCount++
+                resolve()
+              })
+            }
+          })
+        })
+      ],
+      perform: [
+        step("validate behaviors that use the context", async (context) => {
+          await context.runBehaviors("**/common/withRunContext/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("the init function is called only once", (context) => {
+          expect(context.attributes.initCallCount, is(1))
+        }),
+        effect("the teardown function is called only once", (context) => {
+          expect(context.attributes.teardownCallCount, is(1))
+        }),
+        effect("the teardown function is called with the initialized context value", (context) => {
+          expect(context.attributes.lastTeardownValue, is(271))
+        }),
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 2,
+            examples: 2,
+            valid: 2,
+            invalid: 0,
+            skipped: 0
+          }))))
+        }),
+        effect("it returns an ok run result", (context) => {
+          expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.OK))))
+        })
+      ]
     })
 
 ]
+
+interface RunContextAttributes {
+  initCallCount: number
+  teardownCallCount: number
+  lastTeardownValue: any
+}

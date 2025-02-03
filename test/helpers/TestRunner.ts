@@ -9,13 +9,13 @@ export interface TestRunnerOptions {
   browserBehaviorHTML?: string
 }
 
-export function testRunnerContext(options: TestRunnerOptions = {}): Context<TestRunner> {
+export function testRunnerContext<T = undefined>(options: TestRunnerOptions = {}): Context<TestRunner<T>> {
   return {
-    init: () => new TestRunner(options)
+    init: () => new TestRunner<T>(options)
   }
 }
 
-export class TestRunner {
+export class TestRunner<T> {
   private testReporter = new TestReporter()
   private testLogger = new TestLogger()
   private shouldFailFast: boolean = false
@@ -28,11 +28,11 @@ export class TestRunner {
   private shouldCollectCoverage: boolean = false
   private bestConfigFile: string | undefined
   private isParallel: boolean = false
+  private runContext: Context<any> | undefined
   public runResult: ValidationRunResult | undefined
+  public attributes!: T
 
-  constructor(private options: TestRunnerOptions) {
-    this.setShouldCollectCoverage(false)
-  }
+  constructor(private options: TestRunnerOptions) { }
 
   setBrowserGenerator(generator: PlaywrightBrowserGenerator) {
     this.browserGenerator = generator
@@ -70,6 +70,10 @@ export class TestRunner {
     this.behaviorFilter = filter
   }
 
+  setRunContext(context: Context<any>) {
+    this.runContext = context
+  }
+
   async runBehaviors(pattern?: string): Promise<void> {
     this.runResult = await run({
       configFile: this.bestConfigFile,
@@ -81,6 +85,7 @@ export class TestRunner {
         globs: this.options.browserGlob ? [this.options.browserGlob] : undefined,
         html: this.options.browserBehaviorHTML
       },
+      runContext: this.runContext,
       parallel: this.isParallel,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,

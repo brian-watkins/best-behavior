@@ -1,4 +1,4 @@
-import { Reporter } from "esbehavior"
+import { Context, Reporter } from "esbehavior"
 import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../browser/playwrightBrowser.js"
 import { CoverageReporter } from "../coverage.js"
 import { Logger } from "../logger.js"
@@ -51,6 +51,7 @@ export interface BestBehaviorConfig {
   browserContext?: PlaywrightBrowserContextGenerator
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
+  context?: Context<any>
   parallel?: boolean
   failFast?: boolean
   viteConfig?: string

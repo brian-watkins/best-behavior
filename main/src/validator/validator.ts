@@ -5,15 +5,15 @@ import { PlaywrightBrowser } from "../browser/playwrightBrowser.js";
 import { ValidationRunOptions } from "../run.js";
 import { Configuration } from "../config/configuration.js";
 import { PlaywrightTestInstrument } from "../behavior/local/playwrightTestInstrument.js";
-import { createContext } from "../useContext.js";
 import { BehaviorBrowser } from "../behavior/browser/behaviorBrowser.js";
 import { BrowserBehaviorContext } from "../behavior/browser/browserBehavior.js";
 import { BehaviorFactory } from "../behavior/behaviorFactory.js";
 import { ViteModuleLoader, viteTranspiler } from "../transpiler/viteTranspiler.js";
-import { LocalServerContext } from "../localServer/context.js";
 import { CoverageManager } from "../coverage/coverageManager.js";
-import { validationCompleted, ValidationResult, validationTerminated } from "./index.js";
+import { RuntimeAttributes, validationCompleted, ValidationResult, validationTerminated } from "./index.js";
 import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js";
+import { provideRunContext } from "../runContext.js";
+import { provideTestInstrument } from "../behavior/local/testInstrumentContext.js";
 
 export interface ValidatorConfig extends ValidationRunOptions {
   localServerHost: string
@@ -26,7 +26,7 @@ export class Validator {
   private validationStatus: ValidationStatus = ValidationStatus.VALID
   private coverageManager: CoverageManager | undefined
 
-  constructor (private config: Configuration, private localServer: LocalServerContext) { }
+  constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
   async init(): Promise<void> {
     await viteTranspiler.setConfig({
@@ -36,26 +36,29 @@ export class Validator {
 
     this.playwrightBrowser = new PlaywrightBrowser({
       showBrowser: this.config.showBrowser,
-      baseURL: this.localServer.host,
+      baseURL: this.attributes.localServer.host,
       browserGenerator: this.config.browserGenerator,
       browserContextGenerator: this.config.browserContextGenerator
     })
-  
-    const playwrightTestInstrument = new PlaywrightTestInstrument(this.playwrightBrowser, this.localServer, {
-      logger: this.config.logger
-    })
-  
-    createContext({ playwrightTestInstrument })
-  
-    const behaviorBrowser = new BehaviorBrowser(this.playwrightBrowser, this.localServer, {
+
+    const playwrightTestInstrument = new PlaywrightTestInstrument(
+      this.playwrightBrowser,
+      this.attributes.localServer,
+      { logger: this.config.logger }
+    )
+
+    provideTestInstrument(playwrightTestInstrument)
+    provideRunContext(this.attributes.runContext)
+
+    const behaviorBrowser = new BehaviorBrowser(this.playwrightBrowser, this.attributes, {
       adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
       homePage: this.config.browserBehaviors?.html,
       logger: this.config.logger
     })
-  
-    const browserBehaviorContext = new BrowserBehaviorContext(this.localServer, behaviorBrowser)
+
+    const browserBehaviorContext = new BrowserBehaviorContext(this.attributes.localServer, behaviorBrowser)
     this.behaviorFactory = new BehaviorFactory(new ViteModuleLoader(), browserBehaviorContext)
-  
+
     if (this.config.collectCoverage) {
       this.coverageManager = new CoverageManager(this.config.coverageReporter!, [
         new NodeCoverageProvider(viteTranspiler),
@@ -80,10 +83,10 @@ export class Validator {
 
   async run(behavior: BehaviorMetadata): Promise<ValidationResult> {
     let summary
-    
+
     try {
       const configurableBehavior = await this.behaviorFactory.getBehavior(behavior)
-      summary = await runBehavior(this.config, this.validationStatus, configurableBehavior)      
+      summary = await runBehavior(this.config, this.validationStatus, configurableBehavior)
     } catch (err: any) {
       return validationTerminated(err)
     }

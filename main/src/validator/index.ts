@@ -1,6 +1,12 @@
 import { OrderProvider, Reporter, Summary } from "esbehavior";
 import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
 import { OutputAction } from "./bufferedOutput.js";
+import { LocalServerContext } from "../localServer/context.js";
+
+export interface RuntimeAttributes {
+  localServer: LocalServerContext
+  runContext?: any
+}
 
 export interface ValidationOptions {
   reporter: Reporter
