@@ -1,5 +1,12 @@
 # best-behavior
 
+## 0.15.0
+
+### Minor Changes
+
+- 757e48c: Provide a context for the run in general
+- 696a50c: Expose BrowserTestInstrument context
+
 ## 0.14.0
 
 ### Minor Changes
