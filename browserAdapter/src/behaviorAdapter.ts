@@ -7,7 +7,7 @@ import { type BehaviorData, BehaviorErrorCode } from "../../main/src/behavior/br
 declare let window: BehaviorBrowserWindow
 
 window.__bb_loadBehavior = async function (behaviorModuleUrl: string): Promise<BehaviorData> {
-  const behaviorModule = await import(behaviorModuleUrl)
+  const behaviorModule = await import(/* @vite-ignore */ behaviorModuleUrl)
 
   if (!Object.hasOwn(behaviorModule, "default")) {
     return {

@@ -41,9 +41,8 @@ export class BehaviorBrowser extends PreparedBrowser {
     const page = await context.newPage()
     this._page = this.decoratePageWithBetterExceptionHandling(page)
 
-    if (this.options.homePage !== undefined) {
-      await this._page.goto(this.options.homePage)
-    }
+    const homePage = this.options.homePage ?? this.attributes.localServer.urlForPath("/@best-behavior")
+    await this._page.goto(homePage)
 
     this._page.evaluate((runContextValue) => {
       window.__best_behavior_run_context = {

@@ -1,4 +1,4 @@
-import { ViteDevServer, createServer } from "vite";
+import { PluginOption, ViteDevServer, createServer } from "vite";
 import { LocalServerContext } from "./context.js";
 
 export interface ViteLocalServerOptions {
@@ -21,9 +21,11 @@ export class ViteLocalServer {
         }
       },
       server: {
-        hmr: false,
-        headers: { 'Access-Control-Expose-Headers': 'SourceMap,X-SourceMap' }
-      }
+        hmr: false
+      },
+      plugins: [
+        defaultPagePlugin()
+      ]
     })
 
     await this.server.listen()
@@ -43,5 +45,22 @@ export class ViteLocalServer {
 
   async stop(): Promise<void> {
     await this.server?.close()
+  }
+}
+
+function defaultPagePlugin(): PluginOption {
+  return {
+    name: "best-behavior",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.originalUrl === "/@best-behavior") {
+          res.writeHead(200, { 'Content-Type':'text/html'});
+          res.end(`<html><head><link rel="shortcut icon" href="data:," /></head><body></body></html>`);
+        }
+        else {
+          next()
+        }
+      })
+    }
   }
 }

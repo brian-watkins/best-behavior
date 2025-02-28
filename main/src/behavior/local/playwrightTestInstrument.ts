@@ -34,7 +34,7 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
     this._context = await this.getContext(generator)
     const page = await this._context.newPage()
 
-    await page.setContent(`<html><head><base href="${this.localServer.host}" /></head><body></body></html>`)
+    await page.goto(this.localServer.urlForPath("/@best-behavior"))
 
     await this.startCoverage(page)
 

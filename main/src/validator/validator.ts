@@ -51,7 +51,7 @@ export class Validator {
     provideRunContext(this.attributes.runContext)
 
     const behaviorBrowser = new BehaviorBrowser(this.playwrightBrowser, this.attributes, {
-      adapterPath: pathToFile("../../adapter/behaviorAdapter.cjs"),
+      adapterPath: pathToFile("../../adapter/behaviorAdapter.js"),
       homePage: this.config.browserBehaviors?.html,
       logger: this.config.logger
     })

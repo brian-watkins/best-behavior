@@ -12,9 +12,9 @@ await build({
       entry: [
         "./src/behaviorAdapter.ts",
       ],
-      formats: ["cjs"],
+      formats: ["esm"],
       fileName: (_, entry) => {
-        return `${entry}.cjs`
+        return `${entry}.js`
       }
     }
   }

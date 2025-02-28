@@ -4,12 +4,6 @@ export type PlaywrightBrowserGenerator = (showBrowser: boolean) => Promise<Brows
 
 export type PlaywrightBrowserContextGenerator = (browser: Browser, localServerURL?: string) => Promise<BrowserContext>
 
-const defaultBrowserContextGenerator: PlaywrightBrowserContextGenerator = (browser, localServerURL) => {
-  return browser.newContext({
-    baseURL: localServerURL
-  })
-}
-
 export interface PlaywrightBrowserOptions {
   showBrowser: boolean
   baseURL: string
@@ -56,5 +50,11 @@ export class PlaywrightBrowser {
 const defaultBrowserGenerator: PlaywrightBrowserGenerator = (showBrowser) => {
   return chromium.launch({
     headless: !showBrowser
+  })
+}
+
+const defaultBrowserContextGenerator: PlaywrightBrowserContextGenerator = (browser, localServerURL) => {
+  return browser.newContext({
+    baseURL: localServerURL
   })
 }
