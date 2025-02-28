@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.15.1
+
+### Patch Changes
+
+- e6c6817: CORS is no longer needed for browser behaviors
+
 ## 0.15.0
 
 ### Minor Changes
