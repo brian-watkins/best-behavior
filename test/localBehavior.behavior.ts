@@ -19,9 +19,9 @@ export default behavior("running behaviors in the local JS environment", [
       observe: [
         effect("it produces the correct summary", (context) => {
           expect(context.reporter.summary, is(assignedWith(equalTo({
-            behaviors: 1,
-            examples: 2,
-            valid: 4,
+            behaviors: 2,
+            examples: 3,
+            valid: 5,
             invalid: 0,
             skipped: 0
           }))))
@@ -47,6 +47,38 @@ export default behavior("running behaviors in the local JS environment", [
             ])
           ])))
         })
+      ]
+    }),
+
+  example(testRunnerContext())
+    .description("local behavior that uses browserContext and collects coverage")
+    .script({
+      suppose: [
+        fact("coverage data should be collected", (context) => {
+          context.setShouldCollectCoverage(true)
+        })
+      ],
+      perform: [
+        step("validate a behavior with context that closes the page on teardown", async (context) => {
+          await context.runBehaviors("**/outside/closePage.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 1,
+            invalid: 0,
+            skipped: 0
+          }))))
+        }),
+        effect("coverage data is generated for sources loaded in the browser", (context) => {
+          const sourceFiles = context.coverageReporter.coverageResults?.files
+          expect(sourceFiles, is(assignedWith(arrayWith([
+            objectWithProperty("url", assignedWith(stringContaining("/test/fixtures/src/coolModule.ts")))
+          ]))))
+        }),
       ]
     }),
 

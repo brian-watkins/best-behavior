@@ -3,11 +3,7 @@ export function addSomeThings(a: number, b: number): number {
 }
 
 class FunGreeting {
-  private _greeting: string
-
-  constructor(greeting: string) {
-    this._greeting = greeting
-  }
+  constructor(private _greeting: string) { }
 
   greet(name: string): string {
     return `${this._greeting}, ${name}!`

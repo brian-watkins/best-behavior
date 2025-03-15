@@ -13,7 +13,8 @@ export interface PreparedBrowserOptions {
 }
 
 export class PreparedBrowser implements CoverageProvider {
-  onCoverageData?: ((data: Array<V8CoverageData>) => Promise<void>) | undefined;
+  private collectingCoverage: boolean = false
+  onCoverageData: ((data: Array<V8CoverageData>) => Promise<void>) | undefined
 
   constructor(protected browser: PlaywrightBrowser, protected localServer: LocalServerContext, private browserOptions: PreparedBrowserOptions) { }
 
@@ -35,7 +36,7 @@ export class PreparedBrowser implements CoverageProvider {
       if (content.startsWith("[vite]")) return
       const logLine = this.localServer.convertURLsToLocalPaths(content)
       if (message.type() === "error") {
-        this.browserOptions.logger.error(logLine, "Browser")  
+        this.browserOptions.logger.error(logLine, "Browser")
       } else {
         this.browserOptions.logger.info(logLine, "Browser")
       }
@@ -54,6 +55,7 @@ export class PreparedBrowser implements CoverageProvider {
 
   async startCoverage(page: Page): Promise<void> {
     if (this.onCoverageData !== undefined) {
+      this.collectingCoverage = true
       await page.coverage.startJSCoverage({
         resetOnNavigation: false
       })
@@ -61,7 +63,8 @@ export class PreparedBrowser implements CoverageProvider {
   }
 
   async stopCoverage(page: Page): Promise<void> {
-    if (this.onCoverageData !== undefined) {
+    if (this.collectingCoverage && this.onCoverageData !== undefined) {
+      this.collectingCoverage = false
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
         await this.onCoverageData(coverageData.map(adaptCoverageData(this.localServer)))
@@ -69,33 +72,70 @@ export class PreparedBrowser implements CoverageProvider {
     }
   }
 
-  protected decoratePageWithBetterExceptionHandling(page: Page): Page {
+  protected betterExceptionHandling(): PageDecorator {
     const localServer = this.localServer
-    return new Proxy(page, {
-      get(target, prop) {
-        //@ts-ignore
-        const val = target[prop]
-        if (typeof val === "function") {
-          return (...args: Array<any>) => {
-            try {
-              const result = val.apply(target, args)
-              if (result instanceof Promise) {
-                return result.catch((err: any) => {
+    return {
+      decorate(page) {
+        return new Proxy(page, {
+          get(target, prop) {
+            //@ts-ignore
+            const val = target[prop]
+            if (typeof val === "function") {
+              return (...args: Array<any>) => {
+                try {
+                  const result = val.apply(target, args)
+                  if (result instanceof Promise) {
+                    return result.catch((err: any) => {
+                      throw errorWithCorrectedStack(localServer, err)
+                    })
+                  }
+                  return result
+                } catch (err: any) {
                   throw errorWithCorrectedStack(localServer, err)
-                })
+                }
               }
-              return result
-            } catch (err: any) {
-              throw errorWithCorrectedStack(localServer, err)
+            } else {
+              return val
             }
           }
-        } else {
-          return val
-        }
+        })
       }
-    })
+    }
   }
 
+  protected stopCoverageOnClose(): PageDecorator {
+    const preparedBrowser = this
+    return {
+      decorate(page) {
+        return new Proxy(page, {
+          get(target, prop, receiver) {
+            if (prop === "close") {
+              return async function () {
+                if (preparedBrowser.collectingCoverage) {
+                  await preparedBrowser.stopCoverage(target)
+                }
+                return target.close()
+              }
+            } else {
+              return Reflect.get(target, prop, receiver)
+            }
+          }
+        })
+      }
+    }
+  }
+}
+
+export interface PageDecorator {
+  decorate(page: Page): Page
+}
+
+export function decoratePage(page: Page, decorators: Array<PageDecorator>): Page {
+  let decoratedPage = page
+  for (const decorator of decorators) {
+    decoratedPage = decorator.decorate(decoratedPage)
+  }
+  return decoratedPage
 }
 
 function errorWithCorrectedStack(localServer: LocalServerContext, error: Error): Error {

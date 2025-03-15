@@ -1,7 +1,7 @@
 import { ClaimResult, Context, Failure, Reporter, Summary, defaultOrder as defaultOrderProvider } from "esbehavior";
 import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run.js"
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
-import MCR from "monocart-coverage-reports";
+import { CoverageFile, CoverageReport, CoverageResults } from "monocart-coverage-reports";
 import { run, ValidationRunResult } from "../../dist/main/runner.js";
 
 export interface TestRunnerOptions {
@@ -184,11 +184,11 @@ class TestReporter implements Reporter {
 }
 
 class TestCoverageReporter implements CoverageReporter {
-  private mcr!: MCR.CoverageReport
-  coverageResults: MCR.CoverageResults | undefined
+  private mcr!: CoverageReport
+  coverageResults: CoverageResults | undefined
 
   async start(): Promise<void> {
-    this.mcr = MCR({
+    this.mcr = new CoverageReport({
       reports: "none",
       clean: true,
       cleanCache: true,
@@ -204,7 +204,7 @@ class TestCoverageReporter implements CoverageReporter {
     this.coverageResults = await this.mcr.generate()
   }
 
-  coveredFile(path: string): MCR.CoverageFile | undefined {
+  coveredFile(path: string): CoverageFile | undefined {
     return this.coverageResults?.files.find(file => file.url?.includes(path))
   }
 }

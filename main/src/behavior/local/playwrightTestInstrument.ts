@@ -1,5 +1,5 @@
 import { BrowserContext, Page } from "playwright"
-import { PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
+import { decoratePage, PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "../../browser/playwrightBrowser.js"
 import { LocalServerContext } from "../../localServer/context.js"
 
@@ -31,14 +31,18 @@ export class PlaywrightTestInstrument extends PreparedBrowser {
     if (this._context !== undefined) {
       await this._context.close()
     }
+
     this._context = await this.getContext(generator)
     const page = await this._context.newPage()
 
-    await page.goto(this.localServer.urlForPath("/@best-behavior"))
+    this._page = decoratePage(page, [
+      this.stopCoverageOnClose(),
+      this.betterExceptionHandling()
+    ])
 
-    await this.startCoverage(page)
+    await this._page.goto(this.localServer.urlForPath("/@best-behavior"))
 
-    this._page = this.decoratePageWithBetterExceptionHandling(page)
+    await this.startCoverage(this._page)
   }
 
   get page(): Page {

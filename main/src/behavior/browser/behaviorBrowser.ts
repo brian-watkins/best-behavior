@@ -1,7 +1,7 @@
 import { BrowserContext, Page } from "playwright"
 import { PlaywrightBrowser } from "../../browser/playwrightBrowser.js"
 import { BrowserReporter } from "./browserReporter.js"
-import { PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
+import { decoratePage, PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
 import { RuntimeAttributes } from "../../validator/index.js"
 import { BehaviorBrowserWindow } from "./behaviorBrowserWindow.js"
 
@@ -39,7 +39,10 @@ export class BehaviorBrowser extends PreparedBrowser {
     await reporter.decorateContext(context)
 
     const page = await context.newPage()
-    this._page = this.decoratePageWithBetterExceptionHandling(page)
+    
+    this._page = decoratePage(page, [
+      this.betterExceptionHandling()
+    ])
 
     const homePage = this.options.homePage ?? this.attributes.localServer.urlForPath("/@best-behavior")
     await this._page.goto(homePage)
