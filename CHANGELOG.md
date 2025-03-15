@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.15.2
+
+### Patch Changes
+
+- fd1b76a: Collect code coverage as expected if browser page is closed by the user
+
 ## 0.15.1
 
 ### Patch Changes
