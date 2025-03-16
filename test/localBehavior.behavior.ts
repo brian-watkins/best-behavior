@@ -171,7 +171,8 @@ export default behavior("running behaviors in the local JS environment", [
 
           expect(sourceFiles?.length, is(assignedWith(equalTo(1))))
 
-          // Note that this will fail if using a version of node < 22.8.0
+          // Note that this will fail if using a version of node < 23.10.0
+          // And Playwright version >= 1.46.0
           // due to the way that coverage is collected in earlier versions of node
           expect(context.coverageReporter.coveredFile("test/fixtures/src/coolModule.ts"),
             is(assignedWith(fileWithCoverageSummary({

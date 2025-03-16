@@ -11,7 +11,7 @@ export default behavior("ssr", [
       observe: [
         effect("some of the functions run fine when exercised in node", async () => {
           const coolModule = await useModule("/test/fixtures/src/coolModule.ts")
-          expect(coolModule.sayHello("Cool dude"), is("Hello, Cool dude!"))
+          expect(coolModule.addSomeThings(7, 5), is(12))
         })
       ]
     }),
@@ -25,13 +25,13 @@ export default behavior("ssr", [
         step("execute some code", async (context) => {
           await context.evaluate(async () => {
             const module = await import("../../src/coolModule.js")
-            return module.addSomeThings(7, 5)
+            return module.sayHello("Cool dude")
           })
         })
       ],
       observe: [
         effect("another function runs fine when exercised in the browser", (context) => {
-          expect(context.result, is(12))
+          expect(context.result, is("Hello, Cool dude!"))
         })
       ]
     })
