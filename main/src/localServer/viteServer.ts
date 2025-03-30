@@ -55,7 +55,7 @@ function defaultPagePlugin(): PluginOption {
       server.middlewares.use((req, res, next) => {
         if (req.originalUrl === "/@best-behavior") {
           res.writeHead(200, { 'Content-Type':'text/html'});
-          res.end(`<html><head><link rel="shortcut icon" href="data:," /></head><body></body></html>`);
+          res.end(`<!DOCTYPE html><html><head><link rel="shortcut icon" href="data:," /></head><body></body></html>`);
         }
         else {
           next()
