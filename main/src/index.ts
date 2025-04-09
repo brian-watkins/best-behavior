@@ -1,7 +1,7 @@
 export type {
   Behavior, ConfigurableBehavior,
   Example, ConfigurableExample,
-  Presupposition, Action, Observation,
+  Script, Presupposition, Action, Observation,
   Context,
   Reporter, Failure, ClaimResult, ValidClaim, InvalidClaim, SkippedClaim,
   OrderProvider
