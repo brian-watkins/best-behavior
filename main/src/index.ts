@@ -2,7 +2,7 @@ export type {
   Behavior, ConfigurableBehavior,
   Example, ConfigurableExample,
   Script, Presupposition, Action, Observation,
-  Context,
+  Context, ContextMap, ContextValues, ExtractContextTypes,
   Reporter, Failure, ClaimResult, ValidClaim, InvalidClaim, SkippedClaim,
   OrderProvider
 } from "esbehavior"
@@ -10,7 +10,8 @@ export type {
 export {
   behavior,
   behaviorContext,
-  useWithContext,
+  contextMap,
+  use,
   example,
   fact,
   step,

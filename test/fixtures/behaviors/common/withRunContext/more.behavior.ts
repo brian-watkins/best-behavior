@@ -1,11 +1,11 @@
-import { behavior, effect, example } from "esbehavior";
+import { behavior, effect, example, use } from "esbehavior";
 import { expect, is } from "great-expectations";
-import { useRunContext } from "./context.js";
+import { runContext } from "../../../../../main/src/index.js";
 
 export default behavior("another behavior", [
 
-  example(useRunContext({
-    init({ runConfig }) {
+  example(use(runContext<number>(), {
+    init(runConfig) {
       return runConfig + 20
     }
   }))
