@@ -5,7 +5,7 @@ import { LocalServerContext } from "../localServer/context.js";
 
 export interface RuntimeAttributes {
   localServer: LocalServerContext
-  runContext?: any
+  context?: any
 }
 
 export interface ValidationOptions {

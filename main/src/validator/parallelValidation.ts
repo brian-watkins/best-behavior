@@ -21,7 +21,7 @@ export class ParallelValidation implements ValidationManager {
         host: this.attributes.localServer.host,
         root: this.attributes.localServer.root
       },
-      runContext: this.attributes.runContext
+      context: this.attributes.context
     })
 
     const tasks: Array<Promise<ValidationResult>> = []

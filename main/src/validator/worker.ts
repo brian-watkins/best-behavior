@@ -28,7 +28,7 @@ class Worker {
 
     const attributes: RuntimeAttributes = {
       localServer: new LocalServerContext(workerData.localServer.host, workerData.localServer.root),
-      runContext: workerData.runContext
+      context: workerData.context
     }
 
     this.validator = new Validator(config, attributes)

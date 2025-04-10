@@ -13,7 +13,7 @@ export interface Configuration {
   behaviorGlobs?: Array<string>
   browserBehaviors?: BrowserBehaviorOptions
   behaviorFilter?: string
-  runContext?: Context<any>
+  context?: Context<any>
   parallel: boolean
   runPickedOnly: boolean
   failFast: boolean
@@ -44,7 +44,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     behaviorGlobs: runOptions.behaviorGlobs ?? configFile?.behaviorGlobs,
     browserBehaviors: runOptions.browserBehaviors ?? configFile?.browserBehaviors,
     behaviorFilter: runOptions.behaviorFilter,
-    runContext: configFile?.context,
+    context: configFile?.context,
     parallel: runOptions.parallel ?? configFile?.parallel ?? false,
     runPickedOnly: runOptions.runPickedOnly ?? false,
     failFast: runOptions.failFast ?? configFile?.failFast ?? false,

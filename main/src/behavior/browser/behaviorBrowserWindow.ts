@@ -1,6 +1,6 @@
 import type { ClaimResult, Example, Summary } from "esbehavior"
 import type { BehaviorData } from "./behaviorData.js"
-import { RunContext } from "../../runContext.js"
+import { GlobalContext } from "../../globalContext.js"
 
 export interface BehaviorBrowserWindow extends Window {
   __bb_currentExamples: Array<Example>
@@ -15,5 +15,5 @@ export interface BehaviorBrowserWindow extends Window {
   __bb_recordAction(result: ClaimResult): void
   __bb_recordObservation(result: ClaimResult): void
   __bb_pageBinding(pageFunction: string, arg: any): Promise<any>
-  __best_behavior_run_context: RunContext | undefined
+  __best_behavior_global_context: GlobalContext | undefined
 }

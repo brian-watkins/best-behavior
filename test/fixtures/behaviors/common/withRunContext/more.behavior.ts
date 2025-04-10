@@ -1,10 +1,10 @@
 import { behavior, effect, example, use } from "esbehavior";
 import { expect, is } from "great-expectations";
-import { runContext } from "../../../../../main/src/index.js";
+import { globalContext } from "../../../../../main/src/index.js";
 
 export default behavior("another behavior", [
 
-  example(use(runContext<number>(), {
+  example(use(globalContext<number>(), {
     init(runConfig) {
       return runConfig + 20
     }

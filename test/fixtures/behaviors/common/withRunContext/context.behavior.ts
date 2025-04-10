@@ -1,10 +1,10 @@
 import { behavior, effect, example, use } from "esbehavior";
 import { expect, is } from "great-expectations";
-import { runContext } from "../../../../../main/src/index.js";
+import { globalContext } from "../../../../../main/src/index.js";
 
 export default behavior("behavior using context", [
 
-  example(use(runContext(), {
+  example(use(globalContext(), {
     init: (runConfig) => runConfig
   }))
     .description("using the context value")

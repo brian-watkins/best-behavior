@@ -22,4 +22,4 @@ export {
   randomOrder
 } from "esbehavior"
 
-export { runContext } from "./runContext.js"
+export { globalContext } from "./globalContext.js"

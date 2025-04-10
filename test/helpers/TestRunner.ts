@@ -28,7 +28,7 @@ export class TestRunner<T> {
   private shouldCollectCoverage: boolean = false
   private bestConfigFile: string | undefined
   private isParallel: boolean = false
-  private runContext: Context<any> | undefined
+  private globalContext: Context<any> | undefined
   public runResult: ValidationRunResult | undefined
   public attributes!: T
 
@@ -70,8 +70,8 @@ export class TestRunner<T> {
     this.behaviorFilter = filter
   }
 
-  setRunContext(context: Context<any>) {
-    this.runContext = context
+  setGlobalContext(context: Context<any>) {
+    this.globalContext = context
   }
 
   async runBehaviors(pattern?: string): Promise<void> {
@@ -85,7 +85,7 @@ export class TestRunner<T> {
         globs: this.options.browserGlob ? [this.options.browserGlob] : undefined,
         html: this.options.browserBehaviorHTML
       },
-      runContext: this.runContext,
+      context: this.globalContext,
       parallel: this.isParallel,
       failFast: this.shouldFailFast,
       runPickedOnly: this.shouldRunPickedExamplesOnly,

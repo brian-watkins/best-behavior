@@ -47,11 +47,11 @@ export class BehaviorBrowser extends PreparedBrowser {
     const homePage = this.options.homePage ?? this.attributes.localServer.urlForPath("/@best-behavior")
     await this._page.goto(homePage)
 
-    this._page.evaluate((runContextValue) => {
-      window.__best_behavior_run_context = {
-        value: runContextValue
+    this._page.evaluate((globalContextValue) => {
+      window.__best_behavior_global_context = {
+        value: globalContextValue
       }
-    }, this.attributes.runContext)
+    }, this.attributes.context)
 
     this.startCoverage(this._page)
 

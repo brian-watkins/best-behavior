@@ -26,11 +26,11 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
   })
   await viteServer.start()
 
-  const runContextValue = await config.runContext?.init()
+  const globalContextValue = await config.context?.init()
 
   const attributes: RuntimeAttributes = {
     localServer: viteServer.getContext(),
-    runContext: runContextValue
+    context: globalContextValue
   }
 
   const validator = config.parallel ?
@@ -39,7 +39,7 @@ export async function run(config: Configuration): Promise<ValidationRunResult> {
 
   const result = await runBehaviors(config, validator)
 
-  await config.runContext?.teardown?.(runContextValue)
+  await config.context?.teardown?.(globalContextValue)
 
   if (!config.showBrowser) {
     await viteServer.stop()

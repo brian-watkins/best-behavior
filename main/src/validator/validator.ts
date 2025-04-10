@@ -12,7 +12,7 @@ import { ViteModuleLoader, viteTranspiler } from "../transpiler/viteTranspiler.j
 import { CoverageManager } from "../coverage/coverageManager.js";
 import { RuntimeAttributes, validationCompleted, ValidationResult, validationTerminated } from "./index.js";
 import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js";
-import { provideRunContext } from "../runContext.js";
+import { provideGlobalContext } from "../globalContext.js";
 import { provideTestInstrument } from "../behavior/local/testInstrumentContext.js";
 
 export interface ValidatorConfig extends ValidationRunOptions {
@@ -48,7 +48,7 @@ export class Validator {
     )
 
     provideTestInstrument(playwrightTestInstrument)
-    provideRunContext(this.attributes.runContext)
+    provideGlobalContext(this.attributes.context)
 
     const behaviorBrowser = new BehaviorBrowser(this.playwrightBrowser, this.attributes, {
       adapterPath: pathToFile("../../adapter/behaviorAdapter.js"),

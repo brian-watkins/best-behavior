@@ -180,7 +180,7 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
               teardownCallCount: 0,
               lastTeardownValue: undefined
             }
-            context.setRunContext({
+            context.setGlobalContext({
               init: () => {
                 context.attributes.initCallCount++
                 return Promise.resolve(271)
