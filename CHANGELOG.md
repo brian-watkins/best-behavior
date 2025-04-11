@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.4
+
+### Patch Changes
+
+- 09b9cd6: Ignore log messages rather than excluding them
+
 ## 0.16.3
 
 ### Patch Changes
