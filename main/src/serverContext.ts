@@ -28,11 +28,11 @@ export function serverContext<T = void>(options: ServerContextOptions<T>): Conte
       })
 
       serverProcess.stdout?.on("data", (chunk) => {
-        options.logger?.info(chunk.toString(), "ServerContext")
+        options.logger?.info(chunk.toString().trim(), "ServerContext")
       })
 
       serverProcess.stderr?.on("data", (chunk) => {
-        options.logger?.error(chunk.toString(), "ServerContext")
+        options.logger?.error(chunk.toString().trim(), "ServerContext")
       })
 
       serverProcess.on("error", (err) => {
