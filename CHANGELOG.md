@@ -1,5 +1,12 @@
 # best-behavior
 
+## 0.16.0
+
+### Minor Changes
+
+- b058a70: serverContext for managing server processes
+- f0f0d87: runContext is now globalContext
+
 ## 0.15.2
 
 ### Patch Changes
