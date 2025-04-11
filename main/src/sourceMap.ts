@@ -8,7 +8,7 @@ export interface SourceMap {
 }
 
 export function extractSourceMap(source: string): SourceMap | undefined {
-  const match = source.match(/\/\/# sourceMappingURL=(.+)$/m);
+  const match = source.match(/^\/\/# sourceMappingURL=(.+)$/m);
   if (!match) {
     return undefined
   }
