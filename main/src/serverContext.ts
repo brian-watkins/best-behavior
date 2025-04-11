@@ -23,6 +23,7 @@ export function serverContext<T = void>(options: ServerContextOptions<T>): Conte
       const [command, ...args] = tokenizeArgs(options.command)
       serverProcess = spawn(command, args, {
         cwd: options.cwd,
+        detached: true,
         env: { ...process.env, ...options.env }
       })
 
@@ -51,7 +52,7 @@ export function serverContext<T = void>(options: ServerContextOptions<T>): Conte
       return options.value as T
     },
     teardown: async () => {
-      serverProcess.kill(options.killSignal)
+      process.kill(-serverProcess.pid!, options.killSignal)
     }
   }
 }
