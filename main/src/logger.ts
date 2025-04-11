@@ -5,9 +5,16 @@ export interface Logger {
   error(error: Error | string, source?: string): void
 }
 
-export function consoleLogger(): Logger {
+export interface ConsoleLoggerOptions {
+  exclude?: Array<RegExp>
+}
+
+export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
   return {
     info: (line, source) => {
+      if (options.exclude?.some(exclusion => exclusion.test(line))) {
+        return
+      }
       if (source) {
         console.log(cyan(`[${source}]`), line)
       } else {
@@ -15,6 +22,9 @@ export function consoleLogger(): Logger {
       }
     },
     error: (error, source) => {
+      if (options.exclude?.some(exclusion => exclusion.test(error.toString()))) {
+        return
+      }
       if (source) {
         console.error(red(`[${source}]`), error)
       } else {

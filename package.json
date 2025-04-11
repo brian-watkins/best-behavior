@@ -43,6 +43,7 @@
     "@types/wait-on": "^5.3.4",
     "@types/yargs": "^17.0.29",
     "great-expectations": "^1.5.1",
+    "tinyspy": "^4.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   },
