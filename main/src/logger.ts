@@ -6,13 +6,13 @@ export interface Logger {
 }
 
 export interface ConsoleLoggerOptions {
-  exclude?: Array<RegExp>
+  ignore?: Array<RegExp>
 }
 
 export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
   return {
     info: (line, source) => {
-      if (options.exclude?.some(exclusion => exclusion.test(line))) {
+      if (options.ignore?.some(exclusion => exclusion.test(line))) {
         return
       }
       if (source) {
@@ -22,7 +22,7 @@ export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
       }
     },
     error: (error, source) => {
-      if (options.exclude?.some(exclusion => exclusion.test(error.toString()))) {
+      if (options.ignore?.some(exclusion => exclusion.test(error.toString()))) {
         return
       }
       if (source) {

@@ -13,7 +13,7 @@ export default behavior("consoleLogger", [
     .description("excluding log lines")
     .script({
       suppose: [
-        fact("some lines are excluded", (context) => {
+        fact("some lines are ignored", (context) => {
           context.withExclusions([
             /BAD/,
             /SAD/
@@ -24,10 +24,10 @@ export default behavior("consoleLogger", [
         step("log a non-excluded info message", (context) => {
           context.info("Hello", "Test")
         }),
-        step("log an excluded info message", (context) => {
+        step("log an ignored info message", (context) => {
           context.info("This is so BAD!!", "Test")
         }),
-        step("log an exlcuded error message", (context) => {
+        step("log an ignored error message", (context) => {
           context.error("This is very SAD, right?", "Test")
         }),
         step("log a normal error", (context) => {
@@ -35,12 +35,12 @@ export default behavior("consoleLogger", [
         })
       ],
       observe: [
-        effect("only the non-excluded info lines are logged", (context) => {
+        effect("only the non-ignored info lines are logged", (context) => {
           expect(context.infoLines, is(arrayWith([
             equalTo("Hello")
           ])))
         }),
-        effect("only the non-excluded error lines are logged", (context) => {
+        effect("only the non-ignored error lines are logged", (context) => {
           expect(context.errorLines, is(arrayWith([
             equalTo("Whoops!")
           ])))
@@ -65,7 +65,7 @@ class TestConsoleLogger {
 
   info(line: string, source?: string) {
     const logger = consoleLogger({
-      exclude: this.exclusions
+      ignore: this.exclusions
     })
 
     this.startRecording()
@@ -75,7 +75,7 @@ class TestConsoleLogger {
 
   error(line: string, source?: string) {
     const logger = consoleLogger({
-      exclude: this.exclusions
+      ignore: this.exclusions
     })
 
     this.startRecording()
