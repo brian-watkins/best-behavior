@@ -16,6 +16,7 @@
     "./run": "./dist/main/run.js",
     "./browser": "./dist/main/browser.js",
     "./page": "./dist/main/page.js",
+    "./server": "./dist/main/serverContext.js",
     "./coverage": "./dist/main/coverage.js",
     "./transpiler": "./dist/main/transpiler.js"
   },
@@ -39,17 +40,20 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
+    "@types/wait-on": "^5.3.4",
     "@types/yargs": "^17.0.29",
     "great-expectations": "^1.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "args-tokenizer": "^0.3.0",
     "esbehavior": "^7.0.0",
     "glob": "^10.3.10",
     "lilconfig": "^3.0.0",
     "minimatch": "^9.0.3",
     "source-map-support": "^0.5.21",
+    "wait-on": "^8.0.3",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {

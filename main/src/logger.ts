@@ -2,7 +2,7 @@
 
 export interface Logger {
   info(line: string, source?: string): void
-  error(error: string, source?: string): void
+  error(error: Error | string, source?: string): void
 }
 
 export function consoleLogger(): Logger {

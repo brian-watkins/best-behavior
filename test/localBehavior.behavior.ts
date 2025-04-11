@@ -213,6 +213,27 @@ export default behavior("running behaviors in the local JS environment", [
           ])))
         })
       ]
-    })
+    }),
+
+  example(testRunnerContext())
+    .description("behavior that uses a server context and browser")
+    .script({
+      perform: [
+        step("validate the behaviors", async (context) => {
+          await context.runBehaviors("**/server/*.behavior.ts")
+        })
+      ],
+      observe: [
+        effect("it produces the correct summary", (context) => {
+          expect(context.reporter.summary, is(assignedWith(equalTo({
+            behaviors: 1,
+            examples: 1,
+            valid: 2,
+            invalid: 0,
+            skipped: 0
+          }))))
+        })
+      ]
+    }),
 
 ])
