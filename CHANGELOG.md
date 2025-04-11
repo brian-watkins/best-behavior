@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.2
+
+### Patch Changes
+
+- c54d04f: Fix bug with extracting source maps
+
 ## 0.16.1
 
 ### Patch Changes
