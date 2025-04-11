@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.3
+
+### Patch Changes
+
+- 019b8ff: Exclude lines from console logging
+
 ## 0.16.2
 
 ### Patch Changes
