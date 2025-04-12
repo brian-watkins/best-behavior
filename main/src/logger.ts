@@ -16,12 +16,12 @@ export interface ConsoleLoggerOptions {
 
 export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
   const logLevel = options.level ?? LogLevel.Info
+  const shouldIgnore = lineIsIgnored(options.ignore)
+
   return {
     info: (line, source) => {
       if (logLevel < LogLevel.Info) return
-      if (options.ignore?.some(exclusion => exclusion.test(line))) {
-        return
-      }
+      if (shouldIgnore(line, source)) return
       if (source) {
         console.log(cyan(`[${source}]`), line)
       } else {
@@ -30,15 +30,27 @@ export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
     },
     error: (error, source) => {
       if (logLevel < LogLevel.Error) return
-      if (options.ignore?.some(exclusion => exclusion.test(error.toString()))) {
-        return
-      }
+      if (shouldIgnore(`${error}`, source)) return
       if (source) {
         console.error(red(`[${source}]`), error)
       } else {
         console.error(error)
       }
     }
+  }
+}
+
+function lineIsIgnored(ignorePatterns: Array<RegExp> | undefined): (line: string, source: string | undefined) => boolean {
+  const patterns = ignorePatterns ?? []
+  return (line, source) =>
+    patterns.some(exclusion => exclusion.test(testableLogLine(line, source)))
+}
+
+function testableLogLine(line: string, source: string | undefined): string {
+  if (source) {
+    return `[${source}] ${line}`
+  } else {
+    return line
   }
 }
 
