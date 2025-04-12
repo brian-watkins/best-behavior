@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.5
+
+### Patch Changes
+
+- 94600d2: Log Level filtering for consoleLogger
+
 ## 0.16.4
 
 ### Patch Changes
