@@ -1,13 +1,108 @@
 import { behavior, Context, effect, example, fact, step } from "esbehavior";
 import { SpyImpl, spyOn } from "tinyspy"
-import { consoleLogger } from "../main/src/logger.js";
-import { arrayWith, equalTo, expect, is } from "great-expectations";
+import { consoleLogger, Logger, LogLevel } from "../main/src/logger.js";
+import { arrayWith, arrayWithLength, equalTo, expect, is } from "great-expectations";
 
 const testableConsoleLogger: Context<TestConsoleLogger> = {
   init: () => new TestConsoleLogger()
 }
 
 export default behavior("consoleLogger", [
+
+  example(testableConsoleLogger)
+    .description("error level")
+    .script({
+      suppose: [
+        fact("the log level is set to error", (context) => {
+          context.withLogLevel(LogLevel.Error)
+        })
+      ],
+      perform: [
+        step("some info and error logs are written", (context) => {
+          context.info("One", "Info")
+          context.info("Two", "Info")
+          context.info("Three", "Info")
+          context.error("Hey", "Error")
+          context.info("Hey", "Info")
+          context.error("Things!", "Error")
+          context.info("Hey", "Info")
+        })
+      ],
+      observe: [
+        effect("no info logs are displayed", (context) => {
+          expect(context.infoLines, is(arrayWithLength(0)))
+        }),
+        effect("the error lines are displayed", (context) => {
+          expect(context.errorLines, is([
+            "Hey",
+            "Things!"
+          ]))
+        })
+      ]
+    }),
+
+  example(testableConsoleLogger)
+    .description("info level")
+    .script({
+      suppose: [
+        fact("the log level is set to info", (context) => {
+          context.withLogLevel(LogLevel.Info)
+        })
+      ],
+      perform: [
+        step("some info and error logs are written", (context) => {
+          context.info("One", "Info")
+          context.info("Two", "Info")
+          context.info("Three", "Info")
+          context.error("Hey", "Error")
+          context.info("Hey", "Info")
+          context.error("Things!", "Error")
+          context.info("Hey", "Info")
+        })
+      ],
+      observe: [
+        effect("info logs are displayed", (context) => {
+          expect(context.infoLines, is([
+            "One", "Two", "Three", "Hey", "Hey"
+          ]))
+        }),
+        effect("the error lines are displayed", (context) => {
+          expect(context.errorLines, is([
+            "Hey",
+            "Things!"
+          ]))
+        })
+      ]
+    }),
+
+  example(testableConsoleLogger)
+    .description("silent level")
+    .script({
+      suppose: [
+        fact("the log level is set to silent", (context) => {
+          context.withLogLevel(LogLevel.Silent)
+        })
+      ],
+      perform: [
+        step("some info and error logs are written", (context) => {
+          context.info("One", "Info")
+          context.info("Two", "Info")
+          context.info("Three", "Info")
+          context.error("Hey", "Error")
+          context.info("Hey", "Info")
+          context.error("Things!", "Error")
+          context.info("Hey", "Info")
+        })
+      ],
+      observe: [
+        effect("no info logs are displayed", (context) => {
+          expect(context.infoLines, is(arrayWithLength(0)))
+        }),
+        effect("no error lines are displayed", (context) => {
+          expect(context.errorLines, is(arrayWithLength(0)))
+        })
+      ]
+    }),
 
   example(testableConsoleLogger)
     .description("excluding log lines")
@@ -57,29 +152,34 @@ class TestConsoleLogger {
   private consoleInfoSpy: SpyImpl | undefined
   private consoleErrorSpy: SpyImpl | undefined
   private exclusions: Array<RegExp> | undefined
+  private logLevel: LogLevel | undefined
 
   withExclusions(exclusions: Array<RegExp>): TestConsoleLogger {
     this.exclusions = exclusions
     return this
   }
 
-  info(line: string, source?: string) {
-    const logger = consoleLogger({
+  withLogLevel(level: LogLevel): TestConsoleLogger {
+    this.logLevel = level
+    return this
+  }
+
+  private getLogger(): Logger {
+    return consoleLogger({
+      level: this.logLevel,
       ignore: this.exclusions
     })
+  }
 
+  info(line: string, source?: string) {
     this.startRecording()
-    logger.info(line, source)
+    this.getLogger().info(line, source)
     this.stopRecording()
   }
 
   error(line: string, source?: string) {
-    const logger = consoleLogger({
-      ignore: this.exclusions
-    })
-
     this.startRecording()
-    logger.error(line, source)
+    this.getLogger().error(line, source)
     this.stopRecording()
   }
 

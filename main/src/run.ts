@@ -13,7 +13,7 @@ export type {
     BestBehaviorConfig
 } from "./config/public.js"
 export type { Logger } from "./logger.js"
-export { consoleLogger } from "./logger.js"
+export { consoleLogger, LogLevel } from "./logger.js"
 export type {
     PlaywrightBrowserGenerator,
     PlaywrightBrowserContextGenerator

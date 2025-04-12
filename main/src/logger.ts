@@ -5,13 +5,20 @@ export interface Logger {
   error(error: Error | string, source?: string): void
 }
 
+export enum LogLevel {
+  Silent, Error, Info
+}
+
 export interface ConsoleLoggerOptions {
+  level?: LogLevel
   ignore?: Array<RegExp>
 }
 
 export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
+  const logLevel = options.level ?? LogLevel.Info
   return {
     info: (line, source) => {
+      if (logLevel < LogLevel.Info) return
       if (options.ignore?.some(exclusion => exclusion.test(line))) {
         return
       }
@@ -22,6 +29,7 @@ export function consoleLogger(options: ConsoleLoggerOptions = {}): Logger {
       }
     },
     error: (error, source) => {
+      if (logLevel < LogLevel.Error) return
       if (options.ignore?.some(exclusion => exclusion.test(error.toString()))) {
         return
       }
