@@ -1,10 +1,10 @@
-import { behavior, effect, example, fact, step } from "esbehavior";
+import { behavior, effect, example, fact, step, use } from "esbehavior";
 import { expect, is, resolvesTo } from "great-expectations";
-import { useBrowser } from "../../../../main/src/browser.js";
+import { browserContext } from "../../../../main/src/browser";
 
 export default behavior("useBrowser", [
 
-  example(useBrowser())
+  example(browserContext())
     .description("uses a browser with the local server")
     .script({
       suppose: [
@@ -24,11 +24,8 @@ export default behavior("useBrowser", [
       ]
     }),
 
-  example(useBrowser({
-    init(browser) {
-      return browser
-    },
-    browserContextGenerator: (browser) => browser.newContext({
+  example(browserContext({
+    contextGenerator: (browser) => browser.newContext({
       viewport: {
         width: 500,
         height: 300

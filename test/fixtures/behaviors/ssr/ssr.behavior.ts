@@ -1,6 +1,6 @@
-import { behavior, effect, example, step } from "esbehavior";
+import { behavior, effect, example, step, use } from "esbehavior";
 import { expect, is } from "great-expectations";
-import { BrowserTestInstrument, useBrowser } from "../../../../main/src/browser.js";
+import { browserContext, BrowserTestInstrument } from "../../../../main/src/browser.js";
 import { useModule } from "../../../../main/src/transpiler.js"
 
 export default behavior("ssr", [
@@ -16,7 +16,7 @@ export default behavior("ssr", [
       ]
     }),
 
-  example(useBrowser({
+  example(use(browserContext(), {
     init: (browser) => new TestContext(browser),
   }))
     .description("execute different code from the same module in the browser")

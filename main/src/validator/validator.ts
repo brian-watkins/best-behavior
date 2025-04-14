@@ -4,7 +4,7 @@ import { BehaviorMetadata } from "../behavior/behaviorMetadata.js";
 import { PlaywrightBrowser } from "../browser/playwrightBrowser.js";
 import { ValidationRunOptions } from "../run.js";
 import { Configuration } from "../config/configuration.js";
-import { PlaywrightTestInstrument } from "../behavior/local/playwrightTestInstrument.js";
+import { LocalBrowser } from "../browser/localBrowser.js";
 import { BehaviorBrowser } from "../behavior/browser/behaviorBrowser.js";
 import { BrowserBehaviorContext } from "../behavior/browser/browserBehavior.js";
 import { BehaviorFactory } from "../behavior/behaviorFactory.js";
@@ -13,7 +13,7 @@ import { CoverageManager } from "../coverage/coverageManager.js";
 import { RuntimeAttributes, validationCompleted, ValidationResult, validationTerminated } from "./index.js";
 import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js";
 import { provideGlobalContext } from "../globalContext.js";
-import { provideTestInstrument } from "../behavior/local/testInstrumentContext.js";
+import { provideLocalBrowser } from "../browser/browserContext.js";
 
 export interface ValidatorConfig extends ValidationRunOptions {
   localServerHost: string
@@ -41,13 +41,13 @@ export class Validator {
       browserContextGenerator: this.config.browserContextGenerator
     })
 
-    const playwrightTestInstrument = new PlaywrightTestInstrument(
+    const localBrowser = new LocalBrowser(
       this.playwrightBrowser,
       this.attributes.localServer,
       { logger: this.config.logger }
     )
 
-    provideTestInstrument(playwrightTestInstrument)
+    provideLocalBrowser(localBrowser)
     provideGlobalContext(this.attributes.context)
 
     const behaviorBrowser = new BehaviorBrowser(this.playwrightBrowser, this.attributes, {
@@ -63,7 +63,7 @@ export class Validator {
       this.coverageManager = new CoverageManager(this.config.coverageReporter!, [
         new NodeCoverageProvider(viteTranspiler),
         behaviorBrowser,
-        playwrightTestInstrument
+        localBrowser
       ])
     }
 

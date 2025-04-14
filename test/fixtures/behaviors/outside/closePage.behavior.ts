@@ -1,8 +1,8 @@
-import { behavior, Context, effect, example, fact } from "esbehavior";
-import { BrowserTestInstrument, useBrowser } from "../../../../main/src/browser.js";
+import { behavior, Context, effect, example, fact, use } from "esbehavior";
+import { browserContext, BrowserTestInstrument } from "../../../../main/src/browser.js";
 import { expect, is } from "great-expectations";
 
-export default behavior("useBrowser edge cases", [
+export default behavior("browserContext edge cases", [
 
   example(closeBrowserTestContext())
     .description("closing the browser at the end of the example")
@@ -21,7 +21,7 @@ export default behavior("useBrowser edge cases", [
 ])
 
 function closeBrowserTestContext(): Context<BrowserTestInstrument> {
-  return useBrowser({
+  return use(browserContext(), {
     init(browser) {
       return browser
     },

@@ -1,9 +1,9 @@
 import { BrowserContext, Page } from "playwright"
-import { decoratePage, PreparedBrowser, PreparedBrowserOptions } from "../../browser/preparedBrowser.js"
-import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "../../browser/playwrightBrowser.js"
-import { LocalServerContext } from "../../localServer/context.js"
+import { decoratePage, PreparedBrowser, PreparedBrowserOptions } from "./preparedBrowser.js"
+import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./playwrightBrowser.js"
+import { LocalServerContext } from "../localServer/context.js"
 
-export class PlaywrightTestInstrument extends PreparedBrowser {
+export class LocalBrowser extends PreparedBrowser {
   private _context: BrowserContext | undefined
   private _page: Page | undefined
 

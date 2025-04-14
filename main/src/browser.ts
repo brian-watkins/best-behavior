@@ -1,6 +1,2 @@
-export type {
-  ContextWithBrowser,
-} from "./behavior/local/useBrowser.js"
-export type { BrowserTestInstrument } from "./behavior/local/browserTestInstrument.js"
-export { browserContext } from "./behavior/local/browserTestInstrument.js"
-export { useBrowser } from "./behavior/local/useBrowser.js"
+export type { BrowserTestInstrument, BrowserContextOptions } from "./browser/browserContext.js"
+export { browserContext } from "./browser/browserContext.js"
