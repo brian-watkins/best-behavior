@@ -9,7 +9,6 @@ import { BehaviorBrowser } from "../behavior/browser/behaviorBrowser.js";
 import { BrowserBehaviorContext } from "../behavior/browser/browserBehavior.js";
 import { BehaviorFactory } from "../behavior/behaviorFactory.js";
 import { ViteModuleLoader, viteTranspiler } from "../transpiler/viteTranspiler.js";
-import { CoverageManager } from "../coverage/coverageManager.js";
 import { RuntimeAttributes, validationCompleted, ValidationResult, validationTerminated } from "./index.js";
 import { NodeCoverageProvider } from "../coverage/nodeCoverageProvider.js";
 import { provideGlobalContext } from "../globalContext.js";
@@ -24,7 +23,6 @@ export class Validator {
   private behaviorFactory!: BehaviorFactory;
   private playwrightBrowser!: PlaywrightBrowser;
   private validationStatus: ValidationStatus = ValidationStatus.VALID
-  private coverageManager: CoverageManager | undefined
 
   constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
@@ -59,21 +57,17 @@ export class Validator {
     const browserBehaviorContext = new BrowserBehaviorContext(this.attributes.localServer, behaviorBrowser)
     this.behaviorFactory = new BehaviorFactory(new ViteModuleLoader(), browserBehaviorContext)
 
-    if (this.config.collectCoverage) {
-      this.coverageManager = new CoverageManager(this.config.coverageReporter!, [
-        new NodeCoverageProvider(viteTranspiler),
-        behaviorBrowser,
-        localBrowser
-      ])
-    }
-
-    await this.config.coverageReporter?.start()
-    await this.coverageManager?.prepareForCoverageCollection()
+    await this.config.coverageManager?.startCoverageReporter()
+    await this.config.coverageManager?.prepareForCoverageCollection([
+      new NodeCoverageProvider(viteTranspiler),
+      behaviorBrowser,
+      localBrowser
+    ])
   }
 
   async shutdown(): Promise<void> {
-    await this.coverageManager?.finishCoverageCollection()
-    await this.config.coverageReporter?.end()
+    await this.config.coverageManager?.finishCoverageCollection()
+    await this.config.coverageManager?.stopCoverageReporter()
 
     if (!this.playwrightBrowser.isVisible) {
       await this.playwrightBrowser.stop()

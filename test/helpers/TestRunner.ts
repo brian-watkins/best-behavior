@@ -3,6 +3,7 @@ import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrow
 import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
 import { CoverageFile, CoverageReport, CoverageResults } from "monocart-coverage-reports";
 import { run, ValidationRunResult } from "../../dist/main/runner.js";
+import { getCoverageManager } from "../../dist/main/config/configuration.js";
 
 export interface TestRunnerOptions {
   browserGlob?: string
@@ -92,8 +93,7 @@ export class TestRunner<T> {
       showBrowser: false,
       viteConfig: this.viteConfig,
       reporter: this.testReporter,
-      collectCoverage: this.shouldCollectCoverage,
-      coverageReporter: this.shouldCollectCoverage ? this.testCoverageReporter : undefined,
+      coverageManager: getCoverageManager(this.shouldCollectCoverage, this.testCoverageReporter),
       orderType: defaultOrder(),
       orderProvider: defaultOrderProvider(),
       logger: this.testLogger,

@@ -5,6 +5,7 @@ import { CoverageReporter } from "../coverage/coverageReporter.js";
 import { MonocartCoverageReporter } from "../coverage.js";
 import { BrowserBehaviorOptions, OrderType, ValidationRunOptions } from "./public.js";
 import { loadConfigFile } from "./configFile.js";
+import { CoverageManager } from "../coverage/coverageManager.js";
 
 export interface Configuration {
   configFile?: string
@@ -19,8 +20,7 @@ export interface Configuration {
   failFast: boolean
   showBrowser: boolean
   viteConfig?: string
-  collectCoverage: boolean
-  coverageReporter?: CoverageReporter
+  coverageManager?: CoverageManager
   reporter: Reporter
   orderType?: OrderType,
   orderProvider: OrderProvider
@@ -33,7 +33,6 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
   const logger = configFile?.logger ?? consoleLogger()
 
   const collectCoverage = runOptions.collectCoverage ?? configFile?.collectCoverage ?? false
-  const coverageReporter = collectCoverage ? configFile?.coverageReporter ?? new MonocartCoverageReporter() : undefined
 
   const orderType = runOptions.orderType ?? configFile?.orderType
 
@@ -50,8 +49,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     failFast: runOptions.failFast ?? configFile?.failFast ?? false,
     showBrowser: runOptions.showBrowser ?? false,
     viteConfig: runOptions.viteConfig ?? configFile?.viteConfig,
-    collectCoverage,
-    coverageReporter,
+    coverageManager: getCoverageManager(collectCoverage, configFile?.coverageReporter),
     reporter: configFile?.reporter ?? defaultReporter(logger),
     orderType,
     orderProvider: getOrderProvider(orderType),
@@ -71,7 +69,7 @@ export function getRunOptions(config: Configuration): ValidationRunOptions {
     viteConfig: config.viteConfig,
     showBrowser: config.showBrowser,
     orderType: config.orderType,
-    collectCoverage: config.collectCoverage
+    collectCoverage: config.coverageManager !== undefined
   }
 }
 
@@ -96,5 +94,14 @@ function getOrderProvider(orderType: OrderType | undefined): OrderProvider {
     case "random":
       return randomOrder(orderType.seed)
   }
+}
+
+export function getCoverageManager(collectCoverage: boolean, reporter: CoverageReporter | undefined): CoverageManager | undefined {
+  if (!collectCoverage) {
+    return undefined
+  }
+
+  const coverageReporter = reporter ?? new MonocartCoverageReporter()
+  return new CoverageManager(coverageReporter)
 }
 

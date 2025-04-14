@@ -13,7 +13,7 @@ export class ParallelValidation implements ValidationManager {
   constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
   async validate(behaviors: Array<BehaviorMetadata>): Promise<ValidationResult> {
-    await this.config.coverageReporter?.start()
+    await this.config.coverageManager?.startCoverageReporter()
 
     await this.pool.init(pathToFile("./worker.js"), {
       runOptions: getRunOptions(this.config),
@@ -52,7 +52,7 @@ export class ParallelValidation implements ValidationManager {
 
     await this.pool.shutdown()
 
-    await this.config.coverageReporter?.end()
+    await this.config.coverageManager?.stopCoverageReporter()
 
     if (terminationResult !== undefined) {
       return terminationResult
