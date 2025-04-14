@@ -111,12 +111,12 @@ function commonExamples(options?: TestRunnerOptions): Array<ConfigurableExample>
             expect(context.runResult, is(assignedWith(equalTo(ValidationRunResult.NOT_OK))))
           }),
           effect("coverage data is generated", (context) => {
-            expect(context.coverageReporter.coveredFile("/test/fixtures/src/addStuff.ts"),
+            expect(context.coverageReporter.coveredFile("test/fixtures/src/addStuff.ts"),
               is(assignedWith(fileWithCoveredLines({
                 '1': 1, '6': 0, '7': 0, '8': 0, '10': 2, '11': 2, '12': 2
               }))))
 
-            expect(context.coverageReporter.coveredFile("/test/fixtures/src/constants.ts"),
+            expect(context.coverageReporter.coveredFile("test/fixtures/src/constants.ts"),
               is(assignedWith(fileWithCoveredLines({
                 '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
               }))))

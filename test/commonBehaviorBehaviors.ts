@@ -618,12 +618,12 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
           const sourceFiles = context.coverageReporter.coverageResults?.files
           expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
 
-          expect(context.coverageReporter.coveredFile("/test/fixtures/src/addStuff.ts"),
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/addStuff.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '6': 0, '7': 0, '8': 0, '10': 1, '11': 1, '12': 1
             }))))
 
-          expect(context.coverageReporter.coveredFile("/test/fixtures/src/constants.ts"),
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/constants.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
             }))))

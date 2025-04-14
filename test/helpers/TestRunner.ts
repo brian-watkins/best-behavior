@@ -193,6 +193,13 @@ class TestCoverageReporter implements CoverageReporter {
       clean: true,
       cleanCache: true,
       entryFilter: (entry) => entry.url.includes("test/fixtures/src"),
+      sourcePath(filePath, info) {
+        if (info.distFile && info.distFile.startsWith("localhost")) {
+          return info.distFile.substring(15)
+        } else {
+          return filePath
+        }
+      }
     })
   }
 
@@ -205,7 +212,7 @@ class TestCoverageReporter implements CoverageReporter {
   }
 
   coveredFile(path: string): CoverageFile | undefined {
-    return this.coverageResults?.files.find(file => file.url?.includes(path))
+    return this.coverageResults?.files.find(file => file.sourcePath?.includes(path))
   }
 }
 

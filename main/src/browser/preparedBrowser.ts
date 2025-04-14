@@ -4,7 +4,6 @@ import { CoverageProvider } from "../coverage/coverageProvider.js";
 import { Logger } from "../logger.js";
 import { V8CoverageData } from "../coverage/coverageReporter.js";
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./playwrightBrowser.js";
-import { adaptCoverageData } from "./browserCoverageAdapter.js";
 import { LocalServerContext } from "../localServer/context.js";
 
 export interface PreparedBrowserOptions {
@@ -67,7 +66,7 @@ export class PreparedBrowser implements CoverageProvider {
       this.collectingCoverage = false
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData.map(adaptCoverageData(this.localServer)))
+        await this.onCoverageData(coverageData)
       }
     }
   }

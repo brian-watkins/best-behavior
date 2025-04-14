@@ -76,7 +76,7 @@ export default behavior("running behaviors in the local JS environment", [
         effect("coverage data is generated for sources loaded in the browser", (context) => {
           const sourceFiles = context.coverageReporter.coverageResults?.files
           expect(sourceFiles, is(assignedWith(arrayWith([
-            objectWithProperty("url", assignedWith(stringContaining("/test/fixtures/src/coolModule.ts")))
+            objectWithProperty("sourcePath", assignedWith(stringContaining("test/fixtures/src/coolModule.ts")))
           ]))))
         }),
       ]
@@ -109,12 +109,12 @@ export default behavior("running behaviors in the local JS environment", [
           const sourceFiles = context.coverageReporter.coverageResults?.files
           expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
 
-          expect(context.coverageReporter.coveredFile("/test/fixtures/src/addStuff.ts"),
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/addStuff.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '6': 0, '7': 0, '8': 0, '10': 3, '11': 3, '12': 3
             }))))
 
-          expect(context.coverageReporter.coveredFile("/test/fixtures/src/constants.ts"),
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/constants.ts"),
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
             }))))
@@ -168,7 +168,6 @@ export default behavior("running behaviors in the local JS environment", [
         }),
         effect("coverage data is merged for module exercised in node and browser", (context) => {
           const sourceFiles = context.coverageReporter.coverageResults?.files
-
           expect(sourceFiles?.length, is(assignedWith(equalTo(1))))
 
           // Note that this will fail if using a version of node < 23.10.0
