@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.6
+
+### Patch Changes
+
+- bdfa927: No longer adjust browser sourcemap source path
+
 ## 0.16.5
 
 ### Patch Changes
