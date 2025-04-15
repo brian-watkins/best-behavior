@@ -9,17 +9,17 @@ export class SequentialValidation implements ValidationManager {
   constructor(private config: Configuration, private attributes: RuntimeAttributes) { }
 
   async validate(behaviors: Array<BehaviorMetadata>): Promise<ValidationResult> {
-    const runner = new Validator(this.config, this.attributes)
+    const validator = new Validator(this.config, this.attributes)
 
     let terminationResult: ValidationTerminated | undefined = undefined
 
     let summary = emptySummary()
 
-    await runner.init()
+    await validator.init()
 
     outer:
     for (const behavior of this.config.orderProvider.order(behaviors)) {
-      const result = await runner.run(behavior)
+      const result = await validator.run(behavior)
       switch (result.type) {
         case "completed": {
           summary = addSummary(summary, result.summary)
@@ -32,7 +32,7 @@ export class SequentialValidation implements ValidationManager {
       }
     }
 
-    await runner.shutdown()
+    await validator.shutdown()
 
     if (terminationResult !== undefined) {
       return terminationResult
