@@ -14,17 +14,21 @@ export class CoverageManager {
     await this.reporter.end()
   }
 
-  async prepareForCoverageCollection(providers: Array<CoverageProvider>): Promise<void> {
-    for (const provider of providers) {
-      this.providers.push(provider)
-      provider.onCoverageData = (data) => this.reporter.recordData(data)
-      await provider.prepareForCoverageCollection?.()
+  async addProvider(provider: CoverageProvider) {
+    this.providers.push(provider)
+  }
+
+  async prepareForCoverage(): Promise<void> {
+    for (const provider of this.providers) {
+      await provider.prepareForCoverage({
+        recordData: (data) => this.reporter.recordData(data)
+      })
     }
   }
 
-  async finishCoverageCollection(): Promise<void> {
+  async finishCoverage(): Promise<void> {
     for (const provider of this.providers) {
-      await provider.finishCoverageCollection?.()
+      await provider.finishCoverage?.()
     }
   }
 }

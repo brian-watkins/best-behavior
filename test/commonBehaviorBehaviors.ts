@@ -1,6 +1,6 @@
 import { ConfigurableExample, effect, example, fact, step } from "esbehavior"
 import { TestRunnerOptions, testRunnerContext } from "./helpers/TestRunner.js"
-import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, satisfying, stringContaining } from "great-expectations"
+import { arrayContaining, arrayWith, assignedWith, equalTo, expect, is, objectWithProperty, satisfying, stringContaining, valueWhere } from "great-expectations"
 import { expectedBehavior, expectedExampleScripts, fileWithCoveredLines } from "./helpers/matchers.js"
 import { ValidationRunResult } from "../dist/main/run.js"
 
@@ -594,6 +594,14 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       suppose: [
         fact("coverage data should be collected", (context) => {
           context.setShouldCollectCoverage(true)
+        }),
+        fact("a custom coverage provider is used", (context) => {
+          context.useTestCoverageProviderWithData([{
+            url: "/test/fixtures/src/fake-file.js",
+            scriptId: "blah-fake",
+            source: "// Just some comments",
+            functions: []
+          }])
         })
       ],
       perform: [
@@ -616,7 +624,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
         }),
         effect("coverage data is generated", (context) => {
           const sourceFiles = context.coverageReporter.coverageResults?.files
-          expect(sourceFiles?.length, is(assignedWith(equalTo(2))))
+          expect(sourceFiles?.length, is(assignedWith(equalTo(3))))
 
           expect(context.coverageReporter.coveredFile("test/fixtures/src/addStuff.ts"),
             is(assignedWith(fileWithCoveredLines({
@@ -627,6 +635,14 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
             is(assignedWith(fileWithCoveredLines({
               '1': 1, '3': 1, '5': "1/2", '6': 0, '7': 0, '9': 1
             }))))
+
+          expect(context.coverageReporter.coveredFile("test/fixtures/src/fake-file.js"),
+            is(assignedWith(objectWithProperty("source", assignedWith(stringContaining("Just some comments")))))
+          )
+        }),
+        effect("the custom coverage provider is called", (context) => {
+          expect(context.testCoverageProvider?.beginCoverageCalls, is(1))
+          expect(context.testCoverageProvider?.finishCoverageCalls, is(1))
         })
       ]
     }),

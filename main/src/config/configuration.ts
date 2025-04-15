@@ -6,6 +6,7 @@ import { MonocartCoverageReporter } from "../coverage.js";
 import { BrowserBehaviorOptions, OrderType, ValidationRunOptions } from "./public.js";
 import { loadConfigFile } from "./configFile.js";
 import { CoverageManager } from "../coverage/coverageManager.js";
+import { CoverageProvider } from "../coverage/coverageProvider.js";
 
 export interface Configuration {
   configFile?: string
@@ -49,7 +50,7 @@ export async function getConfiguration(runOptions: ValidationRunOptions): Promis
     failFast: runOptions.failFast ?? configFile?.failFast ?? false,
     showBrowser: runOptions.showBrowser ?? false,
     viteConfig: runOptions.viteConfig ?? configFile?.viteConfig,
-    coverageManager: getCoverageManager(collectCoverage, configFile?.coverageReporter),
+    coverageManager: getCoverageManager(collectCoverage, configFile?.coverageReporter, configFile?.coverageProvider),
     reporter: configFile?.reporter ?? defaultReporter(logger),
     orderType,
     orderProvider: getOrderProvider(orderType),
@@ -96,12 +97,18 @@ function getOrderProvider(orderType: OrderType | undefined): OrderProvider {
   }
 }
 
-export function getCoverageManager(collectCoverage: boolean, reporter: CoverageReporter | undefined): CoverageManager | undefined {
+export function getCoverageManager(collectCoverage: boolean, reporter: CoverageReporter | undefined, provider: CoverageProvider | undefined): CoverageManager | undefined {
   if (!collectCoverage) {
     return undefined
   }
 
   const coverageReporter = reporter ?? new MonocartCoverageReporter()
-  return new CoverageManager(coverageReporter)
+  const manager = new CoverageManager(coverageReporter)
+
+  if (provider !== undefined) {
+    manager.addProvider(provider)
+  }
+
+  return manager
 }
 

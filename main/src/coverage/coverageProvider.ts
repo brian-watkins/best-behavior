@@ -1,7 +1,10 @@
 import { V8CoverageData } from "./coverageReporter.js";
 
+export interface CoverageContext {
+  recordData(data: Array<V8CoverageData>): Promise<void>
+}
+
 export interface CoverageProvider {
-  onCoverageData?: (data: Array<V8CoverageData>) => Promise<void>
-  prepareForCoverageCollection?(): Promise<void>
-  finishCoverageCollection?(): Promise<void>
+  prepareForCoverage(context: CoverageContext): Promise<void>
+  finishCoverage?(): Promise<void>
 }

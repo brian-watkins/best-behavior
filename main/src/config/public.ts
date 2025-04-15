@@ -2,6 +2,7 @@ import { Context, Reporter } from "esbehavior"
 import { PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../browser/playwrightBrowser.js"
 import { CoverageReporter } from "../coverage.js"
 import { Logger } from "../logger.js"
+import { CoverageProvider } from "../coverage/coverageProvider.js"
 
 export interface BrowserBehaviorOptions {
   globs?: Array<string>
@@ -57,6 +58,7 @@ export interface BestBehaviorConfig {
   viteConfig?: string
   collectCoverage?: boolean
   coverageReporter?: CoverageReporter
+  coverageProvider?: CoverageProvider
   reporter?: Reporter
   orderType?: OrderType
   logger?: Logger

@@ -57,16 +57,16 @@ export class Validator {
     const browserBehaviorContext = new BrowserBehaviorContext(this.attributes.localServer, behaviorBrowser)
     this.behaviorFactory = new BehaviorFactory(new ViteModuleLoader(), browserBehaviorContext)
 
+    this.config?.coverageManager?.addProvider(new NodeCoverageProvider(viteTranspiler))
+    this.config?.coverageManager?.addProvider(behaviorBrowser)
+    this.config?.coverageManager?.addProvider(localBrowser)
+
     await this.config.coverageManager?.startCoverageReporter()
-    await this.config.coverageManager?.prepareForCoverageCollection([
-      new NodeCoverageProvider(viteTranspiler),
-      behaviorBrowser,
-      localBrowser
-    ])
+    await this.config.coverageManager?.prepareForCoverage()
   }
 
   async shutdown(): Promise<void> {
-    await this.config.coverageManager?.finishCoverageCollection()
+    await this.config.coverageManager?.finishCoverage()
     await this.config.coverageManager?.stopCoverageReporter()
 
     if (!this.playwrightBrowser.isVisible) {

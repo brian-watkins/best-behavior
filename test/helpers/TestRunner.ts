@@ -1,6 +1,6 @@
 import { ClaimResult, Context, Failure, Reporter, Summary, defaultOrder as defaultOrderProvider } from "esbehavior";
 import { defaultOrder, Logger, PlaywrightBrowserContextGenerator, PlaywrightBrowserGenerator } from "../../dist/main/run.js"
-import { CoverageReporter, V8CoverageData } from "../../dist/main/coverage/coverageReporter.js";
+import { CoverageReporter, V8CoverageData, CoverageContext, CoverageProvider } from "../../dist/main/coverage.js";
 import { CoverageFile, CoverageReport, CoverageResults } from "monocart-coverage-reports";
 import { run, ValidationRunResult } from "../../dist/main/runner.js";
 import { getCoverageManager } from "../../dist/main/config/configuration.js";
@@ -26,6 +26,7 @@ export class TestRunner<T> {
   private browserContextGenerator: PlaywrightBrowserContextGenerator | undefined
   private viteConfig: string | undefined
   private testCoverageReporter = new TestCoverageReporter()
+  public testCoverageProvider: TestCoverageProvider | undefined
   private shouldCollectCoverage: boolean = false
   private bestConfigFile: string | undefined
   private isParallel: boolean = false
@@ -57,6 +58,10 @@ export class TestRunner<T> {
 
   setShouldCollectCoverage(shouldCollectCoverage: boolean) {
     this.shouldCollectCoverage = shouldCollectCoverage
+  }
+
+  useTestCoverageProviderWithData(data: Array<V8CoverageData>) {
+    this.testCoverageProvider = new TestCoverageProvider(data)
   }
 
   setShouldFailFast(shouldFailFast: boolean) {
@@ -93,7 +98,7 @@ export class TestRunner<T> {
       showBrowser: false,
       viteConfig: this.viteConfig,
       reporter: this.testReporter,
-      coverageManager: getCoverageManager(this.shouldCollectCoverage, this.testCoverageReporter),
+      coverageManager: getCoverageManager(this.shouldCollectCoverage, this.testCoverageReporter, this.testCoverageProvider),
       orderType: defaultOrder(),
       orderProvider: defaultOrderProvider(),
       logger: this.testLogger,
@@ -213,6 +218,24 @@ class TestCoverageReporter implements CoverageReporter {
 
   coveredFile(path: string): CoverageFile | undefined {
     return this.coverageResults?.files.find(file => file.sourcePath?.includes(path))
+  }
+}
+
+class TestCoverageProvider implements CoverageProvider {
+  beginCoverageCalls: number = 0
+  finishCoverageCalls: number = 0
+  private coverageContext: CoverageContext | undefined
+
+  constructor(private data: Array<V8CoverageData>) { }
+
+  async prepareForCoverage(coverageContext: CoverageContext): Promise<void> {
+    this.beginCoverageCalls++
+    this.coverageContext = coverageContext
+  }
+
+  async finishCoverage(): Promise<void> {
+    this.finishCoverageCalls++
+    this.coverageContext?.recordData(this.data)
   }
 }
 

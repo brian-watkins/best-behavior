@@ -1,6 +1,6 @@
 import url from "node:url"
 import { BrowserContext, Page } from "playwright";
-import { CoverageProvider } from "../coverage/coverageProvider.js";
+import { CoverageContext, CoverageProvider } from "../coverage/coverageProvider.js";
 import { Logger } from "../logger.js";
 import { V8CoverageData } from "../coverage/coverageReporter.js";
 import { PlaywrightBrowser, PlaywrightBrowserContextGenerator } from "./playwrightBrowser.js";
@@ -13,12 +13,16 @@ export interface PreparedBrowserOptions {
 
 export class PreparedBrowser implements CoverageProvider {
   private collectingCoverage: boolean = false
-  onCoverageData: ((data: Array<V8CoverageData>) => Promise<void>) | undefined
+  private coverageContext: CoverageContext | undefined
 
   constructor(protected browser: PlaywrightBrowser, protected localServer: LocalServerContext, private browserOptions: PreparedBrowserOptions) { }
 
   get isVisible(): boolean {
     return this.browser.isVisible
+  }
+
+  async prepareForCoverage(coverageContext: CoverageContext): Promise<void> {
+    this.coverageContext = coverageContext
   }
 
   protected async getContext(generator?: PlaywrightBrowserContextGenerator): Promise<BrowserContext> {
@@ -53,7 +57,7 @@ export class PreparedBrowser implements CoverageProvider {
   }
 
   async startCoverage(page: Page): Promise<void> {
-    if (this.onCoverageData !== undefined) {
+    if (this.coverageContext !== undefined) {
       this.collectingCoverage = true
       await page.coverage.startJSCoverage({
         resetOnNavigation: false
@@ -62,11 +66,11 @@ export class PreparedBrowser implements CoverageProvider {
   }
 
   async stopCoverage(page: Page): Promise<void> {
-    if (this.collectingCoverage && this.onCoverageData !== undefined) {
+    if (this.collectingCoverage && this.coverageContext !== undefined) {
       this.collectingCoverage = false
       const coverageData = await page.coverage.stopJSCoverage()
       if (coverageData.length > 0) {
-        await this.onCoverageData(coverageData)
+        await this.coverageContext.recordData(coverageData)
       }
     }
   }
