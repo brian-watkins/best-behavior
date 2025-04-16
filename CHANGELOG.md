@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.7
+
+### Patch Changes
+
+- c18ea6a: Support for custom coverage provider
+
 ## 0.16.6
 
 ### Patch Changes
