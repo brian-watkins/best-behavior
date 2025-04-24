@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "args-tokenizer": "^0.3.0",
-    "esbehavior": "^7.0.0",
+    "esbehavior": "^8.0.0",
     "glob": "^10.3.10",
     "lilconfig": "^3.0.0",
     "minimatch": "^9.0.3",
