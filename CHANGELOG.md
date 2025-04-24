@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.8
+
+### Patch Changes
+
+- cd6a179: Update contextMap api with new version of esbehavior
+
 ## 0.16.7
 
 ### Patch Changes
