@@ -50,7 +50,7 @@
   "dependencies": {
     "args-tokenizer": "^0.3.0",
     "esbehavior": "^8.0.0",
-    "glob": "^10.3.10",
+    "glob": "^13.0.0",
     "lilconfig": "^3.0.0",
     "minimatch": "^9.0.3",
     "source-map-support": "^0.5.21",
