@@ -52,7 +52,7 @@
     "esbehavior": "^8.0.0",
     "glob": "^13.0.0",
     "lilconfig": "^3.0.0",
-    "minimatch": "^9.0.3",
+    "minimatch": "^10.1.1",
     "source-map-support": "^0.5.21",
     "wait-on": "^9.0.3",
     "yargs": "^17.7.2"
