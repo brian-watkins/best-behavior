@@ -33,7 +33,7 @@
     "build:adapter": "node ./scripts/build.js",
     "build:all": "npm run build:runner && npm run build:adapter",
     "dev": "./bin/index.js --behaviors './test/fixtures/**/valid/*.behavior.ts' --runInBrowser '**/browser/**/*'",
-    "test": "npm run build:all && node --enable-source-maps --import ./test/ts-node-register.mjs --no-deprecation ./test/runner.ts",
+    "test": "npm run build:all && node --enable-source-maps --import=tsx ./test/runner.ts",
     "create:change": "changeset add",
     "create:version": "changeset version",
     "create:release": "npm run build && changeset publish && git push --follow-tags"
@@ -44,7 +44,7 @@
     "@types/yargs": "^17.0.29",
     "great-expectations": "^1.5.1",
     "tinyspy": "^4.0.2",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -63,6 +63,6 @@
     "vite": "^7.3.0"
   },
   "volta": {
-    "node": "23.10.0"
+    "node": "24.12.0"
   }
 }
