@@ -1,5 +1,11 @@
 # best-behavior
 
+## 0.16.10
+
+### Patch Changes
+
+- 832d462: Update dependencies
+
 ## 0.16.9
 
 ### Patch Changes
