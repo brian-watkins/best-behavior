@@ -39,30 +39,30 @@
     "create:release": "npm run build && changeset publish && git push --follow-tags"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
+    "@changesets/cli": "^2.31.0",
     "@types/wait-on": "^5.3.4",
-    "@types/yargs": "^17.0.29",
+    "@types/yargs": "^17.0.35",
     "great-expectations": "^1.5.1",
-    "tinyspy": "^4.0.2",
+    "tinyspy": "^4.0.4",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "args-tokenizer": "^0.3.0",
-    "esbehavior": "^8.0.0",
-    "glob": "^13.0.0",
-    "lilconfig": "^3.0.0",
-    "minimatch": "^10.1.1",
+    "esbehavior": "^8.0.2",
+    "glob": "^13.0.6",
+    "lilconfig": "^3.1.3",
+    "minimatch": "^10.2.5",
     "source-map-support": "^0.5.21",
-    "wait-on": "^9.0.3",
-    "yargs": "^17.7.2"
+    "wait-on": "^9.0.5",
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
-    "monocart-coverage-reports": "^2.12.9",
-    "playwright": "^1.57.0",
-    "vite": "^7.3.0"
+    "monocart-coverage-reports": "^2.12.11",
+    "playwright": "^1.59.1",
+    "vite": "^7.3.2"
   },
   "volta": {
-    "node": "24.12.0"
+    "node": "24.15.0"
   }
 }
