@@ -1,5 +1,6 @@
 import { PluginOption, ViteDevServer, createServer } from "vite";
 import { LocalServerContext } from "./context.js";
+import { patchOxcBraceMappings } from "../transpiler/patchOxcBraceMappings.js";
 
 export interface ViteLocalServerOptions {
   viteConfig?: string
@@ -16,15 +17,16 @@ export class ViteLocalServer {
       configFile: this.options.viteConfig,
       optimizeDeps: {
         entries: this.options.behaviorGlobs,
-        esbuildOptions: {
-          logLevel: "silent"
-        }
+        // rolldownOptions: {
+          // logLevel: "silent"
+        // }
       },
       server: {
         hmr: false
       },
       plugins: [
-        defaultPagePlugin()
+        defaultPagePlugin(),
+        patchOxcBraceMappings()
       ]
     })
 

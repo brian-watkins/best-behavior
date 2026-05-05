@@ -48,6 +48,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@jridgewell/source-map": "^0.3.11",
     "args-tokenizer": "^0.3.0",
     "esbehavior": "^8.0.2",
     "glob": "^13.0.6",
@@ -60,7 +61,7 @@
   "peerDependencies": {
     "monocart-coverage-reports": "^2.12.11",
     "playwright": "^1.59.1",
-    "vite": "^7.3.2"
+    "vite": "^8.0.10"
   },
   "volta": {
     "node": "24.15.0"

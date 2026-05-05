@@ -4,6 +4,7 @@ import { createServer, ViteDevServer } from "vite"
 import { MessagePort } from "node:worker_threads"
 import { LoaderMessage } from "./loaderMessages.js"
 import { getSourceMappingURLComment, getSourceURLComment, SourceMap } from "../sourceMap.js"
+import { patchOxcBraceMappings } from "./patchOxcBraceMappings.js"
 
 interface ViteLoaderData {
   viteConfig?: string
@@ -59,7 +60,8 @@ async function initializeServer(data: { viteConfig?: string, behaviorGlobs?: Arr
     server: {
       hmr: false,
       host: false
-    }
+    },
+    plugins: [patchOxcBraceMappings()]
   })
 }
 
@@ -185,7 +187,7 @@ async function loadFileWithVite(url: string): Promise<LoaderFunctionReturnType> 
 
   const sourceMap = {
     ...transformResult!.map,
-    sources: [modulePath]
+    sources: [modulePath],
   } as SourceMap
 
   const source = `${transformResult?.code}
@@ -244,3 +246,4 @@ interface LoaderFunctionReturnType {
   source?: ModuleSource;
   responseURL?: string
 }
+

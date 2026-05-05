@@ -588,7 +588,7 @@ export default (options: TestRunnerOptions): Array<ConfigurableExample> => [
       ]
     }),
 
-  example(testRunnerContext(options))
+  (m) => m.pick() && example(testRunnerContext(options))
     .description("when coverage is collected")
     .script({
       suppose: [
